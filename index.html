@@ -1,49 +1,137 @@
-async function fetchFromLink() {
-    const status = document.getElementById('pTitle');
-    status.innerText = "جاري سحب القنوات.. انتظر ثواني ⏳";
-    
-    try {
-        // استخدام بروكسي "cors-anywhere" أو "allorigins" لكسر الحماية
-        const proxyUrl = 'https://api.allorigins.win/raw?url=';
-        const targetUrl = 'https://share.google/jm1ifPVaCW0x0QGjT';
-        
-        const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
-        const data = await response.text();
-        
-        // لو الداتا وصلت فاضية
-        if (!data || data.trim() === "") {
-            throw new Error("الملف فاضي أو الرابط مش شغال");
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZACK LIVE | شبكة الأسطورة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #020617; color: white; font-family: sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        .ostora-card { background: #0f172a; border: 1px solid #1e293b; transition: 0.3s; cursor: pointer; border-radius: 1rem; }
+        .ostora-card:hover { border-color: #eab308; transform: translateY(-3px); }
+        .video-container { border-bottom: 3px solid #eab308; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .hidden { display: none !important; }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="max-w-2xl mx-auto pb-20">
+
+    <div id="loginSection" class="pt-24 px-8 text-center">
+        <h1 class="text-4xl font-black text-yellow-500 mb-2 italic">ZACK LIVE</h1>
+        <p class="text-gray-500 text-[10px] uppercase mb-10 tracking-[0.3em]">Premium Streaming</p>
+        <div class="flex flex-col gap-4 max-w-xs mx-auto">
+            <input type="text" id="uName" placeholder="اسم المستخدم" class="bg-[#0f172a] p-4 rounded-2xl text-center outline-none border border-slate-800 focus:border-yellow-500">
+            <input type="password" id="uPass" placeholder="السر (للمدير)" class="bg-[#0f172a] p-4 rounded-2xl text-center outline-none border border-slate-800 focus:border-yellow-500 text-xs">
+            <button onclick="doLogin()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black text-sm uppercase shadow-xl">دخول المنصة</button>
+        </div>
+    </div>
+
+    <div id="mainApp" class="hidden">
+        <div class="video-container sticky top-0 z-50 bg-black">
+            <video id="video" controls autoplay playsinline class="w-full aspect-video"></video>
+            <div class="p-3 bg-[#0f172a] flex justify-between items-center">
+                <span id="pTitle" class="text-[11px] font-bold text-yellow-500">اختر قناة لبدء البث..</span>
+                <button onclick="logout()" class="text-red-500 text-xs"><i class="fas fa-power-off"></i></button>
+            </div>
+        </div>
+
+        <div class="p-4">
+            <div id="adminPanel" class="hidden mb-8">
+                <button onclick="fetchFromLink()" class="w-full bg-red-600 p-4 rounded-2xl text-xs font-black uppercase shadow-lg mb-4">
+                    <i class="fas fa-bolt ml-2"></i> سحب القنوات من الرابط الجديد
+                </button>
+            </div>
+
+            <div class="relative mb-6">
+                <input type="text" id="searchInput" onkeyup="search()" placeholder="ابحث عن قناة أو فيلم..." class="w-full p-4 bg-[#0f172a] border border-slate-800 rounded-2xl text-xs outline-none focus:border-yellow-500">
+            </div>
+
+            <h2 class="text-[10px] font-black text-gray-500 mb-4 uppercase tracking-widest border-r-4 border-red-600 pr-2">قنوات البث المباشر</h2>
+            <div id="channelsGrid" class="grid grid-cols-3 gap-3 mb-10">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('zack_db_v3') || '[]');
+        const m3uSource = 'https://share.google/jm1ifPVaCW0x0QGjT';
+
+        function doLogin() {
+            const n = document.getElementById('uName').value;
+            const p = document.getElementById('uPass').value;
+            if(!n) return alert("اكتب اسمك");
+            localStorage.setItem('z_user', n);
+            localStorage.setItem('z_role', p === "7777" ? "admin" : "user");
+            location.reload();
         }
 
-        const lines = data.split('\n');
-        let newCh = [];
-        
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].includes('#EXTINF')) {
-                // استخراج الاسم بعد الفاصلة
-                let name = lines[i].split(',')[1] || 'قناة بث';
-                // السطر اللي بعده هو الرابط
-                let url = lines[i + 1]?.trim();
-                
-                if (url && url.startsWith('http')) {
-                    newCh.push({ name: name.trim(), url: url });
-                }
+        window.onload = function() {
+            if(localStorage.getItem('z_user')) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                if(localStorage.getItem('z_role') === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
+                render();
             }
         }
 
-        if (newCh.length > 0) {
-            db = newCh;
-            localStorage.setItem('zack_live_db', JSON.stringify(db));
-            render();
-            status.innerText = "مبروك! تم سحب " + db.length + " قناة ✅";
-            alert("تم تحديث الشبكة بـ " + db.length + " قناة");
-        } else {
-            alert("لقيت الملف بس مش عارف أطلع منه روابط.. تأكد من صيغة الملف");
+        async function fetchFromLink() {
+            const status = document.getElementById('pTitle');
+            status.innerText = "جاري سحب البيانات.. ⏳";
+            try {
+                const proxy = 'https://api.allorigins.win/raw?url=';
+                const res = await fetch(proxy + encodeURIComponent(m3uSource));
+                const text = await res.text();
+                const lines = text.split('\n');
+                let newCh = [];
+                for(let i=0; i<lines.length; i++) {
+                    if(lines[i].includes('#EXTINF')) {
+                        let name = lines[i].split(',')[1] || 'قناة رياضية';
+                        let url = lines[i+1]?.trim();
+                        if(url && url.startsWith('http')) newCh.push({name: name.trim(), url: url});
+                    }
+                }
+                db = newCh;
+                localStorage.setItem('zack_db_v3', JSON.stringify(db));
+                render();
+                status.innerText = "تم تحديث " + db.length + " قناة ✅";
+                alert("تم السحب بنجاح!");
+            } catch(e) { status.innerText = "خطأ في الاتصال!"; }
         }
 
-    } catch (error) {
-        console.error(error);
-        status.innerText = "فشل السحب.. تأكد من الإنترنت أو الرابط";
-        alert("الزرار معلق بسبب حماية المتصفح، جرب تفتحه من متصفح تاني أو حدث الصفحة");
-    }
-}
+        function render() {
+            const grid = document.getElementById('channelsGrid');
+            grid.innerHTML = db.map(ch => `
+                <div onclick="play('${ch.url}', '${ch.name}')" class="ostora-card p-4 text-center">
+                    <i class="fas fa-play-circle text-red-600 text-xl mb-2"></i>
+                    <span class="text-[9px] font-bold block truncate">${ch.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function play(url, name) {
+            document.getElementById('pTitle').innerText = "مشاهدة: " + name;
+            const video = document.getElementById('video');
+            if (Hls.isSupported()) {
+                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url; video.play();
+            }
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        function search() {
+            let term = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.ostora-card').forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(term) ? "block" : "none";
+            });
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
+    </script>
+</body>
+                                                                                            </html>
+                                                                                            
