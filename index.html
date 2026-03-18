@@ -3,159 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | Final</title>
+    <title>Zack Cinema | Cloud Sync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; }
+        body { background: #020617; color: white; font-family: sans-serif; overflow-x: hidden; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
         .admin-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: #0b0f1a; border-right: 2px solid #ef4444; z-index: 9999; transform: translateX(-100%); transition: 0.3s; }
         .admin-open { transform: translateX(0); }
+        iframe { width: 100%; height: 210px; border-radius: 25px; border: 2px solid #22c55e; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
 
     <div id="adminPanel" class="admin-sidebar p-5">
-        <h2 class="text-red-500 font-bold text-center mb-5 border-b border-red-900 pb-2">ZACK ADMIN</h2>
+        <h2 class="text-red-500 font-black text-center mb-5 border-b border-red-900 pb-2 italic text-lg">ZACK CONTROL</h2>
         <div class="space-y-4">
-            <div class="bg-black/50 p-3 rounded-xl border border-blue-500/20 text-center">
-                <p class="text-[9px] text-gray-500">رصيدك: <span class="text-blue-400">1,000,000 نقطة</span></p>
+            <div class="bg-black/40 p-3 rounded-xl border border-blue-500/20 text-center">
+                <p class="text-[9px] text-gray-500 uppercase">رصيد نقاط زاك</p>
+                <p class="text-blue-400 font-bold">1,000,000 PT</p>
             </div>
-            <input type="text" id="targetId" placeholder="أيدي العميل" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center text-sm">
-            <input type="number" id="targetAmount" placeholder="الكمية" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center text-sm">
+            <input type="text" id="targetId" placeholder="أدخل أيدي العميل" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center text-sm font-bold">
+            <input type="number" id="targetAmount" placeholder="الكمية المراد شحنها" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center text-sm">
             <div class="grid grid-cols-2 gap-2">
-                <button onclick="adminAction('blue')" class="bg-blue-600 p-2 rounded-xl text-[10px] font-bold">شحن زرقاء</button>
-                <button onclick="adminAction('red')" class="bg-red-600 p-2 rounded-xl text-[10px] font-bold">شحن حمراء</button>
+                <button onclick="cloudCharge('blue')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg shadow-blue-900/40">شحن زرقاء</button>
+                <button onclick="cloudCharge('red')" class="bg-red-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg shadow-red-900/40">شحن حمراء</button>
             </div>
-            <button onclick="adminAction('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-xs uppercase">تفعيل البث للعميل ✅</button>
+            <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-xs uppercase">تفعيل البث فوراً ✅</button>
         </div>
-        <button onclick="toggleAdmin()" class="mt-10 text-[10px] block mx-auto underline text-gray-500">إغلاق</button>
+        <button onclick="toggleAdmin()" class="mt-10 text-[10px] block mx-auto underline text-gray-500">إغلاق اللوحة</button>
     </div>
 
-    <div onclick="toggleAdmin()" style="position:fixed; top:0; left:0; width:50px; height:50px; z-index:999;"></div>
+    <div onclick="toggleAdmin()" style="position:fixed; top:0; left:0; width:60px; height:60px; z-index:9999; cursor: pointer;"></div>
 
-    <div id="loginSection" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 text-center shadow-2xl">
-        <h1 class="text-2xl font-black mb-6 italic text-blue-500">ZACK CINEMA TV</h1>
-        <input type="text" id="uName" placeholder="اكتب اسمك بالإنجليزي" class="w-full p-4 rounded-2xl bg-black/50 border border-slate-800 text-center mb-4 font-bold outline-none">
-        <button onclick="doLogin()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg">دخول وتفعيل الحساب</button>
+    <div id="loginSection" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 text-center shadow-2xl border-t-4 border-blue-600">
+        <h1 class="text-3xl font-black mb-2 italic text-blue-500">ZACK CINEMA</h1>
+        <p class="text-[10px] text-gray-400 mb-8 uppercase tracking-widest font-bold">Premium Streaming Hub</p>
+        <input type="text" id="uName" placeholder="أدخل اسمك بالإنجليزي" class="w-full p-4 rounded-2xl bg-black/50 border border-slate-800 text-center mb-4 font-bold outline-none focus:border-blue-500">
+        <button onclick="doLogin()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">دخول الحساب</button>
     </div>
 
     <div id="userDash" class="hidden w-full max-w-md space-y-4">
         
-        <div class="glass p-6 rounded-[2.5rem] border-b-4 border-blue-600 relative text-center">
-            <button onclick="doLogout()" class="absolute top-4 left-6 text-red-500 font-bold text-[10px]">خروج</button>
-            <h2 id="dispName" class="text-xl font-black text-blue-400"></h2>
-            <p id="dispId" class="text-xl font-mono font-bold mt-1"></p>
-            <div class="flex gap-4 justify-center mt-3">
-                <span class="text-[10px]">زرقاء: <b id="pBlue" class="text-blue-400">0</b></span>
-                <span class="text-[10px]">حمراء: <b id="pRed" class="text-red-400">0</b></span>
-            </div>
-        </div>
 
-        <div id="liveBox" class="hidden glass p-4 rounded-[2.5rem] border-2 border-green-500 shadow-lg shadow-green-900/20">
-            <p class="text-green-500 text-[10px] font-bold mb-3">● البث المباشر مفعّل الآن</p>
-            <iframe id="player" src="" class="w-full h-[200px] rounded-2xl" allowfullscreen></iframe>
-        </div>
-
-        <div class="glass p-4 rounded-[2.5rem] text-center border border-white/5">
-            <p class="text-[10px] font-bold text-gray-400 italic">نتائج الماتشات (مباشر)</p>
-        </div>
-
-        <a href="https://wa.me/201040077271" class="bg-green-600 flex items-center justify-center gap-2 w-full p-4 rounded-[2.5rem] font-black text-xs">
-            <i class="fab fa-whatsapp text-lg"></i> خدمة العملاء (واتساب)
-        </a>
-
-        <div id="payOptions" class="space-y-4">
-            <div class="glass p-5 rounded-[2.5rem] border border-red-900/30">
-                <p class="text-[9px] text-center mb-3">تفعيل 15 يوم (300 حمراء = 20LE)</p>
-                <button onclick="userBuy('red')" class="w-full bg-red-600 p-3 rounded-2xl font-bold text-[10px]">تفعيل الاشتراك العادي</button>
-            </div>
-            <div class="glass p-5 rounded-[2.5rem] border border-blue-900/30">
-                <p class="text-[9px] text-center mb-3 text-blue-400">أيدي مميز 30 يوم (500 زرقاء = 30LE)</p>
-                <input type="text" id="newIdIn" maxlength="8" placeholder="اختر أيدي 8 أرقام" class="w-full p-3 rounded-xl bg-black border border-blue-900 text-center mb-3 text-blue-400 text-sm outline-none">
-                <button onclick="userBuy('blue')" class="w-full bg-blue-600 p-3 rounded-2xl font-bold text-[10px]">تفعيل الأيدي المميز</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // لوحة العميل
-        function doLogin() {
-            const n = document.getElementById('uName').value.trim();
-            if(n.length < 2) return alert("اكتب اسمك!");
-            const id = Math.floor(Math.random() * 90000000) + 10000000;
-            localStorage.setItem('z_n', n);
-            localStorage.setItem('z_i', id);
-            location.reload();
-        }
-
-        window.onload = function() {
-            const n = localStorage.getItem('z_n');
-            const i = localStorage.getItem('z_i');
-            if(n && i) {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('userDash').classList.remove('hidden');
-                document.getElementById('dispName').innerText = n;
-                document.getElementById('dispId').innerText = "#" + i;
-
-                // جلب البيانات "المسمعة" من الأدمن للأيدي ده
-                const b = localStorage.getItem('b_'+i) || 0;
-                const r = localStorage.getItem('r_'+i) || 0;
-                const active = localStorage.getItem('live_'+i) === 'true';
-
-                document.getElementById('pBlue').innerText = b;
-                document.getElementById('pRed').innerText = r;
-
-                if(active) {
-                    document.getElementById('payOptions').style.display = 'none';
-                    document.getElementById('liveBox').classList.remove('hidden');
-                    document.getElementById('player').src = "https://www.youtube.com/embed/live_stream?channel=UC4p9m8_4S99S5M2_9G6G5Q";
-                }
-            }
-        };
-
-        // لوحة الأدمن (زاك)
-        function toggleAdmin() {
-            if (localStorage.getItem('is_adm') || prompt("كلمة السر:") === "zack2026") {
-                localStorage.setItem('is_adm', 't');
-                document.getElementById('adminPanel').classList.toggle('admin-open');
-            }
-        }
-
-        function adminAction(type) {
-            const id = document.getElementById('targetId').value;
-            const amt = document.getElementById('targetAmount').value;
-            if(!id) return alert("فين الأيدي؟");
-            if(type === 'blue') localStorage.setItem('b_'+id, amt);
-            if(type === 'red') localStorage.setItem('r_'+id, amt);
-            if(type === 'live') localStorage.setItem('live_'+id, 'true');
-            alert("✅ تم التنفيذ للأيدي: " + id);
-        }
-
-        function userBuy(type) {
-            const i = localStorage.getItem('z_i');
-            if(type === 'red') {
-                let pts = parseInt(localStorage.getItem('r_'+i) || 0);
-                if(pts >= 300) {
-                    localStorage.setItem('r_'+i, pts-300);
-                    localStorage.setItem('live_'+i, 'true');
-                    location.reload();
-                } else alert("نقاطك مش كفاية");
-            }
-            if(type === 'blue') {
-                const nid = document.getElementById('newIdIn').value;
-                let pts = parseInt(localStorage.getItem('b_'+i) || 0);
-                if(pts >= 500 && nid.length === 8) {
-                    localStorage.setItem('b_'+i, pts-500);
-                    localStorage.setItem('z_i', nid);
-                    localStorage.setItem('live_'+nid, 'true');
-                    location.reload();
-                } else alert("تأكد من النقاط (500) والأيدي (8 أرقام)");
-            }
-        }
-        function doLogout() { localStorage.clear(); location.reload(); }
-    </script>
-</body>
-    </html>
-    
+        
