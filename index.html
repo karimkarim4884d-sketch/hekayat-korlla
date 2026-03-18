@@ -3,158 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | Premium</title>
+    <title>Zack Cinema | Sports & VIP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; }
+        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
         .vip-gold { background: linear-gradient(90deg, #facc15, #eab308); color: black; font-weight: 900; }
         .side-rule { border-right: 4px solid #3b82f6; padding-right: 12px; margin-bottom: 12px; }
-        table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 12px; }
-        th, td { border: 1px solid rgba(255,255,255,0.1); padding: 10px; text-align: center; }
-        th { background: #1e293b; color: #3b82f6; }
+        .admin-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: #0f172a; border-right: 1px solid #1e293b; z-index: 1000; transform: translateX(-100%); transition: 0.3s; }
+        .admin-open { transform: translateX(0); }
     </style>
 </head>
 <body class="min-h-screen p-4 flex flex-col items-center">
 
-    <button onclick="checkAdmin()" class="fixed top-4 left-4 opacity-20 hover:opacity-100 text-white z-[100]"><i class="fas fa-user-shield text-xl"></i></button>
+    <div id="admin-sidebar" class="admin-sidebar p-6 overflow-y-auto">
+        <h2 class="text-red-500 font-black text-xl mb-6 italic border-b border-red-900 pb-2">ZACK ADMIN</h2>
+        
+        <div class="mb-8">
+            <label class="text-[10px] text-gray-500 block mb-2 uppercase">تفعيل أيدي (15 يوم / 30 يوم)</label>
+            <input type="text" id="target-id" placeholder="أدخل الأيدي" class="w-full p-3 rounded-xl bg-black border border-slate-800 text-center mb-2">
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="activate(15)" class="bg-blue-600 p-2 rounded-lg text-[10px] font-bold">15 يوم</button>
+                <button onclick="activate(30)" class="bg-yellow-500 text-black p-2 rounded-lg text-[10px] font-bold">30 يوم VIP</button>
+            </div>
+        </div>
 
-    <div id="login-panel" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 shadow-2xl border-t-4 border-blue-600">
-        <h2 class="text-xl font-bold text-center mb-6 uppercase italic">Zack Cinema TV</h2>
-        <input type="text" id="nameInput" placeholder="اكتب اسمك بالإنجليزي" class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 text-center mb-4 outline-none text-white">
-        <button onclick="startApp()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">دخول وتفعيل</button>
+        <div class="glass p-3 rounded-2xl">
+            <h3 class="text-xs font-bold mb-3 text-blue-400">المشتركين أونلاين:</h3>
+            <ul id="user-list" class="text-[10px] space-y-2 text-gray-400"></ul>
+        </div>
+
+        <button onclick="closeAdmin()" class="mt-10 text-[10px] text-gray-600 underline">إغلاق اللوحة</button>
+    </div>
+
+    <button onclick="checkAdmin()" class="fixed top-4 left-4 opacity-20 text-white z-[500]"><i class="fas fa-bars text-xl"></i></button>
+
+    <div id="login-panel" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 border-t-4 border-blue-600 shadow-2xl">
+        <h2 class="text-xl font-bold text-center mb-6 uppercase italic tracking-widest">ZACK CINEMA</h2>
+        <input type="text" id="nameInput" placeholder="أدخل اسمك (بالإنجليزي)" class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 text-center mb-4 outline-none">
+        <button onclick="loginUser()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg shadow-blue-600/30">دخول وتفعيل الحساب</button>
     </div>
 
     <div id="dashboard" class="hidden w-full max-w-md">
-        <div class="text-center mb-6 glass p-6 rounded-[2.5rem] border-b-4 border-blue-500 shadow-xl relative">
-            <button onclick="logout()" class="absolute top-4 left-4 text-red-500 hover:text-red-400 text-sm">
-                <i class="fas fa-sign-out-alt"></i> خروج
-            </button>
-            
-            <h3 id="userNameDisplay" class="text-2xl font-black text-blue-400 uppercase mt-4"></h3>
-            <p id="autoID" class="text-sm font-mono text-gray-400 mt-2 tracking-widest"></p>
+        <div class="text-center mb-6 glass p-6 rounded-[2.5rem] border-b-4 border-blue-500 relative">
+            <button onclick="logout()" class="absolute top-4 left-6 text-red-500 text-sm italic font-bold tracking-tighter hover:scale-110 transition"><i class="fas fa-sign-out-alt"></i> خروج</button>
+            <p class="text-[10px] text-gray-500 uppercase mb-1">مرحباً بك يا بطل</p>
+            <h3 id="userNameDisplay" class="text-2xl font-black text-blue-400 uppercase"></h3>
+            <p id="autoID" class="text-xl font-mono font-bold text-white mt-2 tracking-[0.2em]"></p>
         </div>
 
-        <div class="glass p-6 rounded-[2.5rem] mb-6 shadow-lg">
-            <div class="side-rule"><p class="text-xs font-bold text-blue-300 italic">1. اشتراك 15 يوم بـ 20 جنيه.</p></div>
-            <div class="side-rule"><p class="text-xs font-bold text-blue-300 italic">2. اشتراك VIP (30 يوم) بـ 30 جنيه.</p></div>
-            <div class="side-rule"><p class="text-xs font-bold text-blue-300 italic">3. الدعم متاح 24 ساعة للحل المشكلات.</p></div>
-            <a href="https://wa.me/201040077271" class="flex items-center justify-center gap-2 w-full mt-4 bg-green-600 p-3 rounded-xl font-bold text-sm shadow-lg">
-                <i class="fab fa-whatsapp"></i> الدعم الفني (واتساب)
-            </a>
+        <div class="glass p-6 rounded-[2.5rem] mb-6 border border-yellow-500/30">
+            <h3 class="text-yellow-500 font-black text-xs mb-4 text-center uppercase">ترقية الحساب لأيدي مميز (VIP)</h3>
+            <input type="text" id="old-id-field" readonly class="w-full p-3 rounded-xl bg-black/50 border border-white/5 text-center text-gray-500 mb-3 text-sm" placeholder="الأيدي القديم">
+            <input type="text" id="new-vip-id" maxlength="8" placeholder="اختر أيدي مميز (8 أرقام)" class="w-full p-3 rounded-xl bg-black border border-yellow-900/50 text-center font-bold text-yellow-500 mb-4 outline-none text-sm">
+            <button onclick="requestVipUpgrade()" class="vip-gold w-full p-4 rounded-2xl shadow-lg uppercase text-xs">شحن أيدي مميز - 30LE</button>
         </div>
 
-        <div id="payment-section" class="space-y-4">
-            <button onclick="requestVip30()" class="vip-gold w-full p-4 rounded-2xl shadow-lg uppercase text-sm">شحن أيدي مميز (30 يوم) - 30LE</button>
-            <button onclick="sendOrder()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg uppercase text-sm">اشتراك عادي (15 يوم) - 20LE</button>
-        </div>
-
-        <div id="premium-content" class="hidden glass p-10 rounded-[2.5rem] text-center mt-6 border-2 border-green-500 animate-pulse">
-            <h2 class="text-2xl font-black text-green-400 mb-2 italic">ZACK CINEMA ACTIVE ✅</h2>
-            <p class="text-xs text-gray-400">المحتوى مفتوح الآن للمشاهدة</p>
-        </div>
-    </div>
-
-    <div id="admin-panel" class="hidden fixed inset-0 bg-black/95 z-[200] p-6 overflow-y-auto">
-        <div class="max-w-md mx-auto">
-            <h2 class="text-red-600 font-black text-2xl text-center mb-6 italic uppercase underline">Zack Control</h2>
-            <input type="text" id="target-id" placeholder="ID المشترك" class="w-full p-4 rounded-xl bg-black border border-red-900 mb-4 text-center font-bold">
-            <div class="grid grid-cols-2 gap-2 mb-6">
-                <button onclick="activate(15)" class="bg-blue-600 p-3 rounded-xl font-bold uppercase">تفعيل 15 يوم</button>
-                <button onclick="activate(30)" class="bg-yellow-500 text-black p-3 rounded-xl font-bold uppercase">تفعيل VIP 30 يوم</button>
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="glass p-4 rounded-3xl border border-blue-500/20 text-center hover:bg-blue-600/10 transition cursor-pointer">
+                <i class="fas fa-tv text-blue-500 mb-2"></i>
+                <p class="text-[10px] font-bold uppercase">البث المباشر</p>
             </div>
-
-            <div class="glass p-4 rounded-3xl border border-white/5 shadow-2xl overflow-x-auto">
-                <h3 class="text-xs font-bold text-gray-400 mb-4 uppercase tracking-widest underline">قائمة المشتركين:</h3>
-                <table id="userTable">
-                    <thead><tr><th>الاسم</th><th>ID</th><th>الحالة</th></tr></thead>
-                    <tbody id="userListBody"></tbody>
-                </table>
+            <div class="glass p-4 rounded-3xl border border-green-500/20 text-center hover:bg-green-600/10 transition cursor-pointer">
+                <i class="fas fa-futbol text-green-500 mb-2"></i>
+                <p class="text-[10px] font-bold uppercase">نتائج الماتشات</p>
             </div>
-            <button onclick="document.getElementById('admin-panel').classList.add('hidden')" class="w-full mt-6 p-3 text-xs text-gray-500 underline uppercase">إغلاق اللوحة</button>
         </div>
+
+        <button onclick="requestNormal()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg uppercase text-xs mb-8">اشتراك عادي (15 يوم) - 20LE</button>
     </div>
 
     <script>
-        // دالة الدخول وتفعيل الاسم
-        function startApp() {
+        function loginUser() {
             const name = document.getElementById('nameInput').value.trim();
             if(name.length < 2) return;
-            const id = Math.floor(10000000 + Math.random() * 90000000);
+            const id = Math.floor(10000000 + Math.random() * 90000000); // توليد أوتوماتيكي
             
-            // حفظ المستخدم في قائمة الأدمن
-            let list = JSON.parse(localStorage.getItem('z_list') || '[]');
-            if(!list.find(u => u.id === id)) {
-                list.push({name: name, id: id});
-                localStorage.setItem('z_list', JSON.stringify(list));
-            }
-
             localStorage.setItem('z_name', name);
             localStorage.setItem('z_id', id);
-            location.reload(); // تحديث إجباري للدخول
+            
+            // إضافة المستخدم لقائمة الأدمن
+            let list = JSON.parse(localStorage.getItem('z_users') || '[]');
+            list.push({name: name, id: id});
+            localStorage.setItem('z_users', JSON.stringify(list));
+            
+            location.reload();
         }
 
         window.onload = function() {
-            const user = localStorage.getItem('z_name');
+            const name = localStorage.getItem('z_name');
             const id = localStorage.getItem('z_id');
-            if(user && id) {
+            if(name && id) {
                 document.getElementById('login-panel').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('userNameDisplay').innerText = user;
-                document.getElementById('autoID').innerText = "#" + id;
-                checkSub();
+                document.getElementById('userNameDisplay').innerText = name;
+                document.getElementById('autoID').innerText = id;
+                document.getElementById('old-id-field').value = "أيدي قديم: " + id;
+                checkSubscriptionStatus();
             }
         };
 
-        function checkSub() {
-            const expiry = localStorage.getItem('z_expiry');
-            if(expiry && new Date().getTime() < expiry) {
-                document.getElementById('payment-section').classList.add('hidden');
-                document.getElementById('premium-content').classList.remove('hidden');
-            }
-        }
-
         function checkAdmin() {
-            if(prompt("باسورد زاك:") === "zack2026") {
-                document.getElementById('admin-panel').classList.remove('hidden');
-                loadList();
+            if(prompt("كلمة سر زاك:") === "zack2026") {
+                document.getElementById('admin-sidebar').classList.add('admin-open');
+                renderUserList();
             }
         }
 
-        function loadList() {
-            const users = JSON.parse(localStorage.getItem('z_list') || '[]');
-            const tbody = document.getElementById('userListBody');
-            tbody.innerHTML = '';
-            users.forEach(u => {
-                const exp = localStorage.getItem('z_expiry'); 
-                let status = "غير مشحون";
-                if(exp && new Date().getTime() < exp) {
-                    status = Math.ceil((exp - new Date().getTime()) / (1000*60*60*24)) + " يوم";
-                }
-                tbody.innerHTML += `<tr><td>${u.name}</td><td>${u.id}</td><td class="text-green-400 font-bold">${status}</td></tr>`;
-            });
+        function renderUserList() {
+            const users = JSON.parse(localStorage.getItem('z_users') || '[]');
+            const listEl = document.getElementById('user-list');
+            listEl.innerHTML = users.map(u => `<li>${u.name} (#${u.id})</li>`).join('');
+        }
+
+        function requestVipUpgrade() {
+            const newID = document.getElementById('new-vip-id').value;
+            if(newID.length < 8) return alert("الأيدي المميز لازم يكون 8 أرقام بالظبط!");
+            window.location.href=`https://wa.me/201040077271?text=ترقية_أيدي_VIP%0Aالأيدي_القديم:${localStorage.getItem('z_id')}%0Aالأيدي_الجديد:${newID}`;
         }
 
         function activate(days) {
             const exp = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
             localStorage.setItem('z_expiry', exp);
-            alert("تم الشحن بنجاح لـ " + days + " يوم!");
+            alert("تم التفعيل!");
             location.reload();
         }
 
-        function logout() {
-            if(confirm("هل تريد تسجيل الخروج؟")) {
-                localStorage.removeItem('z_name');
-                localStorage.removeItem('z_id');
-                localStorage.removeItem('z_expiry');
-                location.reload();
-            }
-        }
-
-        function requestVip30() { window.location.href=`https://wa.me/201040077271?text=طلب_VIP_ID:${localStorage.getItem('z_id')}`; }
-        function sendOrder() { window.location.href=`https://wa.me/201040077271?text=طلب_شحن_ID:${localStorage.getItem('z_id')}`; }
+        function closeAdmin() { document.getElementById('admin-sidebar').classList.remove('admin-open'); }
+        function logout() { localStorage.clear(); location.reload(); }
+        function requestNormal() { window.location.href=`https://wa.me/201040077271?text=طلب_شحن_15_يوم_ID:${localStorage.getItem('z_id')}`; }
     </script>
 </body>
 </html>
