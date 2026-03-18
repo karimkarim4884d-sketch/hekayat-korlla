@@ -5,102 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KARIM KHALED | حكاية كورة</title>
     <link rel="icon" href="https://i.ibb.co/vzYpYfP/1000008040.jpg">
+    <link rel="manifest" href="data:application/manifest+json,{'name':'Karim Khaled','short_name':'ZK','start_url':'.','display':'standalone','background_color':'#020617','theme_color':'#eab308','icons':[{'src':'https://i.ibb.co/vzYpYfP/1000008040.jpg','sizes':'512x512','type':'image/png'}]}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Karim Khaled">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/vzYpYfP/1000008040.jpg">
-
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; margin: 0; }
+        body { background: #020617; color: white; font-family: sans-serif; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
-        .bg-logo { position: fixed; inset: 0; opacity: 0.05; z-index: -1; display: flex; align-items: center; justify-content: center; }
-        .bg-logo img { width: 80%; object-fit: contain; }
-        .btn-install { background: #eab308; color: #000; font-weight: 900; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        .btn-gold { background: #eab308; color: #000; font-weight: 900; }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen pb-20 px-4">
-
-    <div id="bgLogo" class="bg-logo"><img src="https://i.ibb.co/vzYpYfP/1000008040.jpg"></div>
+<body class="max-w-md mx-auto min-h-screen pb-24 px-4">
 
     <div id="loginSection" class="pt-24 text-center">
-        <h1 class="text-3xl font-black text-yellow-500 mb-8 uppercase italic">KARIM KHALED</h1>
-        <div class="glass p-8 rounded-[3rem] border-t-4 border-yellow-500 shadow-2xl">
+        <h1 class="text-3xl font-black text-yellow-500 mb-8 italic uppercase">KARIM KHALED</h1>
+        <div class="glass p-8 rounded-[3rem] border-t-4 border-yellow-500">
             <input type="text" id="uName" placeholder="الاسم" class="w-full p-4 bg-black border border-slate-800 mb-3 text-center rounded-xl outline-none">
             <input type="password" id="uPass" placeholder="كلمة السر للمدير" class="w-full p-4 bg-black border border-slate-800 mb-6 text-center rounded-xl outline-none">
-            <button onclick="doLogin()" class="w-full bg-yellow-500 text-black p-4 rounded-xl font-black uppercase text-xs">دخول</button>
+            <button onclick="doLogin()" class="w-full btn-gold p-4 rounded-xl uppercase text-xs">دخول النظام</button>
         </div>
     </div>
 
     <div id="mainApp" class="hidden">
         <div class="py-4 flex justify-between items-center border-b border-white/5 mb-6 sticky top-0 bg-[#020617] z-50">
             <div class="flex items-center gap-2">
-                <img src="https://i.ibb.co/vzYpYfP/1000008040.jpg" class="w-7 h-7" alt="ZK">
-                <h1 class="text-sm font-bold text-yellow-500 uppercase">KARIM KHALED</h1>
-                <span id="userIdDisp" class="bg-yellow-500 text-black text-[9px] px-2 py-0.5 rounded-full font-bold"></span>
+                <img src="https://i.ibb.co/vzYpYfP/1000008040.jpg" class="w-7 h-7">
+                <h1 class="text-sm font-bold text-yellow-500">KARIM KHALED</h1>
             </div>
-            <button id="installBtn" class="btn-install text-[10px] px-3 py-2 rounded-lg shadow-lg">تثبيت التطبيق 📲</button>
+            <button id="installBtn" class="btn-gold text-[10px] px-3 py-1.5 rounded-lg shadow-lg">تثبيت التطبيق 📲</button>
         </div>
 
-        <div id="adminPanel" class="hidden glass p-6 rounded-[2rem] border-2 border-yellow-500/30 mb-8 text-center">
-             <p class="text-[10px] text-yellow-500 font-bold mb-4 uppercase">لوحة تحكم المدير (500K)</p>
-             <input type="text" id="targetId" placeholder="ID العميل" class="w-full p-3 bg-black border border-slate-800 mb-3 text-center text-xs rounded-xl">
+        <div class="glass p-6 rounded-[2rem] text-center mb-6 border-2 border-yellow-500/20">
+            <p class="text-[10px] text-gray-400 uppercase mb-2">رصيد نقاطك الحالي</p>
+            <div class="text-4xl font-black text-yellow-500" id="userPoints">0</div>
+            <p class="text-[9px] text-blue-400 mt-2 font-bold" id="userTag"></p>
+        </div>
+
+        <div id="adminPanel" class="hidden glass p-6 rounded-[2rem] border-2 border-yellow-500/40 mb-8 text-center">
+             <p class="text-[10px] text-yellow-500 font-bold mb-4 uppercase">لوحة التحكم (Admin)</p>
+             <input type="text" id="targetId" placeholder="ID العميل" class="w-full p-3 bg-black border border-slate-800 mb-2 text-center text-xs rounded-xl">
+             <input type="number" id="pointAmount" placeholder="كمية النقاط" class="w-full p-3 bg-black border border-slate-800 mb-4 text-center text-xs rounded-xl">
              <div class="grid grid-cols-2 gap-2">
-                 <button onclick="alert('تم الشحن')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase">شحن نقاط</button>
-                 <button onclick="alert('تم التفعيل')" class="bg-green-600 p-3 rounded-xl text-[9px] font-bold uppercase">تفعيل بث</button>
+                 <button onclick="adminAction('points')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold">شحن نقاط</button>
+                 <button onclick="adminAction('stream')" class="bg-green-600 p-3 rounded-xl text-[9px] font-bold">تفعيل بث</button>
              </div>
         </div>
 
-        <div id="plansSection" class="space-y-3">
-            <h3 class="text-[10px] text-center font-bold mb-4 text-gray-500 uppercase tracking-widest">اختر باقة الاشتراك</h3>
-            <div onclick="openPay(20, '30 يوم')" class="glass p-5 rounded-2xl flex justify-between items-center border border-white/5 cursor-pointer">
+        <div class="space-y-3">
+            <h3 class="text-[10px] text-center font-bold mb-4 text-gray-500 uppercase">استبدل نقاطك باشتراك مباشر</h3>
+            <div onclick="buyPlan(300, '30 يوم')" class="glass p-5 rounded-2xl flex justify-between items-center border border-white/5 cursor-pointer hover:border-yellow-500/50 transition-all">
                 <div><b class="text-yellow-500">300 نقطة</b> <span class="text-[9px] block text-gray-500 font-bold">تفعيل 30 يوم</span></div>
-                <div class="text-green-500 font-black text-sm">20 جنيه</div>
+                <div class="btn-gold px-3 py-1 rounded-full text-[10px]">تفعيل الآن</div>
             </div>
-            <div onclick="openPay(40, '60 يوم')" class="glass p-5 rounded-2xl flex justify-between items-center border border-yellow-500/30 cursor-pointer">
+            <div onclick="buyPlan(600, '60 يوم')" class="glass p-5 rounded-2xl flex justify-between items-center border border-white/5 cursor-pointer hover:border-yellow-500/50 transition-all">
                 <div><b class="text-yellow-500">600 نقطة</b> <span class="text-[9px] block text-gray-500 font-bold">تفعيل 60 يوم</span></div>
-                <div class="text-green-500 font-black text-sm">40 جنيه</div>
+                <div class="btn-gold px-3 py-1 rounded-full text-[10px]">تفعيل الآن</div>
             </div>
         </div>
     </div>
 
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] glass rounded-2xl p-4 flex justify-around items-center border border-white/10">
-        <a href="https://wa.me/201040077271" class="text-center"><i class="fab fa-whatsapp text-green-500 text-xl block mb-1"></i><span class="text-[8px] font-bold">واتساب</span></a>
-        <a href="https://t.me/HekayetyKorabot" class="text-center"><i class="fab fa-telegram text-blue-400 text-xl block mb-1"></i><span class="text-[8px] font-bold">تلجرام</span></a>
-        <button onclick="logout()" class="text-center"><i class="fas fa-power-off text-red-500 text-xl block mb-1"></i><span class="text-[8px] font-bold">خروج</span></button>
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] glass rounded-2xl p-4 flex justify-around items-center border border-white/10 z-[100]">
+        <a href="https://wa.me/201040077271" class="text-center"><i class="fab fa-whatsapp text-green-500 text-xl block"></i><span class="text-[8px] font-bold">واتساب</span></a>
+        <a href="https://t.me/HekayetyKorabot" class="text-center"><i class="fab fa-telegram text-blue-400 text-xl block"></i><span class="text-[8px] font-bold">تلجرام</span></a>
+        <button onclick="logout()" class="text-center"><i class="fas fa-power-off text-red-500 text-xl block"></i><span class="text-[8px] font-bold">خروج</span></a>
     </div>
 
     <script>
-        // كود تشغيل التثبيت
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBtn').style.display = 'block';
-        });
-
-        document.getElementById('installBtn').addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') deferredPrompt = null;
-            } else {
-                alert("لتثبيت التطبيق:\n1. اضغط على خيارات المتصفح (3 نقط).\n2. اختر 'إضافة للشاشة الرئيسية' (Add to Home Screen).");
-            }
-        });
+        // نظام إدارة البيانات
+        let userPoints = parseInt(localStorage.getItem('z_pts')) || 0;
 
         function doLogin() {
             const name = document.getElementById('uName').value.trim();
             const pass = document.getElementById('uPass').value.trim();
-            if(!name) return alert("الاسم مطلوب!");
-            let id, role;
-            if(name.toLowerCase() === "karim khaled" && pass === "7777") { id = "77777777"; role = 'admin'; }
-            else { id = Math.floor(Math.random() * 89999999) + 10000000; role = 'user'; }
-            localStorage.setItem('z_n', name); localStorage.setItem('z_i', id); localStorage.setItem('z_r', role);
+            if(!name) return alert("ادخل اسمك");
+            let id = Math.floor(Math.random() * 89999999) + 10000000;
+            let role = (name.toLowerCase() === "karim khaled" && pass === "7777") ? 'admin' : 'user';
+            
+            localStorage.setItem('z_n', name);
+            localStorage.setItem('z_i', id);
+            localStorage.setItem('z_r', role);
             location.reload();
         }
 
@@ -109,16 +92,47 @@
             if(n && i) {
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
-                document.getElementById('userIdDisp').innerText = "#" + i;
+                document.getElementById('userTag').innerText = "#" + i;
+                document.getElementById('userPoints').innerText = userPoints;
                 if(r === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
             }
         };
 
-        function openPay(price, time) {
-            const id = localStorage.getItem('z_i');
-            const msg = `طلب شحن جديد 🚀%0Aالأيدي: ${id}%0Aالباقة: ${time}%0Aالسعر: ${price} جنيه%0Aرقم فودافون كاش: 01032447101`;
-            window.open(`https://wa.me/201040077271?text=${msg}`);
+        // وظيفة شحن النقاط للمدير
+        function adminAction(type) {
+            const tid = document.getElementById('targetId').value;
+            const amt = parseInt(document.getElementById('pointAmount').value);
+            if(!tid || !amt) return alert("اكمل البيانات");
+            alert(`تم إرسال ${amt} نقطة إلى الأيدي ${tid} بنجاح ✅`);
         }
+
+        // وظيفة شراء الباقة بالنقاط
+        function buyPlan(cost, time) {
+            if(userPoints < cost) {
+                alert(`عذراً، رصيدك غير كافي. تحتاج ${cost} نقطة. تواصل مع الإدارة للشحن`);
+                window.open(`https://wa.me/201040077271?text=اريد شحن نقاط للأيدي: ${localStorage.getItem('z_i')}`);
+            } else {
+                userPoints -= cost;
+                localStorage.setItem('z_pts', userPoints);
+                document.getElementById('userPoints').innerText = userPoints;
+                alert(`تم تفعيل باقة ${time} بنجاح! تم خصم ${cost} نقطة.`);
+            }
+        }
+
+        // كود تثبيت التطبيق المطور
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+        });
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                await deferredPrompt.userChoice;
+                deferredPrompt = null;
+            } else {
+                alert("لتثبيت التطبيق على الشاشة الرئيسية:\n1. اضغط على خيارات المتصفح.\n2. اختر 'إضافة إلى الشاشة الرئيسية'.");
+            }
+        });
 
         function logout() { localStorage.clear(); location.reload(); }
     </script>
