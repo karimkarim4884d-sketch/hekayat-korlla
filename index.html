@@ -2,77 +2,73 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karim Khaled | Cloud System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Karim Khaled | Cinema System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         body { background: #020617; color: white; font-family: sans-serif; margin: 0; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .glass { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
-        .admin-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: #0b0f1a; border-right: 2px solid #3b82f6; z-index: 9999; transform: translateX(-100%); transition: 0.3s; }
-        .admin-open { transform: translateX(0); }
+        .admin-section { border-top: 2px solid #3b82f6; margin-top: 20px; padding-top: 20px; }
+        .btn-active:active { transform: scale(0.96); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
 
-    <div id="adminPanel" class="admin-sidebar p-5 shadow-2xl">
-        <h2 class="text-blue-500 font-black text-center mb-5 border-b border-blue-900 pb-2 italic uppercase text-sm">Karim Admin Panel</h2>
-        <div class="space-y-4">
-            <div class="bg-blue-900/20 p-3 rounded-xl border border-blue-500/30 text-center">
-                <p class="text-[9px] text-gray-400 uppercase">رصيدك كـ مسؤول</p>
-                <p class="text-blue-400 font-bold text-xs">1,000,000 PT</p>
-            </div>
-            <input type="text" id="targetId" placeholder="أدخل أيدي العميل" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center font-bold text-sm outline-none">
-            <input type="number" id="targetAmount" placeholder="الكمية المراد شحنها" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center text-sm">
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="cloudCharge('blue')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg shadow-blue-900/40 active:scale-95">شحن زرقاء</button>
-                <button onclick="cloudCharge('red')" class="bg-red-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg shadow-red-900/40 active:scale-95">شحن حمراء</button>
-            </div>
-            <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-xs uppercase shadow-lg shadow-green-900/40 active:scale-95">تفعيل البث للعميل ✅</button>
-        </div>
-        <button onclick="toggleAdmin()" class="mt-10 text-[10px] block mx-auto underline text-gray-500">إغلاق اللوحة</button>
-    </div>
-
-    <div onclick="toggleAdmin()" style="position:fixed; top:0; left:0; width:60px; height:60px; z-index:9999; cursor: pointer;"></div>
-
-    <div id="loginSection" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 text-center shadow-2xl border-t-4 border-blue-600">
+    <div id="loginSection" class="w-full max-w-md glass rounded-[3rem] p-10 mt-12 text-center shadow-2xl border-t-4 border-blue-600">
         <h1 class="text-3xl font-black mb-2 italic text-blue-500 uppercase">Karim Khaled</h1>
-        <p class="text-[10px] text-gray-400 mb-8 uppercase tracking-widest font-bold">Manager Access System</p>
-        <input type="text" id="uName" placeholder="أدخل اسمك هنا" class="w-full p-4 rounded-2xl bg-black/50 border border-slate-800 text-center mb-4 font-bold outline-none focus:border-blue-500">
-        <button onclick="doLogin()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg active:scale-95">دخول</button>
+        <p class="text-[10px] text-gray-400 mb-10 uppercase font-bold tracking-widest">Cinema Experience</p>
+        <input type="text" id="uName" placeholder="اكتب اسمك (Karim Khaled للمدير)" class="w-full p-5 rounded-3xl bg-black/40 border border-slate-800 text-center font-bold outline-none text-white mb-4">
+        <button onclick="doLogin()" class="w-full bg-blue-600 p-5 rounded-3xl font-black uppercase shadow-xl btn-active">دخول</button>
     </div>
 
-    <div id="userDash" class="hidden w-full max-w-md space-y-4">
+    <div id="userDash" class="hidden w-full max-w-md space-y-5">
         
-        <div class="glass p-6 rounded-[2.5rem] border-b-4 border-blue-600 relative text-center shadow-xl">
-            <button onclick="doLogout()" class="absolute top-4 left-6 text-red-500 font-bold text-[10px] uppercase">خروج</button>
+        <div class="glass p-8 rounded-[3rem] border-b-8 border-blue-600 relative text-center shadow-2xl">
+            <button onclick="doLogout()" class="absolute top-6 left-8 text-red-500 font-black text-[10px] uppercase">خروج</button>
             <h2 id="dispName" class="text-2xl font-black text-blue-400 uppercase"></h2>
-            <p id="dispId" class="text-xl font-mono font-bold mt-1 text-white"></p>
-            <div class="flex gap-4 justify-center mt-4">
-                <span class="text-[10px] bg-blue-900/30 px-4 py-1.5 rounded-full border border-blue-500/20">زرقاء: <b id="pBlue" class="text-blue-400">0</b></span>
-                <span class="text-[10px] bg-red-900/30 px-4 py-1.5 rounded-full border border-red-500/20">حمراء: <b id="pRed" class="text-red-400">0</b></span>
+            <p id="dispId" class="text-xl font-mono font-black mt-2 text-white"></p>
+            <div class="flex gap-4 justify-center mt-6">
+                <div class="bg-blue-900/20 px-5 py-2 rounded-2xl border border-blue-500/20 text-center">
+                    <p class="text-[8px] text-gray-500 uppercase">زرقاء</p>
+                    <b id="pBlue" class="text-blue-400 text-lg">0</b>
+                </div>
+                <div class="bg-red-900/20 px-5 py-2 rounded-2xl border border-red-500/20 text-center">
+                    <p class="text-[8px] text-gray-500 uppercase">حمراء</p>
+                    <b id="pRed" class="text-red-400 text-lg">0</b>
+                </div>
+            </div>
+
+            <div id="adminControls" class="hidden admin-section space-y-4">
+                <p class="text-blue-500 font-bold text-[10px] uppercase tracking-widest italic text-center">لوحة شحن العملاء</p>
+                <input type="text" id="targetId" placeholder="ID العميل" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none">
+                <input type="number" id="targetAmount" placeholder="الكمية" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none">
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="cloudCharge('blue')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg btn-active">شحن زرقاء</button>
+                    <button onclick="cloudCharge('red')" class="bg-red-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg btn-active">شحن حمراء</button>
+                </div>
+                <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-[10px] uppercase btn-active">تفعيل البث للعميل ✅</button>
             </div>
         </div>
 
         <div id="liveBox" class="hidden glass p-4 rounded-[3rem] border-2 border-green-500 shadow-lg">
-            <p class="text-green-500 text-[10px] font-bold mb-3 uppercase animate-pulse">● البث مفعّل</p>
-            <iframe id="player" src="" class="w-full h-[210px] rounded-[25px]" allowfullscreen></iframe>
+            <p class="text-green-500 text-[10px] font-bold mb-3 uppercase animate-pulse">● البث المباشر مفعّل</p>
+            <iframe id="player" src="" class="w-full h-[200px] rounded-[25px]" allowfullscreen></iframe>
         </div>
 
-        <a href="https://wa.me/201040077271" class="bg-green-600 flex items-center justify-center gap-3 w-full p-4 rounded-[2.5rem] font-black text-xs uppercase shadow-lg shadow-green-900/30">
+        <a href="https://wa.me/201040077271" class="bg-green-600 flex items-center justify-center gap-3 w-full p-5 rounded-[2.5rem] font-black text-xs uppercase shadow-lg btn-active">
             <i class="fab fa-whatsapp text-xl"></i> خدمة العملاء (واتساب)
         </a>
 
-        <div id="payOptions" class="space-y-4">
-            <div class="glass p-5 rounded-[2.5rem] border border-red-900/30 text-center">
-                <p class="text-[9px] mb-3 uppercase font-bold text-gray-400 italic">تفعيل الاشتراك (300 حمراء)</p>
-                <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg shadow-red-900/40 active:scale-95">تفعيل الآن</button>
-            </div>
+        <div id="payOptions" class="glass p-6 rounded-[3rem] border border-red-900/30 text-center">
+            <p class="text-[9px] mb-4 text-gray-400 font-bold uppercase italic">اشتراك 15 يوم (300 حمراء)</p>
+            <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg btn-active">تفعيل الاشتراك</button>
         </div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
         const config = { databaseURL: "https://zack-cinema-default-rtdb.firebaseio.com" };
@@ -82,15 +78,12 @@
         function doLogin() {
             const n = document.getElementById('uName').value.trim();
             if(n.length < 2) return alert("اكتب اسمك!");
-            
-            // إذا كان الاسم هو "كريم خالد" بالإنجليزي، نثبت الأيدي بتاعه ونعطيه المليون نقطة
-            let id = localStorage.getItem('z_i') || Math.floor(Math.random() * 90000000) + 10000000;
+            let id = localStorage.getItem('z_i') || Math.floor(Math.random() * 89999999) + 10000000;
             
             if(n.toLowerCase() === "karim khaled") {
-                id = "77777777"; // أيدي مميز لكريم كمسؤول
+                id = "77777777";
                 if(db) db.ref('users/' + id).update({ name: n, blue: 1000000, red: 1000000, live: true });
-            } else {
-                if(db) db.ref('users/' + id).update({ name: n });
+                localStorage.setItem('is_adm', 'true');
             }
 
             localStorage.setItem('z_n', n);
@@ -99,17 +92,22 @@
         }
 
         function showDash(n, i) {
-            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('loginSection').style.display = 'none';
             document.getElementById('userDash').classList.remove('hidden');
             document.getElementById('dispName').innerText = n;
             document.getElementById('dispId').innerText = "#" + i;
+
+            // إظهار لوحة الشحن في المين إذا كان الداخل هو كريم
+            if(localStorage.getItem('is_adm') === 'true') {
+                document.getElementById('adminControls').classList.remove('hidden');
+            }
 
             if(db) {
                 db.ref('users/' + i).on('value', (s) => {
                     const d = s.val();
                     if(d) {
-                        document.getElementById('pBlue').innerText = d.blue || 0;
-                        document.getElementById('pRed').innerText = d.red || 0;
+                        document.getElementById('pBlue').innerText = (d.blue || 0).toLocaleString();
+                        document.getElementById('pRed').innerText = (d.red || 0).toLocaleString();
                         if(d.live === true) {
                             document.getElementById('payOptions').classList.add('hidden');
                             document.getElementById('liveBox').classList.remove('hidden');
@@ -126,24 +124,26 @@
         };
 
         function cloudCharge(t) {
-            const id = document.getElementById('targetId').value;
+            const target = document.getElementById('targetId').value;
             const am = parseInt(document.getElementById('targetAmount').value) || 0;
-            if(!id || !db) return alert("دخل الأيدي بتاع العميل!");
-            
+            if(!target || !db) return alert("أدخل ID العميل!");
             let up = {};
             if(t === 'blue') up = { blue: am };
             if(t === 'red') up = { red: am };
             if(t === 'live') up = { live: true };
-            
-            db.ref('users/' + id).update(up);
-            alert("✅ تم شحن " + am + " نقطة للأيدي " + id + " بنجاح!");
+            db.ref('users/' + target).update(up);
+            alert("✅ تم التحديث للأيدي " + target);
         }
 
-        function toggleAdmin() {
-            if (localStorage.getItem('is_adm') || prompt("Pass:") === "zack2026") {
-                localStorage.setItem('is_adm', 't');
-                document.getElementById('adminPanel').classList.toggle('admin-open');
-            }
+        function userBuy(t) {
+            const myId = localStorage.getItem('z_i');
+            db.ref('users/' + myId).once('value').then(s => {
+                const d = s.val();
+                if(t === 'red' && d.red >= 300) db.ref('users/' + myId).update({ red: d.red - 300, live: true });
+                else alert("رصيدك لا يكفي!");
+            });
         }
         function doLogout() { localStorage.clear(); location.reload(); }
-        
+    </script>
+</body>
+</html>
