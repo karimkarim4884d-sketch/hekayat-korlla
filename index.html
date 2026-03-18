@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karim Khaled | KR Global Connect</title>
+    <title>Karim Khaled | KR Live Sports</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; }
+        body { background: #020617; color: white; font-family: sans-serif; overflow-x: hidden; }
         .sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; transition: 0.4s; z-index: 200; border-left: 2px solid #eab308; }
         .sidebar.active { right: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 150; }
-        .ostora-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; transition: 0.3s; cursor: pointer; position: relative; }
+        .ostora-card { background: #1e293b; border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid transparent; position: relative; }
         .ostora-card:hover { border-color: #eab308; transform: scale(1.03); }
         .video-fixed { position: sticky; top: 0; z-index: 100; background: #000; border-bottom: 3px solid #eab308; }
         .nav-tab { background: #1e293b; color: #94a3b8; padding: 10px 15px; border-radius: 10px; font-size: 10px; white-space: nowrap; font-weight: bold; }
         .nav-tab.active { background: #eab308; color: #000; }
-        .loading-bar { height: 3px; background: #eab308; width: 0%; transition: 0.5s; }
+        .live-tag { position: absolute; top: 5px; left: 5px; background: red; color: white; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .admin-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f172a; padding: 20px; border-radius: 20px; border: 2px solid #eab308; z-index: 300; display: none; width: 90%; max-width: 400px; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -25,102 +27,102 @@
 
     <div id="mainApp">
         <div class="video-fixed">
-            <div id="loader" class="loading-bar"></div>
             <video id="video" controls autoplay playsinline class="w-full aspect-video bg-black"></video>
             <div class="p-3 bg-[#0f172a] flex justify-between items-center">
                 <button onclick="toggleSidebar()" class="text-yellow-500 text-2xl"><i class="fas fa-bars"></i></button>
-                <span id="pTitle" class="text-[10px] font-bold text-yellow-500 italic">Karim Khaled : بانتظار التحديث..</span>
+                <span id="pTitle" class="text-[10px] font-bold text-yellow-500 italic uppercase">Karim Khaled Live Sports</span>
                 <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-8 h-8 rounded-full border-2 border-yellow-500">
             </div>
         </div>
 
         <div class="p-4">
-            <div class="flex gap-2 overflow-x-auto mb-6 pb-2" id="tabs">
-                <button onclick="setTab('football', this)" class="nav-tab active">بث كورة ⚽</button>
-                <button onclick="setTab('war', this)" class="nav-tab">بث حرب ⚔️</button>
-                <button onclick="setTab('quran', this)" class="nav-tab">قرآن كريم 🕌</button>
+            <div class="flex gap-2 overflow-x-auto mb-4 pb-2">
+                <button onclick="setTab('matches', this)" class="nav-tab active">ماتشات اليوم ⚽</button>
                 <button onclick="setTab('movies', this)" class="nav-tab">أفلام مصرية 🎬</button>
                 <button onclick="setTab('kids', this)" class="nav-tab">كرتون 🧸</button>
-                <button onclick="setTab('music', this)" class="nav-tab">أغاني 🎵</button>
+                <button onclick="setTab('war', this)" class="nav-tab">أخبار وحروب ⚔️</button>
+                <button onclick="setTab('quran', this)" class="nav-tab">قرآن 🕌</button>
             </div>
 
-            <div class="relative mb-4">
-                <input type="text" id="searchInput" onkeyup="searchChannels()" placeholder="بحث في السيرفرات..." class="w-full p-4 bg-[#0f172a] border border-slate-800 rounded-2xl text-xs text-center outline-none focus:border-yellow-500">
-            </div>
-
-            <button onclick="fetchAllServers()" class="w-full mb-6 bg-red-600 p-4 rounded-xl text-xs font-black uppercase shadow-xl active:scale-95">
-                تحديث من جميع السيرفرات العالمية (IPTV Connect) ⚡
+            <button onclick="fetchLiveMatches()" class="w-full mb-6 bg-red-600 p-3 rounded-xl text-[10px] font-black uppercase shadow-lg active:scale-95">
+                تحديث سيرفر المباريات المباشرة ⚡
             </button>
 
             <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
         </div>
     </div>
 
+    <div id="adminModal" class="admin-modal">
+        <h3 class="text-center font-bold mb-4 text-yellow-500 uppercase">Karim Khaled Admin</h3>
+        <input type="text" id="mName" placeholder="اسم الماتش أو الفيلم" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
+        <input type="text" id="mUrl" placeholder="رابط البث المباشر (m3u8)" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
+        <input type="text" id="mImg" placeholder="رابط البوستر (اختياري)" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
+        <select id="mCat" class="w-full p-3 mb-4 bg-slate-800 rounded-lg text-xs outline-none">
+            <option value="matches">ماتشات مباشر</option>
+            <option value="movies">أفلام مصرية</option>
+            <option value="kids">كرتون</option>
+        </select>
+        <div class="flex gap-2">
+            <button onclick="addItem()" class="flex-1 bg-green-600 p-3 rounded-lg text-xs font-bold">حفظ</button>
+            <button onclick="closeAdmin()" class="flex-1 bg-red-600 p-3 rounded-lg text-xs font-bold">إلغاء</button>
+        </div>
+    </div>
+
     <div id="sidebar" class="sidebar p-6">
         <div class="text-center mb-10">
             <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-20 h-20 rounded-full border-4 border-yellow-500 mx-auto mb-2">
-            <p class="text-xs font-bold">Karim Khaled Cinema</p>
+            <p class="text-xs font-black text-yellow-500 uppercase">Karim Khaled</p>
         </div>
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-3">
+            <button onclick="openAdmin()" class="bg-yellow-500 text-black p-4 rounded-xl text-sm font-bold flex items-center gap-3"><i class="fas fa-plus-circle"></i> إضافة بث مباشر</button>
             <a href="https://wa.me/201040077271" class="bg-white/5 p-4 rounded-xl text-sm flex items-center gap-3"><i class="fab fa-whatsapp text-green-500"></i> واتساب الدعم</a>
-            <a href="mailto:karimkarim4884d@gmail.com" class="bg-white/5 p-4 rounded-xl text-sm flex items-center gap-3"><i class="fas fa-envelope text-blue-500"></i> البريد</a>
-            <a href="https://karimkarim4884d-sketch.github.io/hekayat-korlla/" class="bg-white/5 p-4 rounded-xl text-sm flex items-center gap-3"><i class="fas fa-globe text-yellow-500"></i> الموقع الرسمي</a>
         </div>
-        <button onclick="toggleSidebar()" class="w-full p-4 bg-red-600 rounded-xl text-xs font-bold mt-12">إغلاق</button>
     </div>
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
     <script>
-        let fullDb = JSON.parse(localStorage.getItem('kr_global_db')) || [];
-        let currentTab = 'football';
+        let db = JSON.parse(localStorage.getItem('kr_final_db')) || [];
+        let currentTab = 'matches';
 
-        window.onload = () => { if(fullDb.length > 0) render(); };
+        window.onload = () => {
+            if(db.length === 0) fetchLiveMatches();
+            else render();
+        };
 
-        async function fetchAllServers() {
-            const status = document.getElementById('pTitle');
-            const loader = document.getElementById('loader');
-            status.innerText = "جاري الاتصال بـ 5 سيرفرات عالمية... 📡";
-            loader.style.width = "30%";
-
-            const servers = [
+        async function fetchLiveMatches() {
+            document.getElementById('pTitle').innerText = "جاري سحب الماتشات.. 📡";
+            const sources = [
                 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u',
-                'https://raw.githubusercontent.com/mohammadreza-erteshali/iptv/main/iptv.m3u',
-                'https://raw.githubusercontent.com/TidSmarter/IPTV/master/ar.m3u',
-                'https://raw.githubusercontent.com/tikhub/iptv/main/tv.m3u',
-                'https://raw.githubusercontent.com/byte-capsule/wp-iptv/main/iptv.m3u'
+                'https://raw.githubusercontent.com/mohammadreza-erteshali/iptv/main/iptv.m3u'
             ];
-
-            let collected = [];
+            let fetched = [];
             const proxy = 'https://api.allorigins.win/raw?url=';
 
-            for (let srv of servers) {
+            for (let s of sources) {
                 try {
-                    const res = await fetch(proxy + encodeURIComponent(srv));
-                    const data = await res.text();
-                    const lines = data.split('\n');
+                    const res = await fetch(proxy + encodeURIComponent(s));
+                    const text = await res.text();
+                    const lines = text.split('\n');
                     for(let i=0; i<lines.length; i++) {
                         if(lines[i].includes('#EXTINF')) {
-                            let name = lines[i].split(',')[1]?.trim() || 'بث مباشر';
+                            let name = lines[i].split(',')[1]?.trim() || 'قناة رياضية';
                             let url = lines[i+1]?.trim();
                             if(url && url.startsWith('http')) {
                                 let cat = 'movies';
-                                if(/sport|bein|ssc|كورة/i.test(name)) cat = 'football';
+                                if(/sport|bein|ssc|kora|كورة|بث/i.test(name)) cat = 'matches';
                                 if(/quran|قرآن/i.test(name)) cat = 'quran';
-                                if(/kids|cartoon|ديزني|كرتون/i.test(name)) cat = 'kids';
-                                if(/news|العربية|الجزيرة|war/i.test(name)) cat = 'war';
-                                if(/music|أغاني|مهرجان/i.test(name)) cat = 'music';
-                                collected.push({name, url, cat});
+                                if(/cartoon|kids|كرتون/i.test(name)) cat = 'kids';
+                                if(/war|news|أخبار|الجزيرة/i.test(name)) cat = 'war';
+                                fetched.push({name, url, cat, isLive: cat === 'matches'});
                             }
                         }
                     }
-                    loader.style.width = (servers.indexOf(srv) + 1) * 20 + "%";
-                } catch(e) { console.error("خطأ في سيرفر: " + srv); }
+                } catch(e) {}
             }
-
-            if(collected.length > 0) {
-                fullDb = [...new Map(collected.map(item => [item['name'], item])).values()];
-                localStorage.setItem('kr_global_db', JSON.stringify(fullDb));
-                status.innerText = "تم بنجاح! مجلوب " + fullDb.length + " قناة ✅";
+            if(fetched.length > 0) {
+                db = fetched;
+                localStorage.setItem('kr_final_db', JSON.stringify(db));
+                document.getElementById('pTitle').innerText = "تم تحديث السيرفر بنجاح ✅";
                 render();
             }
         }
@@ -132,24 +134,20 @@
             render();
         }
 
-        function render(filterData = null) {
+        function render() {
             const grid = document.getElementById('contentGrid');
-            const items = filterData || fullDb.filter(i => i.cat === currentTab);
+            const items = db.filter(i => i.cat === currentTab);
             grid.innerHTML = items.length ? items.map(i => `
                 <div onclick="play('${i.url}', '${i.name}')" class="ostora-card p-4 text-center">
+                    ${i.isLive ? '<span class="live-tag">LIVE</span>' : ''}
                     <i class="fas fa-play-circle text-yellow-500 text-3xl mb-2"></i>
                     <p class="text-[9px] font-bold truncate">${i.name}</p>
                 </div>
-            `).join('') : '<p class="col-span-3 text-center py-10 text-gray-500 text-xs italic">لا يوجد قنوات.. اضغط تحديث السيرفرات</p>';
-        }
-
-        function searchChannels() {
-            let val = document.getElementById('searchInput').value.toLowerCase();
-            render(fullDb.filter(i => i.name.toLowerCase().includes(val)));
+            `).join('') : '<p class="col-span-3 text-center py-10 text-gray-600 text-xs">اضغط تحديث لجلب ماتشات اليوم</p>';
         }
 
         function play(url, name) {
-            document.getElementById('pTitle').innerText = "مشاهدة: " + name;
+            document.getElementById('pTitle').innerText = "LIVE: " + name;
             const video = document.getElementById('video');
             if (Hls.isSupported()) {
                 const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
@@ -157,10 +155,26 @@
             } else { video.src = url; video.play(); }
         }
 
+        function openAdmin() { document.getElementById('adminModal').style.display = 'block'; toggleSidebar(); }
+        function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none';
         }
+
+        function addItem() {
+            const name = document.getElementById('mName').value;
+            const url = document.getElementById('mUrl').value;
+            const cat = document.getElementById('mCat').value;
+            if(name && url) {
+                db.unshift({name, url, cat, isLive: cat === 'matches'});
+                localStorage.setItem('kr_final_db', JSON.stringify(db));
+                alert("تمت الإضافة للسيرفر بنجاح!");
+                closeAdmin();
+                render();
+            }
+        }
     </script>
 </body>
-</html>
+    </html>
+    
