@@ -3,100 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZACK PREMIER | ZK</title>
+    <title>Karim Khaled | KR Global Connect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; overflow-x: hidden; }
+        body { background: #020617; color: white; font-family: sans-serif; }
         .sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; transition: 0.4s; z-index: 200; border-left: 2px solid #eab308; }
         .sidebar.active { right: 0; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 150; }
-        .ostora-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 1rem; transition: 0.3s; cursor: pointer; overflow: hidden; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 150; }
+        .ostora-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; transition: 0.3s; cursor: pointer; position: relative; }
+        .ostora-card:hover { border-color: #eab308; transform: scale(1.03); }
         .video-fixed { position: sticky; top: 0; z-index: 100; background: #000; border-bottom: 3px solid #eab308; }
-        .nav-tab { background: #1e293b; color: #94a3b8; padding: 10px 20px; border-radius: 12px; font-size: 11px; white-space: nowrap; transition: 0.3s; font-weight: bold; }
+        .nav-tab { background: #1e293b; color: #94a3b8; padding: 10px 15px; border-radius: 10px; font-size: 10px; white-space: nowrap; font-weight: bold; }
         .nav-tab.active { background: #eab308; color: #000; }
+        .loading-bar { height: 3px; background: #eab308; width: 0%; transition: 0.5s; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="max-w-2xl mx-auto pb-20">
 
-    <div id="loginSection" class="pt-24 px-8 text-center">
-        <h1 class="text-6xl font-black text-yellow-500 mb-2 italic">ZK</h1>
-        <p class="text-gray-500 text-[10px] uppercase mb-12 tracking-[0.4em]">Zack Premier Edition</p>
-        <button onclick="enterApp()" class="bg-yellow-500 text-black p-5 rounded-2xl font-black w-full max-w-xs shadow-2xl">دخول المنصة</button>
-    </div>
-
-    <div id="sidebar" class="sidebar p-6 shadow-2xl">
-        <div class="text-center mb-10">
-            <div class="w-20 h-20 bg-yellow-500 text-black text-3xl font-black flex items-center justify-center rounded-full mx-auto mb-4 border-4 border-white">ZK</div>
-            <h2 class="text-xl font-bold">Zack Cinema</h2>
-        </div>
-        
-        <div class="flex flex-col gap-6">
-            <a href="https://wa.me/201040077271" target="_blank" class="flex items-center gap-4 text-sm text-green-400 font-bold bg-white/5 p-4 rounded-xl">
-                <i class="fab fa-whatsapp text-2xl"></i> الدعم عبر واتساب
-            </a>
-            <a href="mailto:karimkarim4884d@gmail.com" class="flex items-center gap-4 text-sm text-blue-400 font-bold bg-white/5 p-4 rounded-xl">
-                <i class="fas fa-envelope text-2xl"></i> تواصل بالبريد
-            </a>
-            <a href="https://karimkarim4884d-sketch.github.io/hekayat-korlla/" target="_blank" class="flex items-center gap-4 text-sm text-yellow-500 font-bold bg-white/5 p-4 rounded-xl">
-                <i class="fas fa-globe text-2xl"></i> موقعنا الرسمي
-            </a>
-        </div>
-        
-        <button onclick="toggleSidebar()" class="mt-12 w-full p-4 bg-red-600 rounded-xl text-xs font-bold uppercase">إغلاق القائمة</button>
-    </div>
-    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
-
-    <div id="mainApp" class="hidden">
+    <div id="mainApp">
         <div class="video-fixed">
+            <div id="loader" class="loading-bar"></div>
             <video id="video" controls autoplay playsinline class="w-full aspect-video bg-black"></video>
             <div class="p-3 bg-[#0f172a] flex justify-between items-center">
                 <button onclick="toggleSidebar()" class="text-yellow-500 text-2xl"><i class="fas fa-bars"></i></button>
-                <span id="pTitle" class="text-[11px] font-bold text-yellow-500">اختر محتوى للمشاهدة..</span>
-                <span class="text-yellow-500 font-black text-xl italic">ZK</span>
+                <span id="pTitle" class="text-[10px] font-bold text-yellow-500 italic">Karim Khaled : بانتظار التحديث..</span>
+                <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-8 h-8 rounded-full border-2 border-yellow-500">
             </div>
         </div>
 
         <div class="p-4">
-            <div class="flex gap-2 overflow-x-auto mb-8 pb-2">
-                <button onclick="setTab('football', this)" class="nav-tab active">بث مباشر كورة</button>
-                <button onclick="setTab('war', this)" class="nav-tab">بث مباشر حرب</button>
-                <button onclick="setTab('quran', this)" class="nav-tab">بث قرآن كريم</button>
-                <button onclick="setTab('movies', this)" class="nav-tab">أفلام مصرية</button>
-                <button onclick="setTab('music', this)" class="nav-tab">أغاني مصرية</button>
-                <button onclick="setTab('wwe', this)" class="nav-tab">مصارعة</button>
-                <button onclick="setTab('vod', this)" class="nav-tab">أفلام (VOD)</button>
-                <button onclick="setTab('kids', this)" class="nav-tab">كرتون</button>
+            <div class="flex gap-2 overflow-x-auto mb-6 pb-2" id="tabs">
+                <button onclick="setTab('football', this)" class="nav-tab active">بث كورة ⚽</button>
+                <button onclick="setTab('war', this)" class="nav-tab">بث حرب ⚔️</button>
+                <button onclick="setTab('quran', this)" class="nav-tab">قرآن كريم 🕌</button>
+                <button onclick="setTab('movies', this)" class="nav-tab">أفلام مصرية 🎬</button>
+                <button onclick="setTab('kids', this)" class="nav-tab">كرتون 🧸</button>
+                <button onclick="setTab('music', this)" class="nav-tab">أغاني 🎵</button>
             </div>
 
-            <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
+            <div class="relative mb-4">
+                <input type="text" id="searchInput" onkeyup="searchChannels()" placeholder="بحث في السيرفرات..." class="w-full p-4 bg-[#0f172a] border border-slate-800 rounded-2xl text-xs text-center outline-none focus:border-yellow-500">
+            </div>
+
+            <button onclick="fetchAllServers()" class="w-full mb-6 bg-red-600 p-4 rounded-xl text-xs font-black uppercase shadow-xl active:scale-95">
+                تحديث من جميع السيرفرات العالمية (IPTV Connect) ⚡
+            </button>
+
+            <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
         </div>
     </div>
 
-    <script>
-        // داتابيز المحتوى
-        const library = [
-            { name: "beIN Sports 1", cat: "football", url: "https://vcp.my.id/bein1/index.m3u8", img: "https://via.placeholder.com/300x450/0f172a/eab308?text=BeIN+1" },
-            { name: "قناة العربية", cat: "war", url: "https://live.alarabiya.net/alarabiya/index.m3u8", img: "https://vid.alarabiya.net/images/2023/03/15/8e8d89e2-6d42-4f36-96a8-6b08f4c084f1/8e8d89e2-6d42-4f36-96a8-6b08f4c084f1.jpg" },
-            { name: "إذاعة القرآن", cat: "quran", url: "https://quraan.us:8000/;stream.mp3", img: "https://i.ytimg.com/vi/v5O6X7vH-yE/maxresdefault.jpg" },
-            { name: "ولاد رزق 3", cat: "vod", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4", img: "https://www.egypttoday.com/siteimages/Larg/202406150257255725.jpg" }
-        ];
+    <div id="sidebar" class="sidebar p-6">
+        <div class="text-center mb-10">
+            <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-20 h-20 rounded-full border-4 border-yellow-500 mx-auto mb-2">
+            <p class="text-xs font-bold">Karim Khaled Cinema</p>
+        </div>
+        <div class="flex flex-col gap-4">
+            <a href="https://wa.me/201040077271" class="bg-white/5 p-4 rounded-xl text-sm flex items-center gap-3"><i class="fab fa-whatsapp text-green-500"></i> واتساب الدعم</a>
+            <a href="mailto:karimkarim4884d@gmail.com" class="bg-white/5 p-4 rounded-xl text-sm flex items-center gap-3"><i class="fas fa-envelope text-blue-500"></i> البريد</a>
+            <a href="https://karimkarim4884d-sketch.github.io/hekayat-korlla/" class="bg-white/5 p-4 rounded-xl text-sm flex items-center gap-3"><i class="fas fa-globe text-yellow-500"></i> الموقع الرسمي</a>
+        </div>
+        <button onclick="toggleSidebar()" class="w-full p-4 bg-red-600 rounded-xl text-xs font-bold mt-12">إغلاق</button>
+    </div>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
+    <script>
+        let fullDb = JSON.parse(localStorage.getItem('kr_global_db')) || [];
         let currentTab = 'football';
 
-        function enterApp() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
-            render();
-        }
+        window.onload = () => { if(fullDb.length > 0) render(); };
 
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const ov = document.getElementById('overlay');
-            sb.classList.toggle('active');
-            ov.style.display = sb.classList.contains('active') ? 'block' : 'none';
+        async function fetchAllServers() {
+            const status = document.getElementById('pTitle');
+            const loader = document.getElementById('loader');
+            status.innerText = "جاري الاتصال بـ 5 سيرفرات عالمية... 📡";
+            loader.style.width = "30%";
+
+            const servers = [
+                'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u',
+                'https://raw.githubusercontent.com/mohammadreza-erteshali/iptv/main/iptv.m3u',
+                'https://raw.githubusercontent.com/TidSmarter/IPTV/master/ar.m3u',
+                'https://raw.githubusercontent.com/tikhub/iptv/main/tv.m3u',
+                'https://raw.githubusercontent.com/byte-capsule/wp-iptv/main/iptv.m3u'
+            ];
+
+            let collected = [];
+            const proxy = 'https://api.allorigins.win/raw?url=';
+
+            for (let srv of servers) {
+                try {
+                    const res = await fetch(proxy + encodeURIComponent(srv));
+                    const data = await res.text();
+                    const lines = data.split('\n');
+                    for(let i=0; i<lines.length; i++) {
+                        if(lines[i].includes('#EXTINF')) {
+                            let name = lines[i].split(',')[1]?.trim() || 'بث مباشر';
+                            let url = lines[i+1]?.trim();
+                            if(url && url.startsWith('http')) {
+                                let cat = 'movies';
+                                if(/sport|bein|ssc|كورة/i.test(name)) cat = 'football';
+                                if(/quran|قرآن/i.test(name)) cat = 'quran';
+                                if(/kids|cartoon|ديزني|كرتون/i.test(name)) cat = 'kids';
+                                if(/news|العربية|الجزيرة|war/i.test(name)) cat = 'war';
+                                if(/music|أغاني|مهرجان/i.test(name)) cat = 'music';
+                                collected.push({name, url, cat});
+                            }
+                        }
+                    }
+                    loader.style.width = (servers.indexOf(srv) + 1) * 20 + "%";
+                } catch(e) { console.error("خطأ في سيرفر: " + srv); }
+            }
+
+            if(collected.length > 0) {
+                fullDb = [...new Map(collected.map(item => [item['name'], item])).values()];
+                localStorage.setItem('kr_global_db', JSON.stringify(fullDb));
+                status.innerText = "تم بنجاح! مجلوب " + fullDb.length + " قناة ✅";
+                render();
+            }
         }
 
         function setTab(cat, btn) {
@@ -106,29 +132,35 @@
             render();
         }
 
-        function render() {
+        function render(filterData = null) {
             const grid = document.getElementById('contentGrid');
-            const items = library.filter(i => i.cat === currentTab);
-            grid.innerHTML = items.map(item => `
-                <div onclick="play('${item.url}', '${item.name}')" class="ostora-card">
-                    <img src="${item.img}" class="w-full aspect-[3/4] object-cover opacity-80">
-                    <div class="absolute bottom-0 w-full p-2 bg-gradient-to-t from-black to-transparent">
-                        <p class="text-[9px] font-bold truncate">${item.name}</p>
-                    </div>
+            const items = filterData || fullDb.filter(i => i.cat === currentTab);
+            grid.innerHTML = items.length ? items.map(i => `
+                <div onclick="play('${i.url}', '${i.name}')" class="ostora-card p-4 text-center">
+                    <i class="fas fa-play-circle text-yellow-500 text-3xl mb-2"></i>
+                    <p class="text-[9px] font-bold truncate">${i.name}</p>
                 </div>
-            `).join('');
+            `).join('') : '<p class="col-span-3 text-center py-10 text-gray-500 text-xs italic">لا يوجد قنوات.. اضغط تحديث السيرفرات</p>';
+        }
+
+        function searchChannels() {
+            let val = document.getElementById('searchInput').value.toLowerCase();
+            render(fullDb.filter(i => i.name.toLowerCase().includes(val)));
         }
 
         function play(url, name) {
-            document.getElementById('pTitle').innerText = "شغال: " + name;
+            document.getElementById('pTitle').innerText = "مشاهدة: " + name;
             const video = document.getElementById('video');
             if (Hls.isSupported()) {
                 const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
             } else { video.src = url; video.play(); }
-            window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none';
         }
     </script>
 </body>
-    </html>
-    
+</html>
