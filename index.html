@@ -3,134 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | VIP</title>
+    <title>Zack Cinema | Auto-Open System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
-        .vip-gold { background: linear-gradient(90deg, #facc15, #eab308); color: black; }
+        .timer-text { color: #facc15; font-weight: bold; font-family: monospace; }
+        .premium-bg { background: linear-gradient(145deg, #1e293b, #0f172a); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
 
-    <div class="w-full max-w-md flex justify-between items-center mb-10 px-2">
-        <h1 class="text-2xl font-black text-blue-500 italic uppercase">ZACK CINEMA</h1>
-        <button onclick="showAdmin()" class="opacity-10 hover:opacity-100 p-2"><i class="fas fa-user-shield text-xl"></i></button>
-    </div>
+    <div id="payment-gate" class="w-full max-w-md mt-10 animate-in fade-in zoom-in duration-500">
+        <div class="glass rounded-[2.5rem] p-8 shadow-2xl border-t-4 border-blue-600 text-center">
+            <h1 class="text-2xl font-black text-blue-500 mb-6 italic uppercase">ZACK CINEMA</h1>
+            
+            <div class="bg-black/40 p-5 rounded-3xl mb-6 border border-white/5 shadow-inner">
+                <p class="text-gray-500 text-[10px] mb-2 uppercase tracking-widest">ID الخاص بك</p>
+                <p id="displayID" class="text-3xl font-mono font-black text-white tracking-[0.2em]">#--------</p>
+            </div>
 
-    <div id="login-panel" class="w-full max-w-md glass rounded-[2.5rem] p-8 shadow-2xl border-t-4 border-blue-600 transition-all">
-        <h2 class="text-xl font-bold text-center mb-8">أدخل اسمك (بالإنجليزي)</h2>
-        <input type="text" id="nameInput" placeholder="Ex: karim20" class="w-full p-5 rounded-2xl bg-black/40 border border-slate-700 text-center font-bold mb-6 outline-none focus:border-blue-500 text-white">
-        <button onclick="startApp()" class="w-full bg-blue-600 p-5 rounded-2xl font-black text-lg shadow-lg shadow-blue-600/30 active:scale-95 transition-all">
-            دخول وتفعيل الحساب
-        </button>
-    </div>
-
-    <div id="dashboard" class="hidden w-full max-w-md glass rounded-[2.5rem] p-8 shadow-2xl border-t-4 border-green-500 animate-in fade-in duration-500">
-        <div class="text-center mb-6">
-            <p class="text-[10px] text-gray-400 uppercase tracking-widest">مرحباً بك يا بطل</p>
-            <h3 id="userNameDisplay" class="text-2xl font-black text-blue-400 uppercase"></h3>
-        </div>
-
-        <div class="bg-black/60 p-6 rounded-3xl border border-blue-500/20 text-center mb-6">
-            <span class="text-[10px] text-gray-500 block mb-2">الأيدي الرقمي الخاص بك:</span>
-            <p id="autoID" class="text-3xl font-mono font-black text-white tracking-[0.2em]">#--------</p>
-            <div class="mt-4 p-4 rounded-2xl border border-yellow-500/20 bg-yellow-500/5">
-                <button onclick="requestVip()" class="vip-gold w-full p-3 rounded-xl font-black text-sm uppercase">شحن أيدي مميز (VIP) - 30LE</button>
+            <div class="space-y-4">
+                <button onclick="payRequest()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-black text-lg shadow-lg shadow-blue-600/30 active:scale-95 transition-all">
+                    تفعيل 15 يوم - 20 جنيه
+                </button>
+                <p class="text-[11px] text-gray-400 leading-relaxed px-4">بعد الدفع، سيقوم الأدمن بتفعيل حسابك وسيفتح الموقع تلقائياً.</p>
             </div>
         </div>
-
-        <div class="space-y-4">
-            <select id="amount" class="w-full p-4 rounded-2xl bg-slate-900 border border-slate-800 font-bold outline-none">
-                <option value="500">500 عملة - (20 جنيه)</option>
-                <option value="1500">1500 عملة - (50 جنيه)</option>
-            </select>
-            <button onclick="sendOrder()" class="w-full bg-green-600 p-4 rounded-2xl font-bold text-lg">إرسال طلب الشحن</button>
-        </div>
-        
-        <button onclick="logout()" class="w-full mt-8 text-[10px] text-gray-600 underline uppercase">تسجيل الخروج</button>
     </div>
 
-    <div id="admin-panel" class="hidden w-full max-w-md glass rounded-[2.5rem] p-8 border-2 border-red-600 mt-6">
-        <h2 class="text-red-500 font-black mb-4 text-center">ZACK ADMIN PANEL</h2>
-        <div class="bg-black/40 p-3 rounded-xl mb-4 text-center">
-            <p class="text-xl font-bold text-green-400">رصيدك: <span id="admin-balance">50000</span></p>
-        </div>
-        <div class="space-y-3">
-            <input type="text" id="target-id" placeholder="أيدي المستخدم" class="w-full p-4 rounded-xl bg-black/50 border border-red-900/50 text-center font-bold">
-            <input type="number" id="charge-amount" placeholder="الكمية" class="w-full p-4 rounded-xl bg-black/50 border border-red-900/50 text-center font-bold">
-            <button onclick="adminCharge()" class="w-full bg-red-600 p-4 rounded-xl font-black">تأكيد الشحن فوراً</button>
-            <button onclick="hideAdmin()" class="w-full mt-2 text-[10px] text-gray-500 text-center uppercase">إغلاق</button>
-        </div>
+    <div id="main-content" class="hidden w-full max-w-5xl animate-in slide-in-from-bottom duration-700">
+        <header class="flex justify-between items-center mb-8 glass p-5 rounded-[2rem] border border-blue-500/20">
+            <div>
+                <h1 class="text-xl font-black text-blue-500 italic uppercase">Zack Cinema TV</h1>
+                <p class="text-[10px] text-yellow-500 font-bold"><i class="fas fa-clock ml-1"></i> متبقي: <span id="countdown" class="timer-text">--:--</span></p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="bg-green-600 text-[9px] px-2 py-1 rounded-md font-bold animate-pulse">PREMIUM</span>
+                <button onclick="resetSub()" class="text-gray-500 hover:text-white transition"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="glass rounded-[2rem] overflow-hidden border border-white/5 hover:border-blue-500/50 transition-all group">
+                <div class="aspect-video bg-black flex items-center justify-center relative">
+                    <i class="fas fa-play-circle text-5xl text-blue-600 opacity-20 group-hover:opacity-100 transition-all"></i>
+                    <span class="absolute top-3 right-3 bg-red-600 text-[9px] px-2 py-1 rounded font-bold">LIVE</span>
+                </div>
+                <div class="p-4 bg-slate-900/50">
+                    <h3 class="font-bold text-sm">بث مباشر - سيرفر 1</h3>
+                </div>
+            </div>
+            </div>
     </div>
+
+    <div id="admin-panel" class="hidden fixed bottom-6 w-full max-w-sm glass rounded-[2rem] p-6 border-2 border-red-600 shadow-2xl z-50">
+        <h2 class="text-red-500 font-black mb-4 text-center text-sm uppercase">تفعيل فوري للمستخدم</h2>
+        <input type="text" id="target-id" placeholder="أدخل ID المشترك" class="w-full p-4 rounded-xl bg-black border border-red-900 mb-4 text-center font-bold text-white outline-none">
+        <button onclick="activateNow()" class="w-full bg-red-600 p-4 rounded-xl font-black shadow-lg hover:bg-red-500 active:scale-95 transition-all uppercase">شحن وفتح الموقع ✅</button>
+        <button onclick="document.getElementById('admin-panel').classList.add('hidden')" class="w-full mt-4 text-[10px] text-gray-500 uppercase tracking-widest">إغلاق</button>
+    </div>
+
+    <button onclick="adminCheck()" class="fixed top-4 left-4 opacity-5 hover:opacity-100 text-white p-2"><i class="fas fa-user-shield text-xl"></i></button>
 
     <script>
-        // التحقق من وجود مستخدم مسجل
         window.onload = function() {
-            const user = localStorage.getItem('zack_user');
-            const id = localStorage.getItem('zack_id');
-            if(user && id) { showDashboard(user, id); }
+            // توليد أو جلب ID المستخدم
+            let myID = localStorage.getItem('zack_id');
+            if(!myID) {
+                myID = Math.floor(10000000 + Math.random() * 90000000);
+                localStorage.setItem('zack_id', myID);
+            }
+            document.getElementById('displayID').innerText = myID;
+
+            // فحص حالة الاشتراك فور فتح الموقع
+            autoCheck();
+            setInterval(autoCheck, 2000); // يفحص كل ثانيتين لو الأدمن فعل له
         };
 
-        function startApp() {
-            const nameInput = document.getElementById('nameInput').value.trim();
-            if(nameInput.length < 2) { alert("أدخل اسمك أولاً!"); return; }
+        function autoCheck() {
+            const expiry = localStorage.getItem('zack_expiry');
+            if (expiry) {
+                const now = new Date().getTime();
+                const timeLeft = expiry - now;
 
-            // توليد الأيدي
-            let hash = 0;
-            for (let i = 0; i < nameInput.length; i++) {
-                hash = nameInput.charCodeAt(i) + ((hash << 5) - hash);
+                if (timeLeft > 0) {
+                    // إذا كان المشترك فعال، اظهر المحتوى فوراً
+                    document.getElementById('payment-gate').classList.add('hidden');
+                    document.getElementById('main-content').classList.remove('hidden');
+                    updateTimer(timeLeft);
+                } else {
+                    // انتهى الوقت
+                    localStorage.removeItem('zack_expiry');
+                    location.reload();
+                }
             }
-            const generatedID = Math.abs(hash % 90000000 + 10000000);
-
-            // حفظ البيانات
-            localStorage.setItem('zack_user', nameInput);
-            localStorage.setItem('zack_id', generatedID);
-
-            // تفعيل اللوحة
-            showDashboard(nameInput, generatedID);
         }
 
-        function showDashboard(name, id) {
-            document.getElementById('login-panel').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('userNameDisplay').innerText = name;
-            document.getElementById('autoID').innerText = id;
+        function updateTimer(ms) {
+            let days = Math.floor(ms / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('countdown').innerText = `${days} يوم و ${hours} ساعة`;
         }
 
-        function logout() { localStorage.clear(); location.reload(); }
-
-        function showAdmin() {
-            const pass = prompt("كلمة سر الأدمن:");
-            if(pass === "zack2026") document.getElementById('admin-panel').classList.remove('hidden');
-        }
-        function hideAdmin() { document.getElementById('admin-panel').classList.add('hidden'); }
-
-        let balance = 50000;
-        function adminCharge() {
+        function activateNow() {
             const id = document.getElementById('target-id').value;
-            const amt = parseInt(document.getElementById('charge-amount').value);
-            if(!id || isNaN(amt)) return;
-            balance -= amt;
-            document.getElementById('admin-balance').innerText = balance;
-            alert("✨ مبروك الشحن! ✨\nتم شحن " + amt + " عملة للأيدي " + id);
-            document.getElementById('target-id').value = "";
-            document.getElementById('charge-amount').value = "";
+            if(!id) return;
+            // تفعيل 15 يوم
+            const expiryTime = new Date().getTime() + (15 * 24 * 60 * 60 * 1000);
+            localStorage.setItem('zack_expiry', expiryTime);
+            
+            alert("✨ مبروك الشحن! ✨\nتم تفعيل 15 يوم بنجاح. سيفتح الموقع الآن.");
+            location.reload(); // هذا سيقوم بفتح المواقع أوتوماتيكياً
         }
 
-        function requestVip() {
-            const vip = prompt("الأيدي المميز (8 أرقام):");
-            if(vip && vip.length === 8) window.location.href=`https://wa.me/201040077271?text=VIP_REQUEST:${vip}`;
-        }
-
-        function sendOrder() {
+        function payRequest() {
             const id = localStorage.getItem('zack_id');
-            const amt = document.getElementById('amount').value;
-            window.location.href=`https://wa.me/201040077271?text=ORDER_ID:${id}_AMT:${amt}`;
+            window.location.href=`https://wa.me/201040077271?text=طلب_شحن_15_يوم_بـ20_جنيه%0AID:${id}`;
         }
+
+        function adminCheck() {
+            if(prompt("باسورد زاك:") === "zack2026") {
+                document.getElementById('admin-panel').classList.remove('hidden');
+            }
+        }
+
+        function resetSub() { localStorage.clear(); location.reload(); }
     </script>
 </body>
-    </html>
-    
+</html>
