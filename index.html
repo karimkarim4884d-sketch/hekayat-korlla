@@ -3,158 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Karim Khaled | Power System</title>
+    <title>Zack Live | يلا شوت</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; margin: 0; }
-        .glass { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        body { background: #f3f4f6; color: #1f2937; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        .match-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+        .league-title { background: #e5e7eb; color: #374151; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .score-box { background: #f9fafb; border: 1px solid #eee; padding: 5px 15px; border-radius: 20px; font-weight: 900; font-size: 18px; min-width: 80px; text-align: center; }
+        .live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .admin-float { background: #020617; color: white; border-radius: 30px 30px 0 0; }
         .hidden { display: none !important; }
-        .btn-active:active { transform: scale(0.96); transition: 0.1s; }
-        iframe { width: 100%; height: 230px; border-radius: 25px; border: 2px solid #22c55e; background: #000; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4">
+<body class="max-w-md mx-auto bg-gray-100 min-h-screen">
 
-    <div id="loginSection" class="w-full max-w-md glass rounded-[3.5rem] p-10 mt-12 text-center shadow-2xl border-t-4 border-blue-600">
-        <h1 class="text-3xl font-black mb-8 italic text-blue-500 uppercase tracking-tighter">Karim Khaled</h1>
-        <input type="text" id="uName" placeholder="ادخل اسمك (Karim Khaled)" class="w-full p-5 rounded-3xl bg-black/40 border border-slate-800 text-center font-bold text-white mb-4 outline-none">
-        <button onclick="doLogin()" class="w-full bg-blue-600 p-5 rounded-3xl font-black uppercase btn-active shadow-lg">دخول النظام</button>
+    <div class="bg-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-2">
+            <div class="bg-blue-600 p-2 rounded-lg text-white"><i class="fas fa-futbol"></i></div>
+            <h1 class="text-xl font-black italic text-blue-900">ZACK LIVE</h1>
+        </div>
+        <div class="text-gray-400 text-sm font-bold">الأربعاء، 18/03/2026</div>
     </div>
 
-    <div id="userDash" class="hidden w-full max-w-md space-y-5">
+    <div id="adminArea" class="hidden p-4">
+        <div class="admin-float p-6 shadow-2xl">
+             <div class="flex justify-between items-center mb-4">
+                 <h2 class="text-blue-400 font-bold text-xs uppercase tracking-widest">Control Panel</h2>
+                 <span class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-[10px]">#77777777</span>
+             </div>
+             <div class="grid grid-cols-2 gap-2 mb-4 text-center">
+                 <div class="bg-slate-800 p-2 rounded-xl">
+                     <p class="text-[8px] text-gray-500">زرقاء</p>
+                     <b id="pBlue" class="text-blue-400">1M</b>
+                 </div>
+                 <div class="bg-slate-800 p-2 rounded-xl">
+                     <p class="text-[8px] text-gray-500">حمراء</p>
+                     <b id="pRed" class="text-red-400">1M</b>
+                 </div>
+             </div>
+             <input type="text" id="targetId" placeholder="ID العميل" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm mb-2 outline-none">
+             <div class="grid grid-cols-2 gap-2">
+                 <button onclick="cloudCharge('blue')" class="bg-blue-600 p-3 rounded-xl text-[10px] font-bold uppercase">شحن</button>
+                 <button onclick="cloudCharge('live')" class="bg-green-600 p-3 rounded-xl text-[10px] font-bold uppercase">تفعيل بث</button>
+             </div>
+        </div>
+    </div>
+
+    <div class="p-4">
         
-        <div class="glass p-8 rounded-[3rem] border-b-8 border-blue-600 relative text-center shadow-2xl">
-            <button onclick="doLogout()" class="absolute top-6 left-8 text-red-500 font-bold text-[10px] uppercase">خروج</button>
-            <h2 id="dispName" class="text-2xl font-black text-blue-400 uppercase tracking-tight"></h2>
-            <p id="dispId" class="text-xl font-mono font-black mt-2 text-white"></p>
-            
-            <div class="flex gap-4 justify-center mt-6">
-                <div class="bg-blue-900/20 px-6 py-2 rounded-2xl border border-blue-500/20">
-                    <p class="text-[8px] text-gray-500 uppercase mb-1">رصيد زرقاء</p>
-                    <b id="pBlue" class="text-blue-400 text-lg">0</b>
-                </div>
-                <div class="bg-red-900/20 px-6 py-2 rounded-2xl border border-red-500/20">
-                    <p class="text-[8px] text-gray-500 uppercase mb-1">رصيد حمراء</p>
-                    <b id="pRed" class="text-red-400 text-lg">0</b>
-                </div>
+        <div class="league-title"><i class="fas fa-trophy text-yellow-600"></i> دوري أبطال أوروبا</div>
+        
+        <div class="match-card flex items-center justify-between text-center">
+            <div class="w-1/3">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/Liverpool_FC.svg/1200px-Liverpool_FC.svg.png" class="w-10 h-10 mx-auto mb-2">
+                <p class="text-[11px] font-bold">ليفربول</p>
             </div>
-
-            <div id="adminPanel" class="hidden mt-8 pt-6 border-t border-blue-900/50 space-y-4">
-                <p class="text-[10px] text-blue-500 font-bold uppercase tracking-widest italic">لوحة شحن العملاء</p>
-                <input type="text" id="targetId" placeholder="ID العميل المراد شحنه" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none text-white">
-                <input type="number" id="targetAmount" placeholder="الكمية" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none text-white">
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="cloudCharge('blue')" class="bg-blue-600 p-4 rounded-2xl text-[10px] font-bold uppercase btn-active shadow-lg">إرسال زرقاء</button>
-                    <button onclick="cloudCharge('red')" class="bg-red-600 p-4 rounded-2xl text-[10px] font-bold uppercase btn-active shadow-lg">إرسال حمراء</button>
-                </div>
-                <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-4 rounded-2xl font-black text-[10px] uppercase btn-active shadow-lg">تفعيل البث المباشر للعميل ✅</button>
+            <div class="w-1/3 flex flex-col items-center">
+                <div class="score-box">1 - 0</div>
+                <p class="text-[10px] text-green-600 font-bold mt-2"><span class="live-dot"></span> 45'</p>
+            </div>
+            <div class="w-1/3">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Galatasaray_Sports_Club_Logo.svg/1200px-Galatasaray_Sports_Club_Logo.svg.png" class="w-10 h-10 mx-auto mb-2">
+                <p class="text-[11px] font-bold">غلطة سراي</p>
             </div>
         </div>
 
-        <div id="liveBox" class="hidden glass p-5 rounded-[3rem] border-2 border-green-500 shadow-2xl">
-            <div class="flex justify-between items-center mb-4 px-2">
-                <span class="text-green-500 text-[10px] font-black animate-pulse uppercase tracking-widest italic">● Live Match Stream</span>
-                <i class="fas fa-expand text-gray-400 text-xs"></i>
+        <div class="league-title"><i class="fas fa-medal text-blue-600"></i> كأس مصر</div>
+        
+        <div class="match-card flex items-center justify-between text-center opacity-80">
+            <div class="w-1/3">
+                <img src="https://upload.wikimedia.org/wikipedia/ar/2/21/Tala%27ea_El_Gaish_SC_logo.png" class="w-10 h-10 mx-auto mb-2">
+                <p class="text-[11px] font-bold">طلائع الجيش</p>
             </div>
-            <iframe id="player" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
+            <div class="w-1/3 flex flex-col items-center">
+                <div class="score-box text-gray-400">0 - 0</div>
+                <p class="text-[10px] text-gray-400 font-bold mt-2">لم تبدأ</p>
+            </div>
+            <div class="w-1/3">
+                <img src="https://upload.wikimedia.org/wikipedia/ar/f/f6/ZED_FC_Logo.png" class="w-10 h-10 mx-auto mb-2">
+                <p class="text-[11px] font-bold">نادي زد</p>
+            </div>
         </div>
 
-        <a href="https://wa.me/201040077271" class="bg-green-600 flex items-center justify-center gap-3 w-full p-5 rounded-[2.5rem] font-black text-xs uppercase shadow-lg btn-active">
-            <i class="fab fa-whatsapp text-2xl"></i> تواصل مع كريم خالد
-        </a>
+    </div>
 
-        <div id="payOptions" class="glass p-8 rounded-[3rem] border border-red-900/30 text-center">
-            <p class="text-[10px] mb-4 text-gray-400 font-bold uppercase italic tracking-widest">تفعيل باقة الماتشات (300 حمراء)</p>
-            <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg btn-active">تفعيل من رصيدي</button>
+    <div id="liveBox" class="hidden p-4">
+        <div class="bg-black rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-3 bg-green-600 text-white text-[10px] font-bold flex justify-between">
+                <span>● بث مباشر مباراة ليفربول</span>
+                <button onclick="toggleFS()"><i class="fas fa-expand"></i></button>
+            </div>
+            <iframe id="player" class="w-full h-[220px]" src="" allowfullscreen></iframe>
         </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around p-3 text-[10px] font-bold text-gray-500">
+        <div class="text-blue-600 flex flex-col items-center"><i class="fas fa-home text-lg mb-1"></i> الرئيسية</div>
+        <div class="flex flex-col items-center" onclick="doLoginPrompt()"><i class="fas fa-user text-lg mb-1"></i> حسابي</div>
+        <div class="flex flex-col items-center"><i class="fas fa-tv text-lg mb-1"></i> البث المباشر</div>
+        <div class="flex flex-col items-center"><i class="fas fa-newspaper text-lg mb-1"></i> الأخبار</div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = { databaseURL: "https://zack-cinema-default-rtdb.firebaseio.com" };
-        let db;
-        try { if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e){}
+        const config = { databaseURL: "https://zack-cinema-default-rtdb.firebaseio.com" };
+        let db; try { firebase.initializeApp(config); db = firebase.database(); } catch(e){}
 
-        function doLogin() {
-            const n = document.getElementById('uName').value.trim();
-            if(n.length < 2) return alert("الاسم مطلوب!");
-            
-            let id = localStorage.getItem('z_i') || Math.floor(Math.random() * 89999999) + 10000000;
-            
-            // تخصيص حساب المدير "كريم خالد" بالمليون نقطة
-            if(n.toLowerCase() === "karim khaled") {
-                id = "77777777"; 
-                if(db) db.ref('users/' + id).update({ name: n, blue: 1000000, red: 1000000, live: true });
-                localStorage.setItem('is_adm', 'true');
-            }
-
+        function doLoginPrompt() {
+            let n = prompt("ادخل اسم المستخدم:");
+            if(!n) return;
+            let id = (n.toLowerCase() === "karim khaled") ? "77777777" : Math.floor(Math.random()*90000000)+10000000;
             localStorage.setItem('z_n', n);
             localStorage.setItem('z_i', id);
-            showDash(n, id);
-        }
-
-        function showDash(n, i) {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('userDash').classList.remove('hidden');
-            document.getElementById('dispName').innerText = n;
-            document.getElementById('dispId').innerText = "#" + i;
-
-            if(localStorage.getItem('is_adm') === 'true') document.getElementById('adminPanel').classList.remove('hidden');
-
-            if(db) {
-                db.ref('users/' + i).on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if(data) {
-                        document.getElementById('pBlue').innerText = (data.blue || 0).toLocaleString();
-                        document.getElementById('pRed').innerText = (data.red || 0).toLocaleString();
-                        
-                        if(data.live === true) {
-                            document.getElementById('payOptions').classList.add('hidden');
-                            document.getElementById('liveBox').classList.remove('hidden');
-                            document.getElementById('player').src = "https://www.youtube.com/embed/live_stream?channel=UC4p9m8_4S99S5M2_9G6G5Q";
-                        } else {
-                            document.getElementById('payOptions').classList.remove('hidden');
-                            document.getElementById('liveBox').classList.add('hidden');
-                        }
-                    }
-                });
-            }
-        }
-
-        // وظيفة الشحن الفعلية من حسابك للعملاء
-        function cloudCharge(type) {
-            const target = document.getElementById('targetId').value.trim();
-            const amount = parseInt(document.getElementById('targetAmount').value) || 0;
-            if(!target || !db) return alert("أدخل ID العميل!");
-            
-            // تحديث بيانات العميل في السحابة فوراً
-            let updateData = {};
-            if(type === 'blue') updateData = { blue: amount };
-            if(type === 'red') updateData = { red: amount };
-            if(type === 'live') updateData = { live: true };
-
-            db.ref('users/' + target).update(updateData)
-              .then(() => alert("✅ تم إرسال النقاط وتفعيل البث للأيدي: " + target))
-              .catch(() => alert("❌ فشل الاتصال بالسحابة"));
-        }
-
-        function userBuy(type) {
-            const myId = localStorage.getItem('z_i');
-            db.ref('users/' + myId).once('value').then(s => {
-                const d = s.val();
-                if(type === 'red' && d.red >= 300) db.ref('users/' + myId).update({ red: d.red - 300, live: true });
-                else alert("النقاط غير كافية!");
-            });
+            location.reload();
         }
 
         window.onload = function() {
             const n = localStorage.getItem('z_n'), i = localStorage.getItem('z_i');
-            if(n && i) showDash(n, i);
+            if(n && i) {
+                if(n.toLowerCase() === "karim khaled") document.getElementById('adminArea').classList.remove('hidden');
+                
+                db.ref('users/' + i).on('value', (s) => {
+                    const d = s.val();
+                    if(d && d.live) {
+                        document.getElementById('liveBox').classList.remove('hidden');
+                        document.getElementById('player').src = "https://www.youtube.com/embed/live_stream?channel=UC4p9m8_4S99S5M2_9G6G5Q";
+                    }
+                });
+            }
         };
-        function doLogout() { localStorage.clear(); location.reload(); }
+
+        function cloudCharge(t) {
+            const target = document.getElementById('targetId').value;
+            if(!target) return alert("أدخل ID العميل!");
+            let up = (t === 'live') ? { live: true } : { blue: 500 };
+            db.ref('users/' + target).update(up).then(() => alert("تم التحديث بنجاح! ✅"));
+        }
     </script>
 </body>
-</html>
+                                                 </html>
+                                                 
