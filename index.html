@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | Sports & VIP</title>
+    <title>Zack Cinema | Points System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -11,130 +11,146 @@
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
         .vip-gold { background: linear-gradient(90deg, #facc15, #eab308); color: black; font-weight: 900; }
-        .side-rule { border-right: 4px solid #3b82f6; padding-right: 12px; margin-bottom: 12px; }
-        .admin-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: #0f172a; border-right: 1px solid #1e293b; z-index: 1000; transform: translateX(-100%); transition: 0.3s; }
+        .admin-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: #0b0f1a; border-right: 2px solid #ef4444; z-index: 1000; transform: translateX(-100%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); shadow: 20px 0 50px rgba(0,0,0,0.5); }
         .admin-open { transform: translateX(0); }
     </style>
 </head>
 <body class="min-h-screen p-4 flex flex-col items-center">
 
     <div id="admin-sidebar" class="admin-sidebar p-6 overflow-y-auto">
-        <h2 class="text-red-500 font-black text-xl mb-6 italic border-b border-red-900 pb-2">ZACK ADMIN</h2>
+        <h2 class="text-red-500 font-black text-xl mb-6 italic border-b border-red-900 pb-2">ZACK CONTROL</h2>
         
-        <div class="mb-8">
-            <label class="text-[10px] text-gray-500 block mb-2 uppercase">تفعيل أيدي (15 يوم / 30 يوم)</label>
-            <input type="text" id="target-id" placeholder="أدخل الأيدي" class="w-full p-3 rounded-xl bg-black border border-slate-800 text-center mb-2">
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="activate(15)" class="bg-blue-600 p-2 rounded-lg text-[10px] font-bold">15 يوم</button>
-                <button onclick="activate(30)" class="bg-yellow-500 text-black p-2 rounded-lg text-[10px] font-bold">30 يوم VIP</button>
+        <div class="bg-black/50 p-4 rounded-2xl mb-6 border border-green-500/30">
+            <p class="text-[10px] text-gray-400 uppercase">رصيدك من النقاط:</p>
+            <p class="text-xl font-mono font-bold text-green-400">1,000,000 PT</p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="text-[10px] text-gray-500 block mb-1">أيدي العميل:</label>
+                <input type="text" id="target-id" class="w-full p-3 rounded-xl bg-black border border-slate-800 text-center font-bold">
             </div>
+            <div>
+                <label class="text-[10px] text-gray-500 block mb-1">كمية النقاط:</label>
+                <input type="number" id="points-amount" class="w-full p-3 rounded-xl bg-black border border-slate-800 text-center font-bold text-yellow-500">
+            </div>
+            <button onclick="sendPointsToUser()" class="w-full bg-green-600 p-3 rounded-xl font-bold shadow-lg shadow-green-900/20">شحن نقاط للعميل</button>
         </div>
 
-        <div class="glass p-3 rounded-2xl">
-            <h3 class="text-xs font-bold mb-3 text-blue-400">المشتركين أونلاين:</h3>
-            <ul id="user-list" class="text-[10px] space-y-2 text-gray-400"></ul>
-        </div>
-
-        <button onclick="closeAdmin()" class="mt-10 text-[10px] text-gray-600 underline">إغلاق اللوحة</button>
+        <button onclick="closeAdmin()" class="mt-10 text-[10px] text-gray-500 underline block mx-auto">إغلاق اللوحة</button>
+        <button onclick="clearAdminPass()" class="mt-4 text-[10px] text-red-900 block mx-auto">خروج من وضع الأدمن</button>
     </div>
 
-    <button onclick="checkAdmin()" class="fixed top-4 left-4 opacity-20 text-white z-[500]"><i class="fas fa-bars text-xl"></i></button>
+    <button onclick="openAdmin()" class="fixed top-4 left-4 opacity-30 text-white z-[500]"><i class="fas fa-user-shield text-xl"></i></button>
 
     <div id="login-panel" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 border-t-4 border-blue-600 shadow-2xl">
-        <h2 class="text-xl font-bold text-center mb-6 uppercase italic tracking-widest">ZACK CINEMA</h2>
-        <input type="text" id="nameInput" placeholder="أدخل اسمك (بالإنجليزي)" class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 text-center mb-4 outline-none">
-        <button onclick="loginUser()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg shadow-blue-600/30">دخول وتفعيل الحساب</button>
+        <h2 class="text-xl font-bold text-center mb-6 italic">ZACK CINEMA</h2>
+        <input type="text" id="nameInput" placeholder="أدخل اسمك" class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 text-center mb-4">
+        <button onclick="login()" class="w-full bg-blue-600 p-4 rounded-2xl font-black">دخول</button>
     </div>
 
     <div id="dashboard" class="hidden w-full max-w-md">
-        <div class="text-center mb-6 glass p-6 rounded-[2.5rem] border-b-4 border-blue-500 relative">
-            <button onclick="logout()" class="absolute top-4 left-6 text-red-500 text-sm italic font-bold tracking-tighter hover:scale-110 transition"><i class="fas fa-sign-out-alt"></i> خروج</button>
-            <p class="text-[10px] text-gray-500 uppercase mb-1">مرحباً بك يا بطل</p>
+        <div class="text-center mb-6 glass p-6 rounded-[2.5rem] border-b-4 border-blue-500 relative shadow-xl">
+            <button onclick="logout()" class="absolute top-4 left-6 text-red-500 font-bold text-xs">خروج</button>
             <h3 id="userNameDisplay" class="text-2xl font-black text-blue-400 uppercase"></h3>
-            <p id="autoID" class="text-xl font-mono font-bold text-white mt-2 tracking-[0.2em]"></p>
+            <p id="autoID" class="text-xl font-mono font-bold text-white mt-2 tracking-widest"></p>
+            <div class="mt-4 bg-black/40 p-2 rounded-xl inline-block border border-yellow-500/20">
+                <p class="text-[10px] text-gray-500">رصيدك: <span id="userPoints" class="text-yellow-500 font-bold">0</span> نقطة</p>
+            </div>
         </div>
 
         <div class="glass p-6 rounded-[2.5rem] mb-6 border border-yellow-500/30">
-            <h3 class="text-yellow-500 font-black text-xs mb-4 text-center uppercase">ترقية الحساب لأيدي مميز (VIP)</h3>
-            <input type="text" id="old-id-field" readonly class="w-full p-3 rounded-xl bg-black/50 border border-white/5 text-center text-gray-500 mb-3 text-sm" placeholder="الأيدي القديم">
-            <input type="text" id="new-vip-id" maxlength="8" placeholder="اختر أيدي مميز (8 أرقام)" class="w-full p-3 rounded-xl bg-black border border-yellow-900/50 text-center font-bold text-yellow-500 mb-4 outline-none text-sm">
-            <button onclick="requestVipUpgrade()" class="vip-gold w-full p-4 rounded-2xl shadow-lg uppercase text-xs">شحن أيدي مميز - 30LE</button>
+            <h3 class="text-yellow-500 font-black text-[10px] mb-4 text-center uppercase">تغيير للأيدي مميز (تكلفة: 500 نقطة)</h3>
+            <input type="text" id="newVipID" maxlength="8" placeholder="اختر أيدي مميز (8 أرقام)" class="w-full p-3 rounded-xl bg-black border border-yellow-900/50 text-center font-bold text-yellow-500 mb-4 outline-none">
+            <button onclick="usePointsForVip()" class="vip-gold w-full p-4 rounded-2xl shadow-lg uppercase text-xs">تفعيل الأيدي المميز بالنقاط</button>
         </div>
 
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="glass p-4 rounded-3xl border border-blue-500/20 text-center hover:bg-blue-600/10 transition cursor-pointer">
-                <i class="fas fa-tv text-blue-500 mb-2"></i>
-                <p class="text-[10px] font-bold uppercase">البث المباشر</p>
-            </div>
-            <div class="glass p-4 rounded-3xl border border-green-500/20 text-center hover:bg-green-600/10 transition cursor-pointer">
+            <button onclick="usePointsFor15Days()" class="glass p-4 rounded-3xl border border-blue-500/20 text-center hover:bg-blue-600/10">
+                <i class="fas fa-clock text-blue-500 mb-2"></i>
+                <p class="text-[9px] font-bold uppercase">تفعيل 15 يوم (300 PT)</p>
+            </button>
+            <div class="glass p-4 rounded-3xl border border-green-500/20 text-center">
                 <i class="fas fa-futbol text-green-500 mb-2"></i>
-                <p class="text-[10px] font-bold uppercase">نتائج الماتشات</p>
+                <p class="text-[9px] font-bold uppercase">نتائج الماتشات</p>
             </div>
         </div>
 
-        <button onclick="requestNormal()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg uppercase text-xs mb-8">اشتراك عادي (15 يوم) - 20LE</button>
+        <button onclick="window.location.href='https://wa.me/201040077271'" class="w-full bg-blue-600 p-4 rounded-2xl font-black uppercase text-xs">شراء نقاط (واتساب)</button>
     </div>
 
     <script>
-        function loginUser() {
+        // لوحة التحكم - حفظ الباسورد
+        function openAdmin() {
+            const savedPass = localStorage.getItem('zack_admin_logged');
+            if (savedPass === "true") {
+                document.getElementById('admin-sidebar').classList.add('admin-open');
+            } else {
+                if(prompt("كلمة سر زاك:") === "zack2026") {
+                    localStorage.setItem('zack_admin_logged', "true");
+                    document.getElementById('admin-sidebar').classList.add('admin-open');
+                }
+            }
+        }
+
+        function sendPointsToUser() {
+            const amount = document.getElementById('points-amount').value;
+            if(!amount) return;
+            localStorage.setItem('z_user_points', amount);
+            alert("✨ مبروك! تم شحن " + amount + " نقطة للعميل.");
+            location.reload();
+        }
+
+        // وظائف العميل
+        function login() {
             const name = document.getElementById('nameInput').value.trim();
             if(name.length < 2) return;
-            const id = Math.floor(10000000 + Math.random() * 90000000); // توليد أوتوماتيكي
-            
+            const id = Math.floor(10000000 + Math.random() * 90000000);
             localStorage.setItem('z_name', name);
             localStorage.setItem('z_id', id);
-            
-            // إضافة المستخدم لقائمة الأدمن
-            let list = JSON.parse(localStorage.getItem('z_users') || '[]');
-            list.push({name: name, id: id});
-            localStorage.setItem('z_users', JSON.stringify(list));
-            
             location.reload();
         }
 
         window.onload = function() {
             const name = localStorage.getItem('z_name');
             const id = localStorage.getItem('z_id');
+            const points = localStorage.getItem('z_user_points') || 0;
             if(name && id) {
                 document.getElementById('login-panel').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
                 document.getElementById('userNameDisplay').innerText = name;
                 document.getElementById('autoID').innerText = id;
-                document.getElementById('old-id-field').value = "أيدي قديم: " + id;
-                checkSubscriptionStatus();
+                document.getElementById('userPoints').innerText = points;
             }
         };
 
-        function checkAdmin() {
-            if(prompt("كلمة سر زاك:") === "zack2026") {
-                document.getElementById('admin-sidebar').classList.add('admin-open');
-                renderUserList();
-            }
+        function usePointsForVip() {
+            let points = parseInt(localStorage.getItem('z_user_points') || 0);
+            const newID = document.getElementById('newVipID').value;
+            if(newID.length < 8) return alert("الأيدي المميز 8 أرقام!");
+            if(points < 500) return alert("عفواً، رصيدك غير كافي (تحتاج 500 نقطة).");
+            
+            localStorage.setItem('z_user_points', points - 500);
+            localStorage.setItem('z_id', newID);
+            alert("تم تغيير الأيدي للمميز بنجاح! ✅");
+            location.reload();
         }
 
-        function renderUserList() {
-            const users = JSON.parse(localStorage.getItem('z_users') || '[]');
-            const listEl = document.getElementById('user-list');
-            listEl.innerHTML = users.map(u => `<li>${u.name} (#${u.id})</li>`).join('');
-        }
-
-        function requestVipUpgrade() {
-            const newID = document.getElementById('new-vip-id').value;
-            if(newID.length < 8) return alert("الأيدي المميز لازم يكون 8 أرقام بالظبط!");
-            window.location.href=`https://wa.me/201040077271?text=ترقية_أيدي_VIP%0Aالأيدي_القديم:${localStorage.getItem('z_id')}%0Aالأيدي_الجديد:${newID}`;
-        }
-
-        function activate(days) {
-            const exp = new Date().getTime() + (days * 24 * 60 * 60 * 1000);
+        function usePointsFor15Days() {
+            let points = parseInt(localStorage.getItem('z_user_points') || 0);
+            if(points < 300) return alert("رصيدك غير كافي (تحتاج 300 نقطة).");
+            
+            localStorage.setItem('z_user_points', points - 300);
+            const exp = new Date().getTime() + (15 * 24 * 60 * 60 * 1000);
             localStorage.setItem('z_expiry', exp);
-            alert("تم التفعيل!");
+            alert("تم تفعيل 15 يوم بنجاح! ✅");
             location.reload();
         }
 
         function closeAdmin() { document.getElementById('admin-sidebar').classList.remove('admin-open'); }
+        function clearAdminPass() { localStorage.removeItem('zack_admin_logged'); location.reload(); }
         function logout() { localStorage.clear(); location.reload(); }
-        function requestNormal() { window.location.href=`https://wa.me/201040077271?text=طلب_شحن_15_يوم_ID:${localStorage.getItem('z_id')}`; }
     </script>
 </body>
-</html>
-
+    </html>
+    
