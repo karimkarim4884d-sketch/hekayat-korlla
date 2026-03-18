@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Karim Khaled | Cinema System</title>
+    <title>Karim Khaled | Live Sports</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,13 +12,16 @@
         .hidden { display: none !important; }
         .admin-section { border-top: 2px solid #3b82f6; margin-top: 20px; padding-top: 20px; }
         .btn-active:active { transform: scale(0.96); }
+        /* تحسين إطار الفيديو لدعم التكبير */
+        .video-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; border-radius: 25px; overflow: hidden; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
 
     <div id="loginSection" class="w-full max-w-md glass rounded-[3rem] p-10 mt-12 text-center shadow-2xl border-t-4 border-blue-600">
-        <h1 class="text-3xl font-black mb-2 italic text-blue-500 uppercase">Karim Khaled</h1>
-        <p class="text-[10px] text-gray-400 mb-10 uppercase font-bold tracking-widest">Cinema Experience</p>
+        <h1 class="text-3xl font-black mb-2 italic text-blue-500 uppercase tracking-tighter">Karim Khaled</h1>
+        <p class="text-[10px] text-gray-400 mb-10 uppercase font-bold tracking-[0.3em]">Live Match System</p>
         <input type="text" id="uName" placeholder="اكتب اسمك (Karim Khaled للمدير)" class="w-full p-5 rounded-3xl bg-black/40 border border-slate-800 text-center font-bold outline-none text-white mb-4">
         <button onclick="doLogin()" class="w-full bg-blue-600 p-5 rounded-3xl font-black uppercase shadow-xl btn-active">دخول</button>
     </div>
@@ -41,20 +44,25 @@
             </div>
 
             <div id="adminControls" class="hidden admin-section space-y-4">
-                <p class="text-blue-500 font-bold text-[10px] uppercase tracking-widest italic text-center">لوحة شحن العملاء</p>
+                <p class="text-blue-500 font-bold text-[10px] uppercase tracking-widest italic">إدارة شحن العملاء</p>
                 <input type="text" id="targetId" placeholder="ID العميل" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none">
-                <input type="number" id="targetAmount" placeholder="الكمية" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none">
+                <input type="number" id="targetAmount" placeholder="كمية النقاط" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none">
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="cloudCharge('blue')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg btn-active">شحن زرقاء</button>
                     <button onclick="cloudCharge('red')" class="bg-red-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg btn-active">شحن حمراء</button>
                 </div>
-                <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-[10px] uppercase btn-active">تفعيل البث للعميل ✅</button>
+                <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-[10px] uppercase btn-active">تفعيل البث المباشر للعميل ✅</button>
             </div>
         </div>
 
-        <div id="liveBox" class="hidden glass p-4 rounded-[3rem] border-2 border-green-500 shadow-lg">
-            <p class="text-green-500 text-[10px] font-bold mb-3 uppercase animate-pulse">● البث المباشر مفعّل</p>
-            <iframe id="player" src="" class="w-full h-[200px] rounded-[25px]" allowfullscreen></iframe>
+        <div id="liveBox" class="hidden glass p-4 rounded-[3rem] border-2 border-green-500 shadow-lg overflow-hidden">
+            <div class="flex items-center justify-between mb-3 px-2">
+                <p class="text-green-500 text-[10px] font-bold uppercase animate-pulse">● البث المباشر للمباراة</p>
+                <span class="text-[8px] text-gray-400 font-bold">اضغط مرتين للتكبير</span>
+            </div>
+            <div class="video-container">
+                <iframe id="player" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            </div>
         </div>
 
         <a href="https://wa.me/201040077271" class="bg-green-600 flex items-center justify-center gap-3 w-full p-5 rounded-[2.5rem] font-black text-xs uppercase shadow-lg btn-active">
@@ -62,8 +70,8 @@
         </a>
 
         <div id="payOptions" class="glass p-6 rounded-[3rem] border border-red-900/30 text-center">
-            <p class="text-[9px] mb-4 text-gray-400 font-bold uppercase italic">اشتراك 15 يوم (300 حمراء)</p>
-            <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg btn-active">تفعيل الاشتراك</button>
+            <p class="text-[9px] mb-4 text-gray-400 font-bold uppercase italic">اشتراك مشاهدة الماتشات (300 حمراء)</p>
+            <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg btn-active">تفعيل الاشتراك الآن</button>
         </div>
     </div>
 
@@ -81,7 +89,7 @@
             let id = localStorage.getItem('z_i') || Math.floor(Math.random() * 89999999) + 10000000;
             
             if(n.toLowerCase() === "karim khaled") {
-                id = "77777777";
+                id = "77777777"; // أيدي المدير الثابت
                 if(db) db.ref('users/' + id).update({ name: n, blue: 1000000, red: 1000000, live: true });
                 localStorage.setItem('is_adm', 'true');
             }
@@ -97,7 +105,6 @@
             document.getElementById('dispName').innerText = n;
             document.getElementById('dispId').innerText = "#" + i;
 
-            // إظهار لوحة الشحن في المين إذا كان الداخل هو كريم
             if(localStorage.getItem('is_adm') === 'true') {
                 document.getElementById('adminControls').classList.remove('hidden');
             }
@@ -111,6 +118,7 @@
                         if(d.live === true) {
                             document.getElementById('payOptions').classList.add('hidden');
                             document.getElementById('liveBox').classList.remove('hidden');
+                            // رابط بث الماتش (يمكنك تغييره حسب المباراة)
                             document.getElementById('player').src = "https://www.youtube.com/embed/live_stream?channel=UC4p9m8_4S99S5M2_9G6G5Q";
                         }
                     }
@@ -139,8 +147,10 @@
             const myId = localStorage.getItem('z_i');
             db.ref('users/' + myId).once('value').then(s => {
                 const d = s.val();
-                if(t === 'red' && d.red >= 300) db.ref('users/' + myId).update({ red: d.red - 300, live: true });
-                else alert("رصيدك لا يكفي!");
+                if(t === 'red' && d.red >= 300) {
+                    db.ref('users/' + myId).update({ red: d.red - 300, live: true });
+                    alert("✅ تم تفعيل بث الماتشات بنجاح!");
+                } else alert("رصيدك غير كافٍ!");
             });
         }
         function doLogout() { localStorage.clear(); location.reload(); }
