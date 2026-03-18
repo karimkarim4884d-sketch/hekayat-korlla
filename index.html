@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KARIM KHALED | ZK</title>
+    <title>KARIM KHALED | ZK PREMIUM</title>
     <link rel="icon" href="https://i.ibb.co/vzYpYfP/1000008040.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; margin: 0; }
+        body { background: #020617; color: white; font-family: sans-serif; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
         .btn-gold { background: #eab308; color: #000; font-weight: 900; }
+        video { width: 100%; border-radius: 1rem; background: #000; box-shadow: 0 0 20px rgba(234, 179, 8, 0.2); }
     </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen pb-24 px-4">
@@ -30,52 +32,126 @@
             <div class="flex items-center gap-2">
                 <img src="https://i.ibb.co/vzYpYfP/1000008040.jpg" class="w-7 h-7">
                 <h1 class="text-sm font-bold text-yellow-500 uppercase">KARIM KHALED</h1>
-                <span id="userIdDisp" class="bg-yellow-500 text-black text-[9px] px-2 py-0.5 rounded-full font-bold"></span>
             </div>
-            <button id="installBtn" class="btn-gold text-[10px] px-3 py-1.5 rounded-lg">تثبيت التطبيق 📲</button>
+            <span id="userTag" class="text-[9px] bg-yellow-500 text-black px-2 py-0.5 rounded-full font-bold"></span>
         </div>
 
-        <div class="glass p-6 rounded-[2rem] text-center mb-6 border-2 border-yellow-500/20">
-            <p class="text-[10px] text-gray-400 uppercase mb-2">رصيد نقاطك</p>
-            <div class="text-4xl font-black text-yellow-500" id="userPoints">0</div>
+        <div class="glass p-5 rounded-3xl text-center mb-6 border border-yellow-500/20">
+            <p class="text-[9px] text-gray-400 uppercase mb-1">نقاطك المتاحة</p>
+            <div class="text-3xl font-black text-yellow-500" id="userPoints">0</div>
         </div>
 
-        <div id="adminPanel" class="hidden glass p-6 rounded-[2rem] border-2 border-yellow-500/40 mb-8 text-center">
-             <p class="text-[10px] text-yellow-500 font-bold mb-4 uppercase">لوحة تحكم المدير (500K)</p>
-             <input type="text" id="targetId" placeholder="ID العميل" class="w-full p-3 bg-black border border-slate-800 mb-3 text-center text-xs rounded-xl text-white">
+        <div id="liveSection" class="hidden mb-8">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
+                <h2 class="text-xs font-bold uppercase">بث حي مباشر ⚽</h2>
+            </div>
+            <div id="playerContainer">
+                <video id="video" controls></video>
+            </div>
+        </div>
+
+        <div id="adminPanel" class="hidden glass p-6 rounded-[2rem] border-2 border-yellow-500/50 mb-8">
+             <h3 class="text-[10px] text-yellow-500 font-black mb-4 uppercase text-center">إدارة السيرفر والبث</h3>
+             
+             <input type="text" id="targetId" placeholder="ID العميل" class="w-full p-3 bg-black border border-slate-800 mb-2 text-center text-xs rounded-xl text-white">
+             <input type="number" id="pointAmt" placeholder="كمية النقاط" class="w-full p-3 bg-black border border-slate-800 mb-4 text-center text-xs rounded-xl text-white">
+             
+             <p class="text-[9px] text-gray-500 mb-2">رابط القناة (m3u8):</p>
+             <input type="text" id="streamUrl" placeholder="https://example.com/live.m3u8" class="w-full p-3 bg-black border border-slate-800 mb-4 text-center text-xs rounded-xl text-white">
+             
              <div class="grid grid-cols-2 gap-2">
-                 <button onclick="alert('تم الشحن')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase">شحن نقاط</button>
-                 <button onclick="alert('تم التفعيل')" class="bg-green-600 p-3 rounded-xl text-[9px] font-bold uppercase">تفعيل بث</button>
+                 <button onclick="adminAction('points')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase">شحن نقاط</button>
+                 <button onclick="adminAction('stream')" class="bg-red-600 p-3 rounded-xl text-[9px] font-bold uppercase">تحديث البث</button>
              </div>
         </div>
 
-        <div class="space-y-3">
-            <h3 class="text-[10px] text-center font-bold mb-4 text-gray-500 uppercase tracking-widest">اختر باقة الاشتراك</h3>
+        <div id="plans" class="space-y-3">
+            <h3 class="text-[10px] text-center font-bold mb-4 text-gray-500 uppercase">باقات الاشتراك المميزة</h3>
             <div onclick="buyPlan(300, '30 يوم')" class="glass p-5 rounded-2xl flex justify-between items-center border border-white/5 cursor-pointer">
-                <div><b class="text-yellow-500">300 نقطة</b> <span class="text-[9px] block text-gray-500 font-bold">تفعيل 30 يوم</span></div>
-                <div class="text-green-500 font-black text-sm">20 جنيه</div>
-            </div>
-            <div onclick="buyPlan(600, '60 يوم')" class="glass p-5 rounded-2xl flex justify-between items-center border border-white/5 cursor-pointer">
-                <div><b class="text-yellow-500">600 نقطة</b> <span class="text-[9px] block text-gray-500 font-bold">تفعيل 60 يوم</span></div>
-                <div class="text-green-500 font-black text-sm">40 جنيه</div>
+                <div><b class="text-yellow-500">300 نقطة</b> <span class="text-[9px] block text-gray-400">تفعيل 30 يوم</span></div>
+                <div class="btn-gold px-4 py-1 rounded-full text-[9px]">تفعيل</div>
             </div>
         </div>
     </div>
 
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] glass rounded-2xl p-4 flex justify-around items-center border border-white/10">
-        <a href="https://wa.me/201040077271" class="text-center"><i class="fab fa-whatsapp text-green-500 text-xl block"></i><span class="text-[8px] font-bold">واتساب</span></a>
-        <a href="https://t.me/HekayetyKorabot" class="text-center"><i class="fab fa-telegram text-blue-400 text-xl block"></i><span class="text-[8px] font-bold">تلجرام</span></a>
-        <button onclick="logout()" class="text-center"><i class="fas fa-power-off text-red-500 text-xl block"></i><span class="text-[8px] font-bold">خروج</span></button>
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] glass rounded-2xl p-4 flex justify-around items-center border border-white/10 z-[100]">
+        <a href="https://wa.me/201040077271" class="text-center text-green-500"><i class="fab fa-whatsapp text-xl"></i></a>
+        <a href="https://t.me/HekayetyKorabot" class="text-center text-blue-400"><i class="fab fa-telegram text-xl"></i></a>
+        <button onclick="logout()" class="text-center text-red-500"><i class="fas fa-power-off text-xl"></i></button>
     </div>
 
     <script>
         function doLogin() {
-            const name = document.getElementById('uName').value.trim();
-            const pass = document.getElementById('uPass').value.trim();
-            if(!name) return alert("ادخل اسمك");
-            
+            const n = document.getElementById('uName').value.trim();
+            const p = document.getElementById('uPass').value.trim();
+            if(!n) return alert("ادخل اسمك");
             let id, role, pts;
-            // إضافة الـ 50 مليون نقطة لاسمك كمدير
-            if(name.toLowerCase() === "karim khaled" && pass === "7777") {
-                id = "7777
-                    
+            // لو المدير دخل، النقاط 50 مليون
+            if(n.toLowerCase() === "karim khaled" && p === "7777") {
+                id = "77777777"; role = "admin"; pts = 50000000;
+            } else {
+                id = Math.floor(Math.random()*899999)+100000; role = "user"; pts = 0;
+            }
+            localStorage.setItem('z_n', n); localStorage.setItem('z_i', id);
+            localStorage.setItem('z_r', role); localStorage.setItem('z_pts', pts);
+            location.reload();
+        }
+
+        window.onload = function() {
+            const n = localStorage.getItem('z_n'), i = localStorage.getItem('z_i'), 
+                  r = localStorage.getItem('z_r'), p = localStorage.getItem('z_pts'),
+                  sub = localStorage.getItem('z_sub');
+            
+            if(n && i) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('userTag').innerText = "#" + i;
+                document.getElementById('userPoints').innerText = parseInt(p).toLocaleString();
+                if(r === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
+                
+                // تشغيل البث للمشتركين فقط
+                const streamUrl = localStorage.getItem('active_stream');
+                if(streamUrl && (sub === 'true' || r === 'admin')) {
+                    document.getElementById('liveSection').classList.remove('hidden');
+                    loadStream(streamUrl);
+                }
+            }
+        };
+
+        function adminAction(type) {
+            if(type === 'points') {
+                alert("تم شحن النقاط للعميل ✅");
+            } else {
+                const url = document.getElementById('streamUrl').value;
+                if(!url) return alert("حط رابط البث!");
+                localStorage.setItem('active_stream', url);
+                alert("البث شغال الآن لكل المشتركين 🚀");
+                location.reload();
+            }
+        }
+
+        function buyPlan(cost, time) {
+            let pts = parseInt(localStorage.getItem('z_pts'));
+            if(pts < cost) return alert("نقاطك مابتكفيش!");
+            pts -= cost;
+            localStorage.setItem('z_pts', pts);
+            localStorage.setItem('z_sub', 'true'); // تفعيل الاشتراك ✅
+            alert(`مبروك! اشتراكك في ${time} اتفعل والماتشات فتحت.`);
+            location.reload();
+        }
+
+        function loadStream(url) {
+            const video = document.getElementById('video');
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+            }
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
+    </script>
+</body>
+                 </html>
+                 
