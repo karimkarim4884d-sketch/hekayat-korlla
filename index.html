@@ -3,42 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karim Khaled | Cinema</title>
+    <title>Karim Khaled | Cloud System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         body { background: #020617; color: white; font-family: sans-serif; margin: 0; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
         .admin-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: #0b0f1a; border-right: 2px solid #3b82f6; z-index: 9999; transform: translateX(-100%); transition: 0.3s; }
         .admin-open { transform: translateX(0); }
-        input { outline: none; transition: 0.3s; }
-        input:focus { border-color: #3b82f6 ! spirituality; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
 
     <div id="adminPanel" class="admin-sidebar p-5 shadow-2xl">
-        <h2 class="text-blue-500 font-black text-center mb-5 border-b border-blue-900 pb-2 italic uppercase">Karim Control</h2>
+        <h2 class="text-blue-500 font-black text-center mb-5 border-b border-blue-900 pb-2 italic uppercase text-sm">Karim Admin Panel</h2>
         <div class="space-y-4">
-            <input type="text" id="targetId" placeholder="أدخل أيدي العميل" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center font-bold">
-            <input type="number" id="targetAmount" placeholder="كمية النقاط" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center">
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="cloudCharge('blue')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg shadow-blue-900/40">شحن زرقاء</button>
-                <button onclick="cloudCharge('red')" class="bg-red-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg shadow-red-900/40">شحن حمراء</button>
+            <div class="bg-blue-900/20 p-3 rounded-xl border border-blue-500/30 text-center">
+                <p class="text-[9px] text-gray-400 uppercase">رصيدك كـ مسؤول</p>
+                <p class="text-blue-400 font-bold text-xs">1,000,000 PT</p>
             </div>
-            <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-xs uppercase shadow-lg shadow-green-900/40">تفعيل البث فوراً ✅</button>
+            <input type="text" id="targetId" placeholder="أدخل أيدي العميل" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center font-bold text-sm outline-none">
+            <input type="number" id="targetAmount" placeholder="الكمية المراد شحنها" class="w-full p-3 rounded-xl bg-black border border-slate-700 text-center text-sm">
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="cloudCharge('blue')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg shadow-blue-900/40 active:scale-95">شحن زرقاء</button>
+                <button onclick="cloudCharge('red')" class="bg-red-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg shadow-red-900/40 active:scale-95">شحن حمراء</button>
+            </div>
+            <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-xs uppercase shadow-lg shadow-green-900/40 active:scale-95">تفعيل البث للعميل ✅</button>
         </div>
-        <button onclick="toggleAdmin()" class="mt-10 text-[10px] block mx-auto underline text-gray-500">إغلاق</button>
+        <button onclick="toggleAdmin()" class="mt-10 text-[10px] block mx-auto underline text-gray-500">إغلاق اللوحة</button>
     </div>
 
     <div onclick="toggleAdmin()" style="position:fixed; top:0; left:0; width:60px; height:60px; z-index:9999; cursor: pointer;"></div>
 
     <div id="loginSection" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 text-center shadow-2xl border-t-4 border-blue-600">
         <h1 class="text-3xl font-black mb-2 italic text-blue-500 uppercase">Karim Khaled</h1>
-        <p class="text-[10px] text-gray-400 mb-8 uppercase tracking-widest font-bold">Premium Cinema Experience</p>
-        <input type="text" id="uName" placeholder="أدخل اسمك هنا" class="w-full p-4 rounded-2xl bg-black/50 border border-slate-800 text-center mb-4 font-bold">
-        <button onclick="doLogin()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">دخول الحساب</button>
+        <p class="text-[10px] text-gray-400 mb-8 uppercase tracking-widest font-bold">Manager Access System</p>
+        <input type="text" id="uName" placeholder="أدخل اسمك هنا" class="w-full p-4 rounded-2xl bg-black/50 border border-slate-800 text-center mb-4 font-bold outline-none focus:border-blue-500">
+        <button onclick="doLogin()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg active:scale-95">دخول</button>
     </div>
 
     <div id="userDash" class="hidden w-full max-w-md space-y-4">
@@ -53,8 +57,8 @@
             </div>
         </div>
 
-        <div id="liveBox" class="hidden glass p-4 rounded-[3rem] border-2 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.15)]">
-            <p class="text-green-500 text-[10px] font-bold mb-3 uppercase animate-pulse">● البث المباشر مفعّل</p>
+        <div id="liveBox" class="hidden glass p-4 rounded-[3rem] border-2 border-green-500 shadow-lg">
+            <p class="text-green-500 text-[10px] font-bold mb-3 uppercase animate-pulse">● البث مفعّل</p>
             <iframe id="player" src="" class="w-full h-[210px] rounded-[25px]" allowfullscreen></iframe>
         </div>
 
@@ -64,32 +68,33 @@
 
         <div id="payOptions" class="space-y-4">
             <div class="glass p-5 rounded-[2.5rem] border border-red-900/30 text-center">
-                <p class="text-[9px] mb-3 uppercase font-bold text-gray-400">تفعيل الاشتراك (300 حمراء)</p>
-                <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg shadow-red-900/40">تفعيل الآن</button>
+                <p class="text-[9px] mb-3 uppercase font-bold text-gray-400 italic">تفعيل الاشتراك (300 حمراء)</p>
+                <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg shadow-red-900/40 active:scale-95">تفعيل الآن</button>
             </div>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <script>
-        // إعداد السحابة لربط الأجهزة فوراً
         const config = { databaseURL: "https://zack-cinema-default-rtdb.firebaseio.com" };
         let db;
         try { if (!firebase.apps.length) firebase.initializeApp(config); db = firebase.database(); } catch(e){}
 
         function doLogin() {
             const n = document.getElementById('uName').value.trim();
-            if(n.length < 2) return alert("اكتب اسمك بالإنجليزي!");
-            const id = localStorage.getItem('z_i') || Math.floor(Math.random() * 90000000) + 10000000;
+            if(n.length < 2) return alert("اكتب اسمك!");
+            
+            // إذا كان الاسم هو "كريم خالد" بالإنجليزي، نثبت الأيدي بتاعه ونعطيه المليون نقطة
+            let id = localStorage.getItem('z_i') || Math.floor(Math.random() * 90000000) + 10000000;
+            
+            if(n.toLowerCase() === "karim khaled") {
+                id = "77777777"; // أيدي مميز لكريم كمسؤول
+                if(db) db.ref('users/' + id).update({ name: n, blue: 1000000, red: 1000000, live: true });
+            } else {
+                if(db) db.ref('users/' + id).update({ name: n });
+            }
+
             localStorage.setItem('z_n', n);
             localStorage.setItem('z_i', id);
-            
-            // تسجيل الاسم في السحابة
-            if(db) db.ref('users/' + id).update({ name: n });
-            
-            // فتح الواجهة فوراً بدون انتظار
             showDash(n, id);
         }
 
@@ -99,7 +104,6 @@
             document.getElementById('dispName').innerText = n;
             document.getElementById('dispId').innerText = "#" + i;
 
-            // استماع للشحن لحظياً
             if(db) {
                 db.ref('users/' + i).on('value', (s) => {
                     const d = s.val();
@@ -124,36 +128,22 @@
         function cloudCharge(t) {
             const id = document.getElementById('targetId').value;
             const am = parseInt(document.getElementById('targetAmount').value) || 0;
-            if(!id || !db) return alert("خطأ في البيانات أو الاتصال");
+            if(!id || !db) return alert("دخل الأيدي بتاع العميل!");
+            
             let up = {};
             if(t === 'blue') up = { blue: am };
             if(t === 'red') up = { red: am };
             if(t === 'live') up = { live: true };
+            
             db.ref('users/' + id).update(up);
-            alert("✅ تم الشحن بنجاح للأيدي " + id);
-        }
-
-        function userBuy(t) {
-            const i = localStorage.getItem('z_i');
-            if(!db) return;
-            db.ref('users/' + i).once('value').then(s => {
-                const d = s.val();
-                if(t === 'red' && d.red >= 300) {
-                    db.ref('users/' + i).update({ red: d.red - 300, live: true });
-                } else alert("نقاطك لا تكفي تواصل مع كريم!");
-            });
+            alert("✅ تم شحن " + am + " نقطة للأيدي " + id + " بنجاح!");
         }
 
         function toggleAdmin() {
-            if (localStorage.getItem('is_adm') || prompt("كلمة السر الخاصة بكريم:") === "zack2026") {
+            if (localStorage.getItem('is_adm') || prompt("Pass:") === "zack2026") {
                 localStorage.setItem('is_adm', 't');
                 document.getElementById('adminPanel').classList.toggle('admin-open');
             }
         }
         function doLogout() { localStorage.clear(); location.reload(); }
-    </script>
-</body>
-            </html>
-            
-
-    
+        
