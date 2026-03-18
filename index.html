@@ -3,75 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Karim Khaled | Live Sports</title>
+    <title>Karim Khaled | Smart Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background: #020617; color: white; font-family: sans-serif; margin: 0; }
         .glass { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
-        .admin-section { border-top: 2px solid #3b82f6; margin-top: 20px; padding-top: 20px; }
-        .btn-active:active { transform: scale(0.96); }
-        /* تحسين إطار الفيديو لدعم التكبير */
-        .video-container { position: relative; width: 100%; padding-top: 56.25%; background: #000; border-radius: 25px; overflow: hidden; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .btn-active:active { transform: scale(0.96); transition: 0.1s; }
+        .video-frame { width: 100%; height: 230px; border-radius: 25px; border: 2px solid #22c55e; background: #000; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
 
     <div id="loginSection" class="w-full max-w-md glass rounded-[3rem] p-10 mt-12 text-center shadow-2xl border-t-4 border-blue-600">
-        <h1 class="text-3xl font-black mb-2 italic text-blue-500 uppercase tracking-tighter">Karim Khaled</h1>
-        <p class="text-[10px] text-gray-400 mb-10 uppercase font-bold tracking-[0.3em]">Live Match System</p>
-        <input type="text" id="uName" placeholder="اكتب اسمك (Karim Khaled للمدير)" class="w-full p-5 rounded-3xl bg-black/40 border border-slate-800 text-center font-bold outline-none text-white mb-4">
-        <button onclick="doLogin()" class="w-full bg-blue-600 p-5 rounded-3xl font-black uppercase shadow-xl btn-active">دخول</button>
+        <h1 class="text-3xl font-black mb-10 italic text-blue-500 uppercase">Karim Khaled</h1>
+        <input type="text" id="uName" placeholder="ادخل اسمك" class="w-full p-5 rounded-3xl bg-black/40 border border-slate-800 text-center font-bold text-white mb-4 outline-none">
+        <button onclick="doLogin()" class="w-full bg-blue-600 p-5 rounded-3xl font-black uppercase btn-active shadow-lg">دخول</button>
     </div>
 
     <div id="userDash" class="hidden w-full max-w-md space-y-5">
         
         <div class="glass p-8 rounded-[3rem] border-b-8 border-blue-600 relative text-center shadow-2xl">
-            <button onclick="doLogout()" class="absolute top-6 left-8 text-red-500 font-black text-[10px] uppercase">خروج</button>
+            <button onclick="doLogout()" class="absolute top-6 left-8 text-red-500 font-bold text-[10px] uppercase">Logout</button>
             <h2 id="dispName" class="text-2xl font-black text-blue-400 uppercase"></h2>
             <p id="dispId" class="text-xl font-mono font-black mt-2 text-white"></p>
+            
             <div class="flex gap-4 justify-center mt-6">
-                <div class="bg-blue-900/20 px-5 py-2 rounded-2xl border border-blue-500/20 text-center">
+                <div class="bg-blue-900/20 px-6 py-2 rounded-2xl border border-blue-500/20">
                     <p class="text-[8px] text-gray-500 uppercase">زرقاء</p>
                     <b id="pBlue" class="text-blue-400 text-lg">0</b>
                 </div>
-                <div class="bg-red-900/20 px-5 py-2 rounded-2xl border border-red-500/20 text-center">
+                <div class="bg-red-900/20 px-6 py-2 rounded-2xl border border-red-500/20">
                     <p class="text-[8px] text-gray-500 uppercase">حمراء</p>
                     <b id="pRed" class="text-red-400 text-lg">0</b>
                 </div>
             </div>
 
-            <div id="adminControls" class="hidden admin-section space-y-4">
-                <p class="text-blue-500 font-bold text-[10px] uppercase tracking-widest italic">إدارة شحن العملاء</p>
+            <div id="adminPanel" class="hidden mt-8 pt-6 border-t border-blue-900/50 space-y-4">
+                <p class="text-[10px] text-blue-500 font-bold uppercase italic">لوحة شحن العملاء</p>
                 <input type="text" id="targetId" placeholder="ID العميل" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none">
-                <input type="number" id="targetAmount" placeholder="كمية النقاط" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none">
+                <input type="number" id="targetAmount" placeholder="كمية الشحن" class="w-full p-4 rounded-2xl bg-black border border-slate-800 text-center font-bold text-sm outline-none">
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="cloudCharge('blue')" class="bg-blue-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg btn-active">شحن زرقاء</button>
-                    <button onclick="cloudCharge('red')" class="bg-red-600 p-3 rounded-xl text-[9px] font-bold uppercase shadow-lg btn-active">شحن حمراء</button>
+                    <button onclick="cloudCharge('blue')" class="bg-blue-600 p-4 rounded-2xl text-[10px] font-bold uppercase btn-active">شحن زرقاء</button>
+                    <button onclick="cloudCharge('red')" class="bg-red-600 p-4 rounded-2xl text-[10px] font-bold uppercase btn-active">شحن حمراء</button>
                 </div>
-                <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-3 rounded-xl font-bold text-[10px] uppercase btn-active">تفعيل البث المباشر للعميل ✅</button>
+                <button onclick="cloudCharge('live')" class="w-full bg-green-600 p-4 rounded-2xl font-black text-[10px] uppercase btn-active">فتح البث للعميل ✅</button>
             </div>
         </div>
 
-        <div id="liveBox" class="hidden glass p-4 rounded-[3rem] border-2 border-green-500 shadow-lg overflow-hidden">
-            <div class="flex items-center justify-between mb-3 px-2">
-                <p class="text-green-500 text-[10px] font-bold uppercase animate-pulse">● البث المباشر للمباراة</p>
-                <span class="text-[8px] text-gray-400 font-bold">اضغط مرتين للتكبير</span>
+        <div id="liveBox" class="hidden glass p-5 rounded-[3rem] border-2 border-green-500 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 px-2">
+                <span class="text-green-500 text-[10px] font-black animate-pulse uppercase">● Live Match Active</span>
+                <i class="fas fa-expand text-gray-400 text-xs"></i>
             </div>
-            <div class="video-container">
-                <iframe id="player" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
-            </div>
+            <iframe id="player" class="video-frame" src="" allowfullscreen allow="autoplay; fullscreen"></iframe>
         </div>
 
         <a href="https://wa.me/201040077271" class="bg-green-600 flex items-center justify-center gap-3 w-full p-5 rounded-[2.5rem] font-black text-xs uppercase shadow-lg btn-active">
-            <i class="fab fa-whatsapp text-xl"></i> خدمة العملاء (واتساب)
+            <i class="fab fa-whatsapp text-2xl"></i> الدعم الفني (واتساب)
         </a>
 
-        <div id="payOptions" class="glass p-6 rounded-[3rem] border border-red-900/30 text-center">
-            <p class="text-[9px] mb-4 text-gray-400 font-bold uppercase italic">اشتراك مشاهدة الماتشات (300 حمراء)</p>
-            <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg btn-active">تفعيل الاشتراك الآن</button>
+        <div id="payOptions" class="glass p-8 rounded-[3rem] border border-red-900/30 text-center">
+            <p class="text-[10px] mb-4 text-gray-400 font-bold uppercase italic">اشحن لتفعيل البث المباشر (300 حمراء)</p>
+            <button onclick="userBuy('red')" class="w-full bg-red-600 p-4 rounded-2xl font-black text-[10px] uppercase shadow-lg btn-active">تفعيل من رصيدي</button>
         </div>
     </div>
 
@@ -89,11 +84,10 @@
             let id = localStorage.getItem('z_i') || Math.floor(Math.random() * 89999999) + 10000000;
             
             if(n.toLowerCase() === "karim khaled") {
-                id = "77777777"; // أيدي المدير الثابت
+                id = "77777777";
                 if(db) db.ref('users/' + id).update({ name: n, blue: 1000000, red: 1000000, live: true });
                 localStorage.setItem('is_adm', 'true');
             }
-
             localStorage.setItem('z_n', n);
             localStorage.setItem('z_i', id);
             showDash(n, id);
@@ -105,9 +99,7 @@
             document.getElementById('dispName').innerText = n;
             document.getElementById('dispId').innerText = "#" + i;
 
-            if(localStorage.getItem('is_adm') === 'true') {
-                document.getElementById('adminControls').classList.remove('hidden');
-            }
+            if(localStorage.getItem('is_adm') === 'true') document.getElementById('adminPanel').classList.remove('hidden');
 
             if(db) {
                 db.ref('users/' + i).on('value', (s) => {
@@ -115,44 +107,48 @@
                     if(d) {
                         document.getElementById('pBlue').innerText = (d.blue || 0).toLocaleString();
                         document.getElementById('pRed').innerText = (d.red || 0).toLocaleString();
+                        
+                        // الربط: لو الحالة live = true، اظهر البث واخفي الاشتراك فوراً
                         if(d.live === true) {
                             document.getElementById('payOptions').classList.add('hidden');
                             document.getElementById('liveBox').classList.remove('hidden');
-                            // رابط بث الماتش (يمكنك تغييره حسب المباراة)
                             document.getElementById('player').src = "https://www.youtube.com/embed/live_stream?channel=UC4p9m8_4S99S5M2_9G6G5Q";
+                        } else {
+                            document.getElementById('payOptions').classList.remove('hidden');
+                            document.getElementById('liveBox').classList.add('hidden');
                         }
                     }
                 });
             }
         }
 
-        window.onload = function() {
-            const n = localStorage.getItem('z_n'), i = localStorage.getItem('z_i');
-            if(n && i) showDash(n, i);
-        };
-
         function cloudCharge(t) {
             const target = document.getElementById('targetId').value;
             const am = parseInt(document.getElementById('targetAmount').value) || 0;
             if(!target || !db) return alert("أدخل ID العميل!");
+            
             let up = {};
             if(t === 'blue') up = { blue: am };
             if(t === 'red') up = { red: am };
-            if(t === 'live') up = { live: true };
+            if(t === 'live') up = { live: true }; // تفعيل البث للعميل من عندك
+            
             db.ref('users/' + target).update(up);
-            alert("✅ تم التحديث للأيدي " + target);
+            alert("✅ تم الشحن للأيدي " + target + " وقسم البث سيظهر له الآن!");
         }
 
         function userBuy(t) {
             const myId = localStorage.getItem('z_i');
             db.ref('users/' + myId).once('value').then(s => {
                 const d = s.val();
-                if(t === 'red' && d.red >= 300) {
-                    db.ref('users/' + myId).update({ red: d.red - 300, live: true });
-                    alert("✅ تم تفعيل بث الماتشات بنجاح!");
-                } else alert("رصيدك غير كافٍ!");
+                if(t === 'red' && d.red >= 300) db.ref('users/' + myId).update({ red: d.red - 300, live: true });
+                else alert("رصيدك لا يكفي لتفعيل البث!");
             });
         }
+
+        window.onload = function() {
+            const n = localStorage.getItem('z_n'), i = localStorage.getItem('z_i');
+            if(n && i) showDash(n, i);
+        };
         function doLogout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
