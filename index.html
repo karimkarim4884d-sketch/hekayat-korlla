@@ -3,134 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | Auto-Open System</title>
+    <title>Zack Cinema | Admin Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
-        .timer-text { color: #facc15; font-weight: bold; font-family: monospace; }
-        .premium-bg { background: linear-gradient(145deg, #1e293b, #0f172a); }
+        .vip-gold { background: linear-gradient(90deg, #facc15, #eab308); color: black; }
+        .side-rule { border-right: 4px solid #3b82f6; padding-right: 10px; margin-bottom: 10px; }
+        /* ستايل لجدول الأدمن */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; }
+        th, td { border: 1px solid rgba(255,255,255,0.1); padding: 8px; text-align: center; }
+        th { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4">
+<body class="min-h-screen p-4 flex flex-col items-center">
 
-    <div id="payment-gate" class="w-full max-w-md mt-10 animate-in fade-in zoom-in duration-500">
-        <div class="glass rounded-[2.5rem] p-8 shadow-2xl border-t-4 border-blue-600 text-center">
-            <h1 class="text-2xl font-black text-blue-500 mb-6 italic uppercase">ZACK CINEMA</h1>
-            
-            <div class="bg-black/40 p-5 rounded-3xl mb-6 border border-white/5 shadow-inner">
-                <p class="text-gray-500 text-[10px] mb-2 uppercase tracking-widest">ID الخاص بك</p>
-                <p id="displayID" class="text-3xl font-mono font-black text-white tracking-[0.2em]">#--------</p>
-            </div>
+    <button onclick="checkAdmin()" class="fixed top-4 left-4 opacity-10 hover:opacity-100 text-white p-2 z-[100]"><i class="fas fa-user-shield text-xl"></i></button>
 
-            <div class="space-y-4">
-                <button onclick="payRequest()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-black text-lg shadow-lg shadow-blue-600/30 active:scale-95 transition-all">
-                    تفعيل 15 يوم - 20 جنيه
-                </button>
-                <p class="text-[11px] text-gray-400 leading-relaxed px-4">بعد الدفع، سيقوم الأدمن بتفعيل حسابك وسيفتح الموقع تلقائياً.</p>
-            </div>
+    <div id="login-panel" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 shadow-2xl border-t-4 border-blue-600">
+        <h2 class="text-xl font-bold text-center mb-6 uppercase italic">Zack Cinema Login</h2>
+        <input type="text" id="nameInput" placeholder="اكتب اسمك بالإنجليزي" class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 text-center mb-4 outline-none text-white">
+        <button onclick="startApp()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg shadow-blue-600/30">دخول وتفعيل</button>
+    </div>
+
+    <div id="dashboard" class="hidden w-full max-w-md">
+        <div class="text-center mb-6 glass p-6 rounded-[2.5rem] border-b-4 border-blue-500">
+            <h3 id="userNameDisplay" class="text-2xl font-black text-blue-400 uppercase mb-2"></h3>
+            <p id="autoID" class="text-lg font-mono font-bold text-white tracking-widest bg-black/50 p-2 rounded-xl inline-block"></p>
+        </div>
+
+        <div class="glass p-6 rounded-[2.5rem] mb-6">
+            <div class="side-rule"><p class="text-xs font-bold text-blue-300 italic uppercase">1. High Quality Streams</p></div>
+            <div class="side-rule"><p class="text-xs font-bold text-blue-300 italic uppercase">2. 24/7 Fast Support</p></div>
+            <div class="side-rule"><p class="text-xs font-bold text-blue-300 italic uppercase">3. No Ads for Premium</p></div>
+            <a href="https://wa.me/201040077271" class="flex items-center justify-center gap-2 w-full mt-4 bg-green-600 p-3 rounded-xl font-bold text-sm">
+                <i class="fab fa-whatsapp"></i> الدعم الفني المباشر
+            </a>
+        </div>
+
+        <div id="payment-section" class="space-y-4">
+            <button onclick="requestVip30()" class="vip-gold w-full p-4 rounded-2xl font-black text-sm uppercase shadow-lg shadow-yellow-500/20">شحن أيدي مميز (30 يوم) - 30LE</button>
+            <button onclick="sendOrder()" class="w-full bg-blue-600 p-4 rounded-2xl font-black text-sm uppercase">اشتراك عادي (15 يوم) - 20LE</button>
+        </div>
+
+        <div id="premium-content" class="hidden glass p-10 rounded-[2.5rem] text-center mt-6 border-2 border-green-500 animate-pulse">
+            <h2 class="text-2xl font-black text-green-400 mb-4 uppercase italic">ZACK CINEMA ACTIVE ✅</h2>
+            <p class="text-xs text-gray-400">استمتع بالمشاهدة الآن</p>
         </div>
     </div>
 
-    <div id="main-content" class="hidden w-full max-w-5xl animate-in slide-in-from-bottom duration-700">
-        <header class="flex justify-between items-center mb-8 glass p-5 rounded-[2rem] border border-blue-500/20">
-            <div>
-                <h1 class="text-xl font-black text-blue-500 italic uppercase">Zack Cinema TV</h1>
-                <p class="text-[10px] text-yellow-500 font-bold"><i class="fas fa-clock ml-1"></i> متبقي: <span id="countdown" class="timer-text">--:--</span></p>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="bg-green-600 text-[9px] px-2 py-1 rounded-md font-bold animate-pulse">PREMIUM</span>
-                <button onclick="resetSub()" class="text-gray-500 hover:text-white transition"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="glass rounded-[2rem] overflow-hidden border border-white/5 hover:border-blue-500/50 transition-all group">
-                <div class="aspect-video bg-black flex items-center justify-center relative">
-                    <i class="fas fa-play-circle text-5xl text-blue-600 opacity-20 group-hover:opacity-100 transition-all"></i>
-                    <span class="absolute top-3 right-3 bg-red-600 text-[9px] px-2 py-1 rounded font-bold">LIVE</span>
-                </div>
-                <div class="p-4 bg-slate-900/50">
-                    <h3 class="font-bold text-sm">بث مباشر - سيرفر 1</h3>
+    <div id="admin-panel" class="hidden fixed inset-0 bg-black/95 z-[200] p-6 overflow-y-auto">
+        <div class="max-w-md mx-auto">
+            <h2 class="text-red-600 font-black text-2xl text-center mb-6 italic uppercase tracking-tighter">Zack Control Center</h2>
+            
+            <div class="glass p-5 rounded-3xl mb-6 border border-red-900/50">
+                <input type="text" id="target-id" placeholder="ID المستخدم" class="w-full p-3 rounded-xl bg-black border border-red-900 mb-3 text-center">
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="activateUser(15)" class="bg-blue-600 p-3 rounded-xl font-bold text-[10px]">تفعيل 15 يوم</button>
+                    <button onclick="activateUser(30)" class="bg-yellow-500 text-black p-3 rounded-xl font-bold text-[10px]">تفعيل VIP 30 يوم</button>
                 </div>
             </div>
+
+            <div class="glass p-4 rounded-3xl border border-white/5">
+                <h3 class="text-sm font-bold text-gray-400 mb-4 underline uppercase">قائمة الأيدي والمشتركين:</h3>
+                <div class="overflow-x-auto">
+                    <table id="userTable">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الأيدي</th>
+                                <th>المتبقي</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userListBody">
+                            </tbody>
+                    </table>
+                </div>
             </div>
-    </div>
 
-    <div id="admin-panel" class="hidden fixed bottom-6 w-full max-w-sm glass rounded-[2rem] p-6 border-2 border-red-600 shadow-2xl z-50">
-        <h2 class="text-red-500 font-black mb-4 text-center text-sm uppercase">تفعيل فوري للمستخدم</h2>
-        <input type="text" id="target-id" placeholder="أدخل ID المشترك" class="w-full p-4 rounded-xl bg-black border border-red-900 mb-4 text-center font-bold text-white outline-none">
-        <button onclick="activateNow()" class="w-full bg-red-600 p-4 rounded-xl font-black shadow-lg hover:bg-red-500 active:scale-95 transition-all uppercase">شحن وفتح الموقع ✅</button>
-        <button onclick="document.getElementById('admin-panel').classList.add('hidden')" class="w-full mt-4 text-[10px] text-gray-500 uppercase tracking-widest">إغلاق</button>
+            <button onclick="document.getElementById('admin-panel').classList.add('hidden')" class="w-full mt-8 bg-white/10 p-3 rounded-xl text-xs uppercase">إغلاق اللوحة</button>
+        </div>
     </div>
-
-    <button onclick="adminCheck()" class="fixed top-4 left-4 opacity-5 hover:opacity-100 text-white p-2"><i class="fas fa-user-shield text-xl"></i></button>
 
     <script>
-        window.onload = function() {
-            // توليد أو جلب ID المستخدم
-            let myID = localStorage.getItem('zack_id');
-            if(!myID) {
-                myID = Math.floor(10000000 + Math.random() * 90000000);
-                localStorage.setItem('zack_id', myID);
-            }
-            document.getElementById('displayID').innerText = myID;
+        // دالة لبدء التطبيق وحفظ البيانات
+        function startApp() {
+            const name = document.getElementById('nameInput').value.trim();
+            if(name.length < 2) return;
+            const id = Math.floor(10000000 + Math.random() * 90000000);
+            
+            // تخزين المستخدم في القائمة (للأدمن)
+            saveUserToAdminList(name, id);
 
-            // فحص حالة الاشتراك فور فتح الموقع
-            autoCheck();
-            setInterval(autoCheck, 2000); // يفحص كل ثانيتين لو الأدمن فعل له
+            localStorage.setItem('zack_name', name);
+            localStorage.setItem('zack_id', id);
+            location.reload();
+        }
+
+        function saveUserToAdminList(name, id) {
+            let list = JSON.parse(localStorage.getItem('admin_all_users') || '[]');
+            // إضافة المستخدم لو مش موجود
+            if(!list.find(u => u.id === id)) {
+                list.push({ name: name, id: id, expiry: null });
+                localStorage.setItem('admin_all_users', JSON.stringify(list));
+            }
+        }
+
+        window.onload = function() {
+            const user = localStorage.getItem('zack_name');
+            const id = localStorage.getItem('zack_id');
+            if(user && id) {
+                document.getElementById('login-panel').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('userNameDisplay').innerText = user;
+                document.getElementById('autoID').innerText = "#" + id;
+                checkSubscription();
+            }
         };
 
-        function autoCheck() {
+        function checkSubscription() {
             const expiry = localStorage.getItem('zack_expiry');
-            if (expiry) {
-                const now = new Date().getTime();
-                const timeLeft = expiry - now;
-
-                if (timeLeft > 0) {
-                    // إذا كان المشترك فعال، اظهر المحتوى فوراً
-                    document.getElementById('payment-gate').classList.add('hidden');
-                    document.getElementById('main-content').classList.remove('hidden');
-                    updateTimer(timeLeft);
-                } else {
-                    // انتهى الوقت
-                    localStorage.removeItem('zack_expiry');
-                    location.reload();
-                }
+            if(expiry && new Date().getTime() < expiry) {
+                document.getElementById('payment-section').classList.add('hidden');
+                document.getElementById('premium-content').classList.remove('hidden');
             }
         }
 
-        function updateTimer(ms) {
-            let days = Math.floor(ms / (1000 * 60 * 60 * 24));
-            let hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById('countdown').innerText = `${days} يوم و ${hours} ساعة`;
-        }
-
-        function activateNow() {
-            const id = document.getElementById('target-id').value;
-            if(!id) return;
-            // تفعيل 15 يوم
-            const expiryTime = new Date().getTime() + (15 * 24 * 60 * 60 * 1000);
-            localStorage.setItem('zack_expiry', expiryTime);
-            
-            alert("✨ مبروك الشحن! ✨\nتم تفعيل 15 يوم بنجاح. سيفتح الموقع الآن.");
-            location.reload(); // هذا سيقوم بفتح المواقع أوتوماتيكياً
-        }
-
-        function payRequest() {
-            const id = localStorage.getItem('zack_id');
-            window.location.href=`https://wa.me/201040077271?text=طلب_شحن_15_يوم_بـ20_جنيه%0AID:${id}`;
-        }
-
-        function adminCheck() {
-            if(prompt("باسورد زاك:") === "zack2026") {
+        // وظائف الأدمن (زاك)
+        function checkAdmin() {
+            if(prompt("باسورد زاك الخاص:") === "zack2026") {
                 document.getElementById('admin-panel').classList.remove('hidden');
+                refreshAdminTable();
             }
         }
 
-        function resetSub() { localStorage.clear(); location.reload(); }
-    </script>
-</body>
-</html>
+        function refreshAdminTable() {
+            const users = JSON.parse(localStorage.getItem('admin_all_users') || '[]');
+            const tbody = document.getElementById('userListBody');
+            tbody.innerHTML = '';
+
+            users.forEach(u => {
+                // حساب الأيام المتبقية
+                let status = "غير مشحن";
+                const userExpiry = localStorage.getItem('zack_expiry'); // في النسخة دي بنفحص اللي مسجل حالياً
+                
+                // ملاحظة: بما إننا شغالين LocalStorage، الأدمن هيشوف نفسه والمستخدمين اللي دخلوا من نفس المتصفح
+                if(userExpiry) {
+                    let diff = userExpiry - new Date().getTime();
+                    if(diff > 0) {
+                        status = Math.ceil(diff / (1000 * 60 * 60
+        
