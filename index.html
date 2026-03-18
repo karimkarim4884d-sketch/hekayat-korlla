@@ -3,90 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZACK LIVE | النسخة الصاروخية</title>
+    <title>ZACK LIVE | شبكة الأسطورة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; }
-        .ostora-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; cursor: pointer; transition: 0.2s; }
-        .ostora-card:hover { border-color: #eab308; transform: scale(1.05); }
-        .sticky-vid { position: sticky; top: 0; z-index: 100; background: #000; border-bottom: 2px solid #eab308; }
+        body { background: #020617; color: white; font-family: sans-serif; overflow-x: hidden; }
+        .ostora-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 1rem; transition: 0.3s; cursor: pointer; }
+        .ostora-card:hover { border-color: #eab308; transform: translateY(-3px); box-shadow: 0 0 15px #eab30844; }
+        .video-fixed { position: sticky; top: 0; z-index: 50; background: #000; border-bottom: 3px solid #eab308; }
         .hidden { display: none !important; }
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="max-w-md mx-auto pb-10">
+<body class="max-w-2xl mx-auto pb-20">
 
-    <div id="login" class="pt-20 px-10 text-center">
-        <h1 class="text-3xl font-bold text-yellow-500 mb-10 italic">ZACK LIVE</h1>
-        <input type="password" id="pass" placeholder="كلمة السر (7777)" class="w-full p-4 bg-[#0f172a] rounded-xl mb-4 text-center outline-none border border-slate-800">
-        <button onclick="login()" class="w-full bg-yellow-500 text-black p-4 rounded-xl font-bold">دخول الآن</button>
+    <div id="loginSection" class="pt-24 px-8 text-center">
+        <h1 class="text-4xl font-black text-yellow-500 mb-2 italic">ZACK LIVE</h1>
+        <p class="text-gray-500 text-[10px] uppercase mb-10 tracking-[0.3em]">Premium Streaming</p>
+        <div class="flex flex-col gap-4 max-w-xs mx-auto">
+            <input type="text" id="uName" placeholder="اسم المستخدم" class="bg-[#0f172a] p-4 rounded-2xl text-center outline-none border border-slate-800 focus:border-yellow-500">
+            <input type="password" id="uPass" placeholder="السر (للمدير)" class="bg-[#0f172a] p-4 rounded-2xl text-center outline-none border border-slate-800 focus:border-yellow-500 text-xs">
+            <button onclick="doLogin()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black text-sm uppercase shadow-xl active:scale-95">دخول الشبكة</button>
+        </div>
     </div>
 
-    <div id="app" class="hidden">
-        <div class="sticky-vid">
+    <div id="mainApp" class="hidden">
+        <div class="video-fixed">
             <video id="video" controls autoplay playsinline class="w-full aspect-video"></video>
-            <div id="title" class="p-2 text-[10px] text-yellow-500 font-bold bg-[#0f172a]">اختر قناة للمشاهدة</div>
+            <div class="p-3 bg-[#0f172a] flex justify-between items-center">
+                <span id="pTitle" class="text-[11px] font-bold text-yellow-500">اختر قناة لبدء البث..</span>
+                <button onclick="logout()" class="text-red-500 text-xs"><i class="fas fa-power-off"></i></button>
+            </div>
         </div>
 
         <div class="p-4">
-            <button onclick="forceFetch()" class="w-full bg-red-600 p-3 rounded-lg text-[10px] font-bold mb-5 shadow-lg">تحديث السيرفرات يدوياً ⚡</button>
+            <div id="adminPanel" class="hidden mb-6">
+                <button onclick="fetchAllSources()" class="w-full bg-red-600 p-4 rounded-2xl text-xs font-black uppercase shadow-lg hover:bg-red-700 transition">
+                    <i class="fas fa-bolt ml-2"></i> تحديث القنوات من كل السيرفرات ⚡
+                </button>
+            </div>
 
-            <div id="grid" class="grid grid-cols-3 gap-2">
+            <div class="relative mb-6">
+                <input type="text" id="searchInput" onkeyup="search()" placeholder="بحث سريع..." class="w-full p-4 bg-[#0f172a] border border-slate-800 rounded-2xl text-xs outline-none focus:border-yellow-500 pr-10">
+                <i class="fas fa-search absolute left-4 top-4 text-gray-600"></i>
+            </div>
+
+            <h2 class="text-[10px] font-black text-gray-500 mb-4 uppercase tracking-widest border-r-4 border-red-600 pr-2">شبكة القنوات المباشرة</h2>
+            <div id="channelsGrid" class="grid grid-cols-3 gap-3">
                 </div>
         </div>
     </div>
 
     <script>
-        // قنوات جاهزة عشان لو السحب فشل
-        const backupChannels = [
-            {name: "beIN Sports 1", url: "https://test-streams.mux.dev/x36xhzz/url_6/14500/14500.m3u8"},
-            {name: "beIN Sports 2", url: "https://test-streams.mux.dev/x36xhzz/url_8/15000/15000.m3u8"},
-            {name: "قناة تجريبية 1", url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8"}
-        ];
+        let db = JSON.parse(localStorage.getItem('zack_ultra_db') || '[]');
 
-        let channels = JSON.parse(localStorage.getItem('zack_final')) || backupChannels;
-
-        function login() {
-            if(document.getElementById('pass').value === "7777") {
-                localStorage.setItem('auth', 'true');
-                location.reload();
-            } else { alert("السر غلط يا كريم!"); }
+        function doLogin() {
+            const n = document.getElementById('uName').value;
+            const p = document.getElementById('uPass').value;
+            if(!n) return alert("اكتب اسمك الأول");
+            localStorage.setItem('z_u', n);
+            localStorage.setItem('z_r', p === "7777" ? "admin" : "user");
+            location.reload();
         }
 
         window.onload = function() {
-            if(localStorage.getItem('auth')) {
-                document.getElementById('login').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
+            if(localStorage.getItem('z_u')) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                if(localStorage.getItem('z_r') === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
                 render();
             }
         }
 
+        async function fetchAllSources() {
+            const status = document.getElementById('pTitle');
+            status.innerText = "جاري السحب من 3 سيرفرات.. 📡⏳";
+            
+            const sources = [
+                'https://share.google/jm1ifPVaCW0x0QGjT', // رابطك الأساسي
+                'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u',
+                'https://raw.githubusercontent.com/mohammadreza-erteshali/iptv/main/iptv.m3u'
+            ];
+
+            let allChannels = [];
+            const proxy = 'https://api.allorigins.win/raw?url=';
+
+            for (let src of sources) {
+                try {
+                    const res = await fetch(proxy + encodeURIComponent(src));
+                    const text = await res.text();
+                    const lines = text.split('\n');
+                    for(let i=0; i<lines.length; i++) {
+                        if(lines[i].includes('#EXTINF')) {
+                            let name = lines[i].split(',')[1] || 'قناة بث';
+                            let url = lines[i+1]?.trim();
+                            if(url && url.startsWith('http')) allChannels.push({name: name.trim(), url: url});
+                        }
+                    }
+                } catch(e) { console.log("سيرفر لم يستجب: " + src); }
+            }
+
+            if(allChannels.length > 0) {
+                db = [...new Map(allChannels.map(item => [item['name'], item])).values()];
+                localStorage.setItem('zack_ultra_db', JSON.stringify(db));
+                render();
+                status.innerText = "تم بنجاح! سحبنا " + db.length + " قناة ✅";
+                alert("مبروك يا كريم! الموقع الآن يحتوي على " + db.length + " قناة.");
+            } else {
+                status.innerText = "خطأ: تأكد من الإنترنت!";
+            }
+        }
+
         function render() {
-            const g = document.getElementById('grid');
-            g.innerHTML = channels.map(ch => `
-                <div onclick="play('${ch.url}', '${ch.name}')" class="ostora-card p-3 text-center">
-                    <i class="fas fa-play text-red-600 text-xs mb-1"></i>
-                    <div class="text-[9px] font-bold truncate">${ch.name}</div>
+            const grid = document.getElementById('channelsGrid');
+            grid.innerHTML = db.map(ch => `
+                <div onclick="play('${ch.url}', '${ch.name}')" class="ostora-card p-4 text-center">
+                    <i class="fas fa-play-circle text-red-600 text-xl mb-2"></i>
+                    <span class="text-[9px] font-bold block truncate">${ch.name}</span>
                 </div>
             `).join('');
         }
 
         function play(url, name) {
-            document.getElementById('title').innerText = "بث مباشر: " + name;
-            const v = document.getElementById('video');
+            document.getElementById('pTitle').innerText = "بث مباشر: " + name;
+            const video = document.getElementById('video');
             if (Hls.isSupported()) {
-                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(v);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => v.play());
-            } else { v.src = url; v.play(); }
-            window.scrollTo({top: 0, behavior: 'smooth'});
+                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url; video.play();
+            }
+            window.scrollTo({top:0, behavior:'smooth'});
         }
 
-        async function forceFetch() {
-            alert("جاري محاولة كسر الحماية وسحب القنوات من الرابط...");
-            // هنا الكود بتاع السحب اللي جربناه قبل كدة
-            // لو فشل تانى، القنوات الـ backup هتفضل موجودة وشغالة
+        function search() {
+            let t = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.ostora-card').forEach(c => {
+                c.style.display = c.innerText.toLowerCase().includes(t) ? "block" : "none";
+            });
         }
+
+        function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
