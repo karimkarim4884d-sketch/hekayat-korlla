@@ -3,121 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | Fix Login</title>
+    <title>Zack Cinema | Premium Points System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
         .hidden { display: none !important; }
-        .admin-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: #0b0f1a; border-right: 2px solid #ef4444; z-index: 1000; transform: translateX(-100%); transition: 0.4s; }
+        .admin-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 300px; background: #0b0f1a; border-right: 2px solid #ef4444; z-index: 1000; transform: translateX(-100%); transition: 0.4s; }
         .admin-open { transform: translateX(0); }
+        .blue-p { color: #3b82f6; } /* عملة زرقاء */
+        .red-p { color: #ef4444; }  /* عملة حمراء */
     </style>
 </head>
 <body class="min-h-screen p-4 flex flex-col items-center">
 
-    <div id="admin-sidebar" class="admin-sidebar p-6">
-        <h2 class="text-red-500 font-black text-center mb-6 border-b border-red-900 pb-2">ZACK CONTROL</h2>
-        <input type="text" id="target-id" placeholder="أيدي العميل" class="w-full p-3 rounded-xl bg-black border border-slate-800 text-center mb-4">
-        <button onclick="instantActivate()" class="w-full bg-blue-600 p-3 rounded-xl font-bold mb-4">تفعيل البث الآن ✅</button>
-        <div class="glass p-3 rounded-xl">
-            <p class="text-[10px] text-blue-400 mb-2">المسجلين:</p>
-            <ul id="live-users" class="text-[9px] text-gray-500"></ul>
+    <div id="admin-sidebar" class="admin-sidebar p-6 overflow-y-auto">
+        <h2 class="text-red-500 font-black text-center mb-6 border-b border-red-900 pb-2 italic">ZACK CONTROL</h2>
+        
+        <div class="space-y-2 mb-6">
+            <div class="bg-black/50 p-3 rounded-xl border border-blue-500/20">
+                <p class="text-[10px] text-gray-500">رصيد نقاط زرقاء (VIP):</p>
+                <p class="text-lg font-mono font-bold blue-p text-center">1,000,000 PT</p>
+            </div>
+            <div class="bg-black/50 p-3 rounded-xl border border-red-500/20">
+                <p class="text-[10px] text-gray-500">رصيد نقاط حمراء (Days):</p>
+                <p class="text-lg font-mono font-bold red-p text-center">1,000,000 PT</p>
+            </div>
         </div>
-        <button onclick="closeAdmin()" class="mt-10 text-[10px] underline block mx-auto">إغلاق</button>
+
+        <div class="space-y-4 glass p-4 rounded-2xl">
+            <input type="text" id="target-id" placeholder="أدخل أيدي العميل" class="w-full p-3 rounded-xl bg-black border border-slate-800 text-center font-bold">
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="sendPoints('blue')" class="bg-blue-600 p-2 rounded-lg text-[9px] font-bold">شحن زرقاء (VIP)</button>
+                <button onclick="sendPoints('red')" class="bg-red-600 p-2 rounded-lg text-[9px] font-bold">شحن حمراء (أيام)</button>
+            </div>
+            <input type="number" id="pts-amount" placeholder="الكمية" class="w-full p-2 rounded-lg bg-black text-center text-sm border border-slate-800">
+        </div>
+
+        <div class="mt-6 glass p-3 rounded-xl">
+            <p class="text-[10px] text-blue-400 font-bold mb-2">سجل الأيديهات (قديم > مميز):</p>
+            <ul id="user-history" class="text-[9px] text-gray-500 space-y-1"></ul>
+        </div>
+        <button onclick="closeAdmin()" class="mt-10 text-[10px] underline block mx-auto text-gray-600">إغلاق</button>
     </div>
 
     <button onclick="openAdmin()" class="fixed top-4 left-4 opacity-20 text-white z-[500]"><i class="fas fa-user-shield text-xl"></i></button>
 
     <div id="login-panel" class="w-full max-w-md glass rounded-[2.5rem] p-8 mt-10 border-t-4 border-blue-600 shadow-2xl">
-        <h2 class="text-xl font-bold text-center mb-6 italic">ZACK CINEMA</h2>
-        <input type="text" id="nameInput" placeholder="أدخل اسمك بالإنجليزي" class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 text-center mb-4 font-bold outline-none focus:border-blue-500">
-        <button id="loginBtn" onclick="login()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">دخول وتفعيل الحساب</button>
+        <h2 class="text-xl font-bold text-center mb-6 italic">ZACK CINEMA TV</h2>
+        <input type="text" id="nameInput" placeholder="أدخل اسمك بالإنجليزي" class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 text-center mb-4 font-bold outline-none">
+        <button onclick="login()" class="w-full bg-blue-600 p-4 rounded-2xl font-black shadow-lg">دخول وتفعيل</button>
     </div>
 
     <div id="dashboard" class="hidden w-full max-w-md">
         <div class="text-center mb-6 glass p-6 rounded-[2.5rem] border-b-4 border-blue-500 relative">
             <button onclick="logout()" class="absolute top-4 left-6 text-red-500 font-bold text-xs">خروج</button>
-            <h3 id="userNameDisplay" class="text-2xl font-black text-blue-400 uppercase"></h3>
-            <p id="autoID" class="text-xl font-mono font-bold text-white mt-2 tracking-widest"></p>
-            <div class="mt-4 bg-black/40 p-2 rounded-xl inline-block border border-yellow-500/20">
-                <p class="text-[10px] text-gray-500">نقاط: <span id="userPoints" class="text-yellow-500 font-bold">0</span></p>
+            <h3 id="userNameDisplay" class="text-2xl font-black text-blue-400"></h3>
+            <p id="autoID" class="text-xl font-mono font-bold text-white mt-2"></p>
+            
+            <div class="flex gap-2 justify-center mt-4">
+                <div class="bg-black/40 p-2 rounded-xl border border-blue-500/20">
+                    <p class="text-[9px] text-gray-500">زرقاء: <span id="bluePoints" class="blue-p font-bold">0</span></p>
+                </div>
+                <div class="bg-black/40 p-2 rounded-xl border border-red-500/20">
+                    <p class="text-[9px] text-gray-500">حمراء: <span id="redPoints" class="red-p font-bold">0</span></p>
+                </div>
             </div>
         </div>
 
-        <div id="recharge-section" class="glass p-6 rounded-[2.5rem] mb-6 border border-red-500/30">
-            <p class="text-center text-red-400 text-[10px] font-bold mb-4 animate-pulse">⚠️ الحساب يحتاج تفعيل للمشاهدة</p>
-            <button onclick="window.location.href='https://wa.me/201040077271'" class="w-full bg-blue-600 p-4 rounded-2xl font-black text-xs">شحن الآن (واتساب)</button>
+        <div id="vip-section" class="glass p-6 rounded-[2.5rem] mb-6 border border-blue-500/30">
+            <h3 class="blue-p font-black text-[10px] mb-4 text-center uppercase">ترقية لأيدي مميز (500 زرقاء = 30LE)</h3>
+            <input type="text" id="newVipID" maxlength="8" placeholder="اختر 8 أرقام مميزة" class="w-full p-3 rounded-xl bg-black border border-blue-900/50 text-center font-bold blue-p mb-4 outline-none">
+            <button onclick="buyVip()" class="w-full bg-blue-600 p-4 rounded-2xl font-black text-xs uppercase shadow-lg shadow-blue-600/20">تفعيل الأيدي المميز الآن</button>
         </div>
 
-        <div id="live-stream-section" class="hidden glass p-4 rounded-[2.5rem] border-2 border-green-500">
-            <p class="text-green-500 text-[10px] font-bold mb-4">● مباشر الآن</p>
-            <iframe id="mainPlayer" src="" class="w-full h-[200px] rounded-xl border border-blue-500" allowfullscreen></iframe>
+        <div id="recharge-section" class="glass p-6 rounded-[2.5rem] mb-6 border border-red-500/30">
+            <p id="sub-status" class="text-center text-red-400 text-[9px] font-bold mb-4 animate-pulse">⚠️ البث مغلق.. اشحن تفعيل 15 يوم</p>
+            <button onclick="buy15Days()" class="w-full bg-red-600 p-4 rounded-2xl font-black text-xs uppercase shadow-lg shadow-red-600/20">تفعيل 15 يوم (300 حمراء = 15LE)</button>
+        </div>
+
+        <div id="live-section" class="hidden glass p-4 rounded-[2.5rem] border-2 border-green-500">
+            <iframe id="videoPlayer" src="" class="w-full h-[200px] rounded-xl" allowfullscreen></iframe>
         </div>
     </div>
 
     <script>
-        // دالة الدخول (الإصلاح النهائي)
+        function openAdmin() {
+            if (localStorage.getItem('z_adm') === "t" || prompt("كلمة السر:") === "zack2026") {
+                localStorage.setItem('z_adm', "t");
+                document.getElementById('admin-sidebar').classList.add('admin-open');
+                updateAdminHistory();
+            }
+        }
+
+        function sendPoints(color) {
+            const amount = document.getElementById('pts-amount').value;
+            if(!amount) return;
+            localStorage.setItem(color === 'blue' ? 'z_blue' : 'z_red', amount);
+            alert("تم شحن النقاط للعميل!");
+            location.reload();
+        }
+
         function login() {
             const name = document.getElementById('nameInput').value.trim();
-            if(name.length < 2) {
-                alert("اكتب اسمك الأول يا بطل!");
-                return;
-            }
-
-            // توليد أيدي جديد وحفظه
+            if(name.length < 2) return;
             const id = Math.floor(10000000 + Math.random() * 90000000);
-            
-            // تخزين البيانات
             localStorage.setItem('z_name', name);
             localStorage.setItem('z_id', id);
-            
-            // إضافة العميل لقائمة الأدمن
-            let users = JSON.parse(localStorage.getItem('z_all_users') || '[]');
-            users.push({name: name, id: id});
-            localStorage.setItem('z_all_users', JSON.stringify(users));
-
-            // أهم خطوة: تحديث الصفحة بالكامل لإجبار المتصفح على إظهار الداشبورد
-            window.location.reload();
+            localStorage.setItem('z_old_id', id); // حفظ الأيدي القديم للأبد
+            location.reload();
         }
 
         window.onload = function() {
             const name = localStorage.getItem('z_name');
             const id = localStorage.getItem('z_id');
-            const active = localStorage.getItem('z_active_status') === 'true';
+            const blue = localStorage.getItem('z_blue') || 0;
+            const red = localStorage.getItem('z_red') || 0;
+            const active = localStorage.getItem('z_active') === 'true';
 
             if(name && id) {
-                // إخفاء لوحة الدخول وإظهار الداشبورد
                 document.getElementById('login-panel').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
                 document.getElementById('userNameDisplay').innerText = name;
                 document.getElementById('autoID').innerText = "#" + id;
+                document.getElementById('bluePoints').innerText = blue;
+                document.getElementById('redPoints').innerText = red;
 
                 if(active) {
                     document.getElementById('recharge-section').classList.add('hidden');
-                    document.getElementById('live-stream-section').classList.remove('hidden');
-                    document.getElementById('mainPlayer').src = "https://www.youtube.com/embed/live_stream?channel=UC4p9m8_4S99S5M2_9G6G5Q";
+                    document.getElementById('live-section').classList.remove('hidden');
+                    document.getElementById('videoPlayer').src = "https://www.youtube.com/embed/live_stream?channel=UC4p9m8_4S99S5M2_9G6G5Q";
                 }
             }
         };
 
-        // وظائف الأدمن
-        function openAdmin() {
-            if (localStorage.getItem('zack_admin_logged') === "true" || prompt("كلمة السر:") === "zack2026") {
-                localStorage.setItem('zack_admin_logged', "true");
-                document.getElementById('admin-sidebar').classList.add('admin-open');
-                const users = JSON.parse(localStorage.getItem('z_all_users') || '[]');
-                document.getElementById('live-users').innerHTML = users.map(u => `<li>${u.name} (#${u.id})</li>`).join('');
-            }
-        }
-        function instantActivate() {
-            localStorage.setItem('z_active_status', 'true');
-            alert("تم التفعيل! العميل هيفتح عنده البث لما يعمل ريفريش.");
+        function buyVip() {
+            let blue = parseInt(localStorage.getItem('z_blue') || 0);
+            const newID = document.getElementById('newVipID').value;
+            if(blue < 500) return alert("محتاج 500 نقطة زرقاء!");
+            if(newID.length < 8) return alert("الأيدي المميز 8 أرقام!");
+
+            localStorage.setItem('z_blue', blue - 500);
+            localStorage.setItem('z_id', newID); // تغيير الأيدي للجديد
+            localStorage.setItem('z_vip_status', 'true');
+            
+            // تسجيل التغيير للأدمن
+            let hist = JSON.parse(localStorage.getItem('z_hist') || '[]');
+            hist.push({old: localStorage.getItem('z_old_id'), new: newID});
+            localStorage.setItem('z_hist', JSON.stringify(hist));
+
+            alert("مبروك الأيدي المميز الجديد! ✅");
             location.reload();
         }
+
+        function buy15Days() {
+            let red = parseInt(localStorage.getItem('z_red') || 0);
+            if(red < 300) return alert("محتاج 300 نقطة حمراء!");
+            localStorage.setItem('z_red', red - 300);
+            localStorage.setItem('z_active', 'true');
+            alert("تم تفعيل البث لمدة 15 يوم! ✅");
+            location.reload();
+        }
+
+        function updateAdminHistory() {
+            const hist = JSON.parse(localStorage.getItem('z_hist') || '[]');
+            document.getElementById('user-history').innerHTML = hist.map(h => `<li>${h.old} ➔ ${h.new}</li>`).join('');
+        }
+
         function closeAdmin() { document.getElementById('admin-sidebar').classList.remove('admin-open'); }
         function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
-                </html>
+    </html>
     
