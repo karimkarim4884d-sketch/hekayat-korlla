@@ -3,141 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KARIM LIVE & CINEMA</title>
+    <title>ZACK LIVE | شبكة الأسطورة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #050505; color: #fff; font-family: sans-serif; }
-        .ostora-card { background: #121212; border: 1px solid #1f1f1f; transition: 0.3s; cursor: pointer; position: relative; overflow: hidden; }
+        body { background: #020617; color: white; font-family: sans-serif; }
+        .ostora-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 1rem; transition: 0.3s; cursor: pointer; }
         .ostora-card:hover { border-color: #eab308; transform: scale(1.05); }
-        .movie-poster { width: 100%; aspect-ratio: 2/3; background: #1a1a1a; border-radius: 12px; object-fit: cover; }
-        .video-container { border-bottom: 3px solid #eab308; box-shadow: 0 10px 40px rgba(0,0,0,1); }
+        .video-player { border-bottom: 4px solid #eab308; box-shadow: 0 10px 50px rgba(0,0,0,0.9); }
         .hidden { display: none !important; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="max-w-4xl mx-auto pb-32">
+<body class="max-w-2xl mx-auto pb-20">
 
-    <div id="loginSection" class="pt-24 px-8 text-center">
-        <h1 class="text-4xl font-black text-yellow-500 mb-2 italic">ZACK LIVE</h1>
-        <p class="text-gray-500 text-[10px] uppercase mb-10 tracking-[0.3em]">Premium Streaming Platform</p>
+    <div id="loginSection" class="pt-24 px-6 text-center">
+        <h1 class="text-4xl font-black text-yellow-500 italic mb-10">ZACK LIVE</h1>
         <div class="flex flex-col gap-4 max-w-xs mx-auto">
-            <input type="text" id="uName" placeholder="اسمك" class="bg-[#121212] p-4 rounded-2xl text-center outline-none border border-gray-800 focus:border-yellow-500">
-            <input type="password" id="uPass" placeholder="السر (للمدير)" class="bg-[#121212] p-4 rounded-2xl text-center outline-none border border-gray-800 focus:border-yellow-500 text-xs">
-            <button onclick="doLogin()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black text-sm uppercase">دخول المنصة</button>
+            <input type="text" id="uName" placeholder="اسمك" class="bg-[#0f172a] p-4 rounded-2xl text-center border border-slate-800 outline-none">
+            <input type="password" id="uPass" placeholder="السر (للمدير)" class="bg-[#0f172a] p-4 rounded-2xl text-center border border-slate-800 outline-none">
+            <button onclick="doLogin()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black uppercase shadow-xl">دخول الشبكة</button>
         </div>
     </div>
 
     <div id="mainApp" class="hidden">
-        <div class="video-container sticky top-0 z-50 bg-black">
+        <div class="video-player sticky top-0 z-50 bg-black">
             <video id="video" controls autoplay playsinline class="w-full aspect-video"></video>
-            <div class="p-3 flex justify-between items-center bg-[#121212]">
-                <span id="playingTitle" class="text-[11px] font-bold text-yellow-500">اختر قناة أو فيلم للبدء</span>
-                <button onclick="logout()" class="text-[10px] text-gray-500 uppercase"><i class="fas fa-sign-out-alt"></i></button>
+            <div class="p-3 bg-[#0f172a] flex justify-between items-center">
+                <span id="pTitle" class="text-xs font-bold text-yellow-500">اختر قناة للمشاهدة..</span>
+                <button onclick="logout()" class="text-[10px] text-gray-500"><i class="fas fa-power-off"></i></button>
             </div>
         </div>
 
         <div class="p-4">
-            <h2 class="text-[11px] font-black text-gray-400 mb-4 uppercase tracking-widest border-r-4 border-red-600 pr-2">البث المباشر (الأسطورة)</h2>
-            <div id="channelGrid" class="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-10">
-                </div>
-
-            <h2 class="text-[11px] font-black text-gray-400 mb-4 uppercase tracking-widest border-r-4 border-yellow-500 pr-2">مكتبة الأفلام (Zack Cinema)</h2>
-            <div id="movieGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                </div>
-        </div>
-
-        <div id="adminPanel" class="hidden m-6 p-6 bg-[#121212] rounded-3xl border-2 border-yellow-500/20">
-            <h3 class="text-center text-xs font-bold mb-6 text-yellow-500 uppercase">إضافة محتوى جديد</h3>
-            <div class="flex flex-col gap-3">
-                <select id="itemType" class="bg-black p-3 rounded-xl text-xs outline-none border border-gray-800 text-yellow-500 font-bold">
-                    <option value="channel">قناة بث مباشر</option>
-                    <option value="movie">فيلم سينمائي</option>
-                </select>
-                <input type="text" id="itemName" placeholder="اسم القناة أو الفيلم" class="bg-black p-3 rounded-xl text-xs border border-gray-800">
-                <input type="text" id="itemUrl" placeholder="رابط الـ m3u8 أو mp4" class="bg-black p-3 rounded-xl text-xs border border-gray-800">
-                <input type="text" id="itemImg" placeholder="رابط صورة البوستر (للأفلام)" class="bg-black p-3 rounded-xl text-xs border border-gray-800">
-                <button onclick="addItem()" class="bg-green-600 p-4 rounded-xl font-bold text-xs uppercase mt-2">إضافة للموقع الآن ✅</button>
-                <button onclick="clearAll()" class="text-[9px] text-gray-600 mt-4">مسح كل المحتوى</button>
+            <div id="adminControls" class="hidden mb-6">
+                <button onclick="fetchFromLink()" class="w-full bg-red-600 p-3 rounded-xl text-xs font-bold mb-4 uppercase">سحب القنوات من الرابط الجديد ⚡</button>
             </div>
+
+            <h2 class="text-[10px] font-black text-gray-500 mb-4 uppercase tracking-[0.3em]">قنوات البث المباشر</h2>
+            <div id="channelsGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                </div>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('zack_platform_db') || '{"channels":[], "movies":[]}');
+        let db = JSON.parse(localStorage.getItem('zack_live_db') || '[]');
+        const m3uLink = 'https://share.google/jm1ifPVaCW0x0QGjT'; // الرابط بتاعك
 
         function doLogin() {
             const n = document.getElementById('uName').value;
             const p = document.getElementById('uPass').value;
             if(!n) return alert("اكتب اسمك");
-            localStorage.setItem('user', n);
-            localStorage.setItem('role', p === "7777" ? "admin" : "user");
+            localStorage.setItem('u', n);
+            localStorage.setItem('r', p === "7777" ? "admin" : "user");
             location.reload();
         }
 
         window.onload = function() {
-            if(localStorage.getItem('user')) {
+            if(localStorage.getItem('u')) {
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
-                if(localStorage.getItem('role') === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
-                renderContent();
+                if(localStorage.getItem('r') === 'admin') document.getElementById('adminControls').classList.remove('hidden');
+                render();
             }
         }
 
-        function addItem() {
-            const type = document.getElementById('itemType').value;
-            const name = document.getElementById('itemName').value;
-            const url = document.getElementById('itemUrl').value;
-            const img = document.getElementById('itemImg').value || 'https://i.ibb.co/vzYpYfP/1000008040.jpg';
-
-            if(name && url) {
-                if(type === 'channel') db.channels.push({name, url});
-                else db.movies.push({name, url, img});
+        async function fetchFromLink() {
+            try {
+                // ملاحظة: الرابط ده بيحتاج وسيط (Proxy) لو السيرفر مانع السحب المباشر
+                const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(m3uLink));
+                const json = await res.json();
+                const content = json.contents;
                 
-                localStorage.setItem('zack_platform_db', JSON.stringify(db));
-                renderContent();
-                alert("تمت الإضافة بنجاح!");
-            }
+                const lines = content.split('\n');
+                let newCh = [];
+                for(let i=0; i<lines.length; i++) {
+                    if(lines[i].includes('#EXTINF')) {
+                        let name = lines[i].split(',')[1] || 'قناة غير معروفة';
+                        let url = lines[i+1]?.trim();
+                        if(url && url.startsWith('http')) newCh.push({name, url});
+                    }
+                }
+                db = newCh;
+                localStorage.setItem('zack_live_db', JSON.stringify(db));
+                render();
+                alert("تم تحديث " + db.length + " قناة بنجاح!");
+            } catch(e) { alert("حدث خطأ في السحب!"); }
         }
 
-        function renderContent() {
-            // رندر القنوات
-            const cGrid = document.getElementById('channelGrid');
-            cGrid.innerHTML = db.channels.map(ch => `
-                <div onclick="play('${ch.url}', '${ch.name}')" class="ostora-card p-3 rounded-2xl text-center">
-                    <i class="fas fa-tv text-red-600 text-lg mb-2"></i>
+        function render() {
+            const g = document.getElementById('channelsGrid');
+            g.innerHTML = db.map(ch => `
+                <div onclick="play('${ch.url}', '${ch.name}')" class="ostora-card p-4 text-center">
+                    <i class="fas fa-play-circle text-red-600 text-lg mb-2"></i>
                     <span class="text-[9px] font-bold block truncate">${ch.name}</span>
                 </div>
             `).join('');
-
-            // رندر الأفلام
-            const mGrid = document.getElementById('movieGrid');
-            mGrid.innerHTML = db.movies.map(m => `
-                <div onclick="play('${m.url}', '${m.name}')" class="ostora-card rounded-2xl">
-                    <img src="${m.img}" class="movie-poster">
-                    <div class="absolute bottom-0 left-0 right-0 p-2 bg-black/80 backdrop-blur-sm">
-                        <span class="text-[9px] font-black block truncate text-center">${m.name}</span>
-                    </div>
-                </div>
-            `).join('');
         }
 
-        function play(url, title) {
-            document.getElementById('playingTitle').innerText = "مشاهدة الآن: " + title;
-            const video = document.getElementById('video');
+        function play(url, name) {
+            document.getElementById('pTitle').innerText = "بث مباشر: " + name;
+            const v = document.getElementById('video');
             if (Hls.isSupported()) {
-                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = url; video.play();
+                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(v);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => v.play());
+            } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+                v.src = url; v.play();
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({top:0, behavior:'smooth'});
         }
 
-        function clearAll() { localStorage.removeItem('zack_platform_db'); location.reload(); }
         function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
-    </html>
-    
+</html>
