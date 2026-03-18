@@ -9,10 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background: #020617; color: white; font-family: sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
-        .ostora-card { background: #0f172a; border: 1px solid #1e293b; transition: 0.3s; cursor: pointer; border-radius: 1rem; }
-        .ostora-card:hover { border-color: #eab308; transform: translateY(-3px); }
-        .video-container { border-bottom: 3px solid #eab308; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .ostora-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 1rem; transition: 0.3s; cursor: pointer; }
+        .ostora-card:hover { border-color: #eab308; transform: translateY(-3px); box-shadow: 0 0 15px #eab30844; }
+        .video-fixed { position: sticky; top: 0; z-index: 50; background: #000; border-bottom: 3px solid #eab308; }
         .hidden { display: none !important; }
         ::-webkit-scrollbar { display: none; }
     </style>
@@ -25,12 +24,12 @@
         <div class="flex flex-col gap-4 max-w-xs mx-auto">
             <input type="text" id="uName" placeholder="اسم المستخدم" class="bg-[#0f172a] p-4 rounded-2xl text-center outline-none border border-slate-800 focus:border-yellow-500">
             <input type="password" id="uPass" placeholder="السر (للمدير)" class="bg-[#0f172a] p-4 rounded-2xl text-center outline-none border border-slate-800 focus:border-yellow-500 text-xs">
-            <button onclick="doLogin()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black text-sm uppercase shadow-xl">دخول المنصة</button>
+            <button onclick="doLogin()" class="bg-yellow-500 text-black p-4 rounded-2xl font-black text-sm uppercase shadow-xl active:scale-95">دخول الشبكة</button>
         </div>
     </div>
 
     <div id="mainApp" class="hidden">
-        <div class="video-container sticky top-0 z-50 bg-black">
+        <div class="video-fixed">
             <video id="video" controls autoplay playsinline class="w-full aspect-video"></video>
             <div class="p-3 bg-[#0f172a] flex justify-between items-center">
                 <span id="pTitle" class="text-[11px] font-bold text-yellow-500">اختر قناة لبدء البث..</span>
@@ -39,66 +38,81 @@
         </div>
 
         <div class="p-4">
-            <div id="adminPanel" class="hidden mb-8">
-                <button onclick="fetchFromLink()" class="w-full bg-red-600 p-4 rounded-2xl text-xs font-black uppercase shadow-lg mb-4">
-                    <i class="fas fa-bolt ml-2"></i> سحب القنوات من الرابط الجديد
+            <div id="adminPanel" class="hidden mb-6">
+                <button onclick="fetchAllSources()" class="w-full bg-red-600 p-4 rounded-2xl text-xs font-black uppercase shadow-lg hover:bg-red-700 transition">
+                    <i class="fas fa-bolt ml-2"></i> تحديث القنوات من كل السيرفرات ⚡
                 </button>
             </div>
 
             <div class="relative mb-6">
-                <input type="text" id="searchInput" onkeyup="search()" placeholder="ابحث عن قناة أو فيلم..." class="w-full p-4 bg-[#0f172a] border border-slate-800 rounded-2xl text-xs outline-none focus:border-yellow-500">
+                <input type="text" id="searchInput" onkeyup="search()" placeholder="بحث سريع..." class="w-full p-4 bg-[#0f172a] border border-slate-800 rounded-2xl text-xs outline-none focus:border-yellow-500 pr-10">
+                <i class="fas fa-search absolute left-4 top-4 text-gray-600"></i>
             </div>
 
-            <h2 class="text-[10px] font-black text-gray-500 mb-4 uppercase tracking-widest border-r-4 border-red-600 pr-2">قنوات البث المباشر</h2>
-            <div id="channelsGrid" class="grid grid-cols-3 gap-3 mb-10">
+            <h2 class="text-[10px] font-black text-gray-500 mb-4 uppercase tracking-widest border-r-4 border-red-600 pr-2">شبكة القنوات المباشرة</h2>
+            <div id="channelsGrid" class="grid grid-cols-3 gap-3">
                 </div>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('zack_db_v3') || '[]');
-        const m3uSource = 'https://share.google/jm1ifPVaCW0x0QGjT';
+        let db = JSON.parse(localStorage.getItem('zack_ultra_db') || '[]');
 
         function doLogin() {
             const n = document.getElementById('uName').value;
             const p = document.getElementById('uPass').value;
-            if(!n) return alert("اكتب اسمك");
-            localStorage.setItem('z_user', n);
-            localStorage.setItem('z_role', p === "7777" ? "admin" : "user");
+            if(!n) return alert("اكتب اسمك الأول");
+            localStorage.setItem('z_u', n);
+            localStorage.setItem('z_r', p === "7777" ? "admin" : "user");
             location.reload();
         }
 
         window.onload = function() {
-            if(localStorage.getItem('z_user')) {
+            if(localStorage.getItem('z_u')) {
                 document.getElementById('loginSection').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
-                if(localStorage.getItem('z_role') === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
+                if(localStorage.getItem('z_r') === 'admin') document.getElementById('adminPanel').classList.remove('hidden');
                 render();
             }
         }
 
-        async function fetchFromLink() {
+        async function fetchAllSources() {
             const status = document.getElementById('pTitle');
-            status.innerText = "جاري سحب البيانات.. ⏳";
-            try {
-                const proxy = 'https://api.allorigins.win/raw?url=';
-                const res = await fetch(proxy + encodeURIComponent(m3uSource));
-                const text = await res.text();
-                const lines = text.split('\n');
-                let newCh = [];
-                for(let i=0; i<lines.length; i++) {
-                    if(lines[i].includes('#EXTINF')) {
-                        let name = lines[i].split(',')[1] || 'قناة رياضية';
-                        let url = lines[i+1]?.trim();
-                        if(url && url.startsWith('http')) newCh.push({name: name.trim(), url: url});
+            status.innerText = "جاري السحب من 3 سيرفرات.. 📡⏳";
+            
+            const sources = [
+                'https://share.google/jm1ifPVaCW0x0QGjT', // رابطك الأساسي
+                'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u',
+                'https://raw.githubusercontent.com/mohammadreza-erteshali/iptv/main/iptv.m3u'
+            ];
+
+            let allChannels = [];
+            const proxy = 'https://api.allorigins.win/raw?url=';
+
+            for (let src of sources) {
+                try {
+                    const res = await fetch(proxy + encodeURIComponent(src));
+                    const text = await res.text();
+                    const lines = text.split('\n');
+                    for(let i=0; i<lines.length; i++) {
+                        if(lines[i].includes('#EXTINF')) {
+                            let name = lines[i].split(',')[1] || 'قناة بث';
+                            let url = lines[i+1]?.trim();
+                            if(url && url.startsWith('http')) allChannels.push({name: name.trim(), url: url});
+                        }
                     }
-                }
-                db = newCh;
-                localStorage.setItem('zack_db_v3', JSON.stringify(db));
+                } catch(e) { console.log("سيرفر لم يستجب: " + src); }
+            }
+
+            if(allChannels.length > 0) {
+                db = [...new Map(allChannels.map(item => [item['name'], item])).values()];
+                localStorage.setItem('zack_ultra_db', JSON.stringify(db));
                 render();
-                status.innerText = "تم تحديث " + db.length + " قناة ✅";
-                alert("تم السحب بنجاح!");
-            } catch(e) { status.innerText = "خطأ في الاتصال!"; }
+                status.innerText = "تم بنجاح! سحبنا " + db.length + " قناة ✅";
+                alert("مبروك يا كريم! الموقع الآن يحتوي على " + db.length + " قناة.");
+            } else {
+                status.innerText = "خطأ: تأكد من الإنترنت!";
+            }
         }
 
         function render() {
@@ -112,7 +126,7 @@
         }
 
         function play(url, name) {
-            document.getElementById('pTitle').innerText = "مشاهدة: " + name;
+            document.getElementById('pTitle').innerText = "بث مباشر: " + name;
             const video = document.getElementById('video');
             if (Hls.isSupported()) {
                 const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
@@ -124,14 +138,14 @@
         }
 
         function search() {
-            let term = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.ostora-card').forEach(card => {
-                card.style.display = card.innerText.toLowerCase().includes(term) ? "block" : "none";
+            let t = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.ostora-card').forEach(c => {
+                c.style.display = c.innerText.toLowerCase().includes(t) ? "block" : "none";
             });
         }
 
         function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
-                                                                                            </html>
-                                                                                            
+    </html>
+    
