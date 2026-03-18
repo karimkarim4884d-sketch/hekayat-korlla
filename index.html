@@ -3,119 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | نظام الشحن الذكي</title>
+    <title>Zack Cinema | لوحة الأدمن</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; }
         .glass-card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); }
-        .vip-btn { background: linear-gradient(90deg, #facc15, #eab308); color: black; transition: 0.3s; }
-        .vip-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
     </style>
 </head>
 <body class="min-h-screen p-4 flex flex-col items-center">
 
-    <div class="w-full max-w-md flex justify-between items-center mb-8">
+    <div class="w-full max-w-md flex justify-between items-center mb-6 px-2">
         <h1 class="text-2xl font-black text-blue-500 italic uppercase">ZACK CINEMA</h1>
-        <button onclick="showAdmin()" class="opacity-10 hover:opacity-100"><i class="fas fa-user-shield"></i></button>
+        <button onclick="showAdmin()" class="opacity-10 hover:opacity-100 p-2"><i class="fas fa-user-shield"></i></button>
     </div>
 
     <div id="login-panel" class="w-full max-w-md glass-card rounded-[2.5rem] p-8 shadow-2xl border-t-4 border-blue-600">
-        <div class="text-center mb-8">
-            <div class="bg-blue-600/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-user-plus text-2xl text-blue-500"></i>
-            </div>
-            <h2 class="text-xl font-bold">تسجيل مستخدم جديد</h2>
-            <p class="text-gray-400 text-xs mt-2 italic">اكتب اسمك بالإنجليزي للحصول على الأيدي (ID)</p>
-        </div>
-
-        <div class="space-y-6">
-            <input type="text" id="nameInput" placeholder="Enter your name (English)" 
-            class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 focus:border-blue-500 outline-none text-center font-bold text-white transition-all">
-            
-            <button onclick="startApp()" class="w-full bg-blue-600 p-4 rounded-2xl font-bold text-lg shadow-lg shadow-blue-600/30 active:scale-95 transition">
-                دخول واستخراج الأيدي
-            </button>
-        </div>
+        <h2 class="text-xl font-bold text-center mb-6">سجل اسمك بالإنجليزي</h2>
+        <input type="text" id="nameInput" placeholder="Enter Name" class="w-full p-4 rounded-2xl bg-black/40 border border-slate-700 text-center font-bold mb-4 outline-none">
+        <button onclick="startApp()" class="w-full bg-blue-600 p-4 rounded-2xl font-bold">دخول</button>
     </div>
 
     <div id="dashboard" class="hidden w-full max-w-md glass-card rounded-[2.5rem] p-8 shadow-2xl border-t-4 border-green-500">
-        <div class="text-center mb-6">
-            <p class="text-gray-400 text-xs">مرحباً بك يا بطل</p>
+        <div class="text-center mb-4">
             <h3 id="userNameDisplay" class="text-xl font-bold text-blue-400 uppercase"></h3>
         </div>
-
         <div class="bg-black/60 p-6 rounded-3xl border border-blue-500/20 text-center mb-6">
-            <span class="text-[10px] uppercase tracking-widest text-gray-500">الأيدي الرقمي (8 أرقام)</span>
-            <p id="autoID" class="text-3xl font-mono font-black mt-1 text-white tracking-widest">#--------</p>
-            <div class="mt-4 pt-4 border-t border-white/5">
-                <button onclick="requestVip()" class="vip-btn w-full p-3 rounded-xl font-bold text-sm">
-                    طلب أيدي مميز (VIP) - 30 جنيه
-                </button>
-            </div>
+            <p id="autoID" class="text-3xl font-mono font-black text-white tracking-widest">#--------</p>
+            <button onclick="requestVip()" class="w-full mt-4 bg-yellow-500 text-black p-3 rounded-xl font-bold text-sm">طلب أيدي مميز - 30 جنيه</button>
         </div>
-
-        <div class="space-y-3 bg-blue-600/5 p-4 rounded-2xl border border-blue-500/10">
-            <label class="text-xs text-blue-400 font-bold">اختر كمية الشحن:</label>
-            <select id="amount" class="w-full p-4 rounded-xl bg-slate-900 border border-slate-700 outline-none font-bold">
+        <div class="space-y-3">
+            <select id="amount" class="w-full p-4 rounded-xl bg-slate-900 border border-slate-700 font-bold">
                 <option value="500">500 عملة - (20 جنيه)</option>
                 <option value="1500">1500 عملة - (50 جنيه)</option>
-                <option value="5000">5000 عملة - (150 جنيه)</option>
             </select>
-            <button onclick="sendOrder()" class="w-full bg-green-600 p-4 rounded-xl font-bold shadow-lg shadow-green-600/30">إرسال طلب الشحن</button>
+            <button onclick="sendOrder()" class="w-full bg-green-600 p-4 rounded-xl font-bold">إرسال طلب الشحن</button>
         </div>
     </div>
 
-    <div id="admin-panel" class="hidden w-full max-w-md glass-card rounded-[2.5rem] p-8 border-t-4 border-red-600 mt-4">
-        <h2 class="text-red-500 font-bold mb-4 text-center">لوحة تحكم زاك (الأدمن)</h2>
-        <p class="text-center text-xs mb-4 text-green-400 font-bold">الرصيد: 50,000 عملة</p>
-        <button onclick="hideAdmin()" class="w-full text-xs text-gray-500">إغلاق</button>
+    <div id="admin-panel" class="hidden w-full max-w-md glass-card rounded-[2.5rem] p-8 border-2 border-red-600 mt-6 shadow-[0_0_20px_rgba(220,38,38,0.2)]">
+        <h2 class="text-red-500 font-bold mb-4 text-center text-lg">لوحة تحكم زاك (الأدمن)</h2>
+        <div class="text-center mb-4">
+            <span class="text-xs text-gray-400">رصيدك الحالي:</span>
+            <p class="text-xl font-bold text-green-400"><span id="admin-balance">50000</span> عملة</p>
+        </div>
+        
+        <div class="space-y-3">
+            <input type="text" id="target-id" placeholder="أدخل أيدي المستخدم" class="w-full p-3 rounded-xl bg-black/50 border border-red-900/50 outline-none text-center text-sm">
+            <input type="number" id="charge-amount" placeholder="كمية العملات" class="w-full p-3 rounded-xl bg-black/50 border border-red-900/50 outline-none text-center text-sm">
+            <button onclick="adminCharge()" class="w-full bg-red-600 p-3 rounded-xl font-bold text-sm hover:bg-red-700 transition">تأكيد الشحن فوراً</button>
+            <button onclick="hideAdmin()" class="w-full mt-2 text-[10px] text-gray-500 uppercase tracking-widest">إغلاق اللوحة</button>
+        </div>
     </div>
 
     <script>
+        let adminBalance = 50000;
+
         function startApp() {
             const name = document.getElementById('nameInput').value;
-            if(name.length < 2) {
-                alert("Please enter a valid name in English!");
-                return;
-            }
-
-            // إخفاء لوحة الدخول وإظهار الداشبورد
+            if(name.length < 2) return;
             document.getElementById('login-panel').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('userNameDisplay').innerText = name;
-
-            // توليد أيدي من 8 أرقام بناءً على الاسم
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) {
-                hash = name.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            const finalID = Math.abs(hash % 90000000 + 10000000);
-            document.getElementById('autoID').innerText = finalID;
-        }
-
-        function requestVip() {
-            const vip = prompt("اكتب الـ 8 أرقام المميزة (مثلاً 55555555):");
-            if(vip && vip.length === 8) {
-                const msg = `ZACK CINEMA - طلب VIP ID\nالاسم: ${document.getElementById('userNameDisplay').innerText}\nالأيدي المطلوب: ${vip}\nالسعر: 30 جنيه`;
-                window.location.href = `https://wa.me/201040077271?text=${encodeURIComponent(msg)}`;
-            } else { alert("يجب إدخال 8 أرقام!"); }
-        }
-
-        function sendOrder() {
-            const name = document.getElementById('userNameDisplay').innerText;
-            const id = document.getElementById('autoID').innerText;
-            const amt = document.getElementById('amount').value;
-            const msg = `ZACK CINEMA - طلب شحن\nالاسم: ${name}\nالأيدي: ${id}\nالكمية: ${amt} عملة`;
-            window.location.href = `https://wa.me/201040077271?text=${encodeURIComponent(msg)}`;
+            let hash = 0; for (let i = 0; i < name.length; i++) { hash = name.charCodeAt(i) + ((hash << 5) - hash); }
+            document.getElementById('autoID').innerText = Math.abs(hash % 90000000 + 10000000);
         }
 
         function showAdmin() {
-            const pass = prompt("الباسورد يا زاك:");
+            const pass = prompt("كلمة سر الأدمن:");
             if(pass === "zack2026") document.getElementById('admin-panel').classList.remove('hidden');
         }
 
         function hideAdmin() { document.getElementById('admin-panel').classList.add('hidden'); }
+
+        function adminCharge() {
+            const id = document.getElementById('target-id').value;
+            const amt = parseInt(document.getElementById('charge-amount').value);
+            if(!id || isNaN(amt)) { alert("اكتب البيانات صح!"); return; }
+            if(amt > adminBalance) { alert("رصيدك لا يكفي!"); return; }
+            
+            adminBalance -= amt;
+            document.getElementById('admin-balance').innerText = adminBalance;
+            alert("✅ تم شحن " + amt + " عملة للأيدي " + id);
+            document.getElementById('target-id').value = "";
+            document.getElementById('charge-amount').value = "";
+        }
+
+        function requestVip() { 
+            const vip = prompt("الأيدي المميز:"); 
+            if(vip) window.location.href=`https://wa.me/201040077271?text=VIP:${vip}-30LE`; 
+        }
+
+        function sendOrder() {
+            const id = document.getElementById('autoID').innerText;
+            const amt = document.getElementById('amount').value;
+            window.location.href=`https://wa.me/201040077271?text=ID:${id}-AMT:${amt}`;
+        }
     </script>
 </body>
-</html>
+                </html>
+                
