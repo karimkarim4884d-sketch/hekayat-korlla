@@ -1,65 +1,5 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZACK CINEMA - FUN TV STYLE</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --main: #ccff00; --bg: #050505; --card: #121212; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding-bottom: 50px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #000; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 20px; font-weight: bold; color: var(--main); }
-        
-        /* قائمة الـ 3 شروط تحت بعض */
-        .side-menu { position: fixed; top: 0; right: -250px; width: 220px; height: 100%; background: #000; border-left: 2px solid var(--main); transition: 0.4s; z-index: 2000; padding-top: 60px; }
-        .side-menu.active { right: 0; }
-        .menu-item { display: flex; align-items: center; padding: 15px; color: white; text-decoration: none; border-bottom: 1px solid #1a1a1a; }
-        .menu-item i { margin-left: 10px; color: var(--main); font-size: 20px; }
-
-        .banner { width: 95%; height: 160px; margin: 15px auto; border-radius: 15px; background: linear-gradient(45deg, #1a1a1a, #000); border: 1px solid #333; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-
-        .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
-        .movie-card { background: var(--card); border-radius: 8px; overflow: hidden; border: 1px solid #1a1a1a; position: relative; }
-        .movie-card img { width: 100%; height: 150px; object-fit: cover; }
-        .movie-title { padding: 5px; font-size: 11px; text-align: center; }
-
-        #admin { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; background: #111; padding: 20px; border: 2px solid var(--main); border-radius: 15px; z-index: 3000; }
-        .admin-input { width: 100%; padding: 10px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: white; border-radius: 5px; }
-    </style>
-</head>
-<body>
-
-    <div class="top-bar">
-        <div onclick="document.querySelector('.side-menu').classList.toggle('active')"><i class="fas fa-bars" style="color:var(--main); font-size:24px;"></i></div>
-        <div class="logo">ZACK <span style="color:white">CINEMA</span></div>
-        <div style="width:24px;"></div>
-    </div>
-
-    <div class="side-menu">
-        <a href="https://wa.me/201040077271" class="menu-item"><i class="fab fa-whatsapp"></i> خدمة العملاء</a>
-        <a href="mailto:karimkarim4884d@gmail.com" class="menu-item"><i class="fas fa-envelope"></i> الشكاوى</a>
-        <a href="javascript:void(0)" onclick="toggleAdmin()" class="menu-item"><i class="fas fa-plus-circle"></i> إضافة محتوى</a>
-    </div>
-
-    <div class="banner">
-        <img src="https://i.ibb.co/vxdv6px/cinema-poster.jpg">
-        <h2 style="position:absolute; color:var(--main);">أقوى سيرفرات الكورة</h2>
-    </div>
-
-    <div class="movie-grid" id="main-grid"></div>
-
-    <div id="admin">
-        <h3 style="text-align:center; color:var(--main);">لوحة التحكم</h3>
-        <input type="text" id="m-title" class="admin-input" placeholder="الاسم">
-        <input type="text" id="m-link" class="admin-input" placeholder="الرابط">
-        <input type="text" id="m-img" class="admin-input" placeholder="رابط البوستر">
-        <button onclick="addMovie()" style="width:100%; padding:12px; background:var(--main); border:none; font-weight:bold; border-radius:5px;">نشر الآن</button>
-        <button onclick="toggleAdmin()" style="width:100%; margin-top:10px; background:none; color:gray; border:none;">إغلاق</button>
-    </div>
-
     <script>
+        // الرابط بتاع قاعدة البيانات بتاعتك
         const api = "https://karim-884d-default-rtdb.firebaseio.com/movies.json";
 
         function toggleAdmin() {
@@ -67,37 +7,54 @@
             a.style.display = a.style.display === 'block' ? 'none' : 'block';
         }
 
+        // وظيفة الإضافة من الموقع نفسه
         async function addMovie() {
             const m = {
                 title: document.getElementById('m-title').value,
                 link: document.getElementById('m-link').value,
-                img: document.getElementById('m-img').value
+                img: document.getElementById('m-img').value || "https://via.placeholder.com/300"
             };
+            if(!m.title || !m.link) return alert("اكتب الاسم والرابط الأول!");
+            
             await fetch(api, { method: 'POST', body: JSON.stringify(m) });
             alert("تم النشر بنجاح!");
             toggleAdmin();
-            render();
+            location.reload(); // تحديث الصفحة عشان تشوف الجديد
         }
 
+        // وظيفة عرض الأفلام (المعدلة عشان تقرأ من البوت صح)
         async function render() {
             const g = document.getElementById('main-grid');
-            const res = await fetch(api);
-            const data = await res.json();
-            g.innerHTML = '';
-            if(data) {
-                Object.keys(data).reverse().forEach(id => {
-                    const i = data[id];
-                    g.innerHTML += `
-                        <div class="movie-card" onclick="window.location.href='${i.link}'">
-                            <img src="${i.img}">
-                            <div class="movie-title">${i.title}</div>
-                        </div>
-                    `;
-                });
+            try {
+                const res = await fetch(api);
+                const data = await res.json();
+                g.innerHTML = '';
+                
+                if(data) {
+                    // ترتيب من الأحدث للأقدم
+                    const keys = Object.keys(data).reverse();
+                    keys.forEach(id => {
+                        const i = data[id];
+                        // تأكد إن البيانات موجودة عشان مظهرش undefined
+                        const title = i.title || "بدون عنوان";
+                        const link = i.link || "#";
+                        const img = i.img || "https://via.placeholder.com/300";
+
+                        g.innerHTML += `
+                            <div class="movie-card" onclick="window.location.href='${link}'">
+                                <img src="${img}" onerror="this.src='https://via.placeholder.com/300'">
+                                <div class="movie-title">${title}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    g.innerHTML = '<p style="text-align:center; grid-column: 1/4;">لا يوجد محتوى حالياً.. ابعت من البوت!</p>';
+                }
+            } catch (error) {
+                console.error("خطأ في جلب البيانات:", error);
             }
         }
+        
         window.onload = render;
     </script>
-</body>
-            </html>
-            
+    
