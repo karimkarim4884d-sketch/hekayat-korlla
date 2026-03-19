@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KARIM KHALED - ZACK CINEMA</title>
@@ -9,62 +8,104 @@
     <style>
         :root { --main: #ffcc00; --bg: #0b0d17; --card: #161b22; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding-bottom: 50px; }
+
+        /* 1. الساعة (القائمة الجانبية) - الـ 3 شروط تحت بعض */
+        .side-menu {
+            position: fixed;
+            top: 20px;
+            right: -200px; /* مخفية في البداية */
+            width: 180px;
+            background: rgba(26, 26, 26, 0.95);
+            border: 2px solid var(--main);
+            border-radius: 15px 0 0 15px;
+            transition: 0.4s;
+            z-index: 2000;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.8);
+        }
+        .side-menu.active { right: 0; } /* تظهر لما نضغط على الزرار */
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            text-decoration: none;
+            color: white;
+            border-bottom: 1px solid #333;
+            font-size: 13px;
+        }
+        .menu-item i { color: var(--main); margin-left: 10px; font-size: 18px; }
         
-        /* 1. الثلاثة أقسام العلوية (شروطك) */
-        .top-nav { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #1a1a1a; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 1000; }
-        .nav-item { padding: 12px; text-decoration: none; color: white; font-size: 11px; text-align: center; border-left: 1px solid #333; }
-        .nav-item i { color: var(--main); display: block; margin-bottom: 4px; font-size: 18px; }
+        /* زرار التحكم في "الساعة" */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--main);
+            color: black;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 2001;
+            box-shadow: 0 0 15px var(--main);
+        }
 
         /* اللوجو والاسم */
-        .header { text-align: center; padding: 25px 10px; }
-        .logo { width: 70px; height: 70px; border: 3px solid var(--main); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; background: #222; color: var(--main); box-shadow: 0 0 15px var(--main); }
+        .header { text-align: center; padding: 40px 10px 20px; }
+        .logo { width: 80px; height: 80px; border: 3px solid var(--main); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; background: #222; color: var(--main); }
 
-        /* الأقسام */
-        .cats { display: flex; overflow-x: auto; padding: 10px; gap: 8px; scrollbar-width: none; }
-        .cat-btn { background: var(--card); border: 1px solid #333; color: white; padding: 10px 15px; border-radius: 20px; white-space: nowrap; cursor: pointer; }
+        /* الأقسام وتحت الأفلام */
+        .cats { display: flex; overflow-x: auto; padding: 15px; gap: 10px; scrollbar-width: none; }
+        .cat-btn { background: var(--card); border: 1px solid #333; color: white; padding: 10px 20px; border-radius: 25px; white-space: nowrap; }
         .cat-btn.active { background: var(--main); color: black; font-weight: bold; }
 
-        /* شبكة العرض */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 15px; }
-        .item { background: var(--card); border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #222; }
-        .item img { width: 100%; height: 200px; object-fit: cover; }
-        .q-tag { position: absolute; top: 8px; left: 8px; background: var(--main); color: black; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .y-tag { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); font-size: 10px; padding: 2px 6px; border-radius: 4px; }
-        .title { padding: 8px; font-size: 13px; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 15px; padding: 15px; }
+        .item { background: var(--card); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid #222; }
+        .item img { width: 100%; height: 210px; object-fit: cover; }
+        .title { padding: 10px; font-size: 13px; text-align: center; }
 
-        /* لوحة التحكم */
-        #admin { display: none; background: #1a1a1a; padding: 20px; border: 2px solid var(--main); margin: 15px; border-radius: 15px; }
-        .admin-input { width: 100%; padding: 10px; margin-bottom: 10px; background: #252525; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
+        /* لوحة التحكم (بتفتح من الساعة) */
+        #admin-panel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; background: #1a1a1a; padding: 20px; border: 2px solid var(--main); border-radius: 15px; z-index: 3000; box-shadow: 0 0 50px black; }
+        .admin-input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
+        .close-admin { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: left; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <a href="https://wa.me/201040077271" class="nav-item"><i class="fab fa-whatsapp"></i> خدمة العملاء</a>
-        <a href="mailto:karimkarim4884d@gmail.com" class="nav-item"><i class="fas fa-envelope"></i> الشكاوى</a>
-        <a href="javascript:void(0)" onclick="toggleAdmin()" class="nav-item"><i class="fas fa-plus"></i> إضافة محتوى</a>
+    <div class="menu-toggle" onclick="document.querySelector('.side-menu').classList.toggle('active')">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="side-menu">
+        <div style="padding: 20px; text-align: center; color: var(--main); font-weight: bold; border-bottom: 1px solid #444;">القائمة</div>
+        <a href="https://wa.me/201040077271" class="menu-item"><i class="fab fa-whatsapp"></i> خدمة العملاء</a>
+        <a href="mailto:karimkarim4884d@gmail.com" class="menu-item"><i class="fas fa-envelope"></i> الشكاوى</a>
+        <a href="javascript:void(0)" onclick="toggleAdmin()" class="menu-item"><i class="fas fa-plus-circle"></i> إضافة محتوى</a>
     </div>
 
     <div class="header">
         <div class="logo">KR</div>
-        <h2 style="color:var(--main); margin-top:10px;">KARIM KHALED</h2>
-        <p style="color:gray; font-size:11px; margin-top:-10px;">ZACK CINEMA ENGINE</p>
+        <h2 style="color:var(--main); margin-top:15px;">KARIM KHALED</h2>
+        <p style="color: #666; font-size: 12px; margin-top: -10px;">ZACK CINEMA ENGINE</p>
     </div>
 
-    <div id="admin">
-        <h3 style="text-align:center; color:var(--main);">لوحة التحكم السريعة</h3>
-        <input type="text" id="m-title" class="admin-input" placeholder="اسم الفيلم">
-        <input type="text" id="m-img" class="admin-input" placeholder="رابط الصورة المباشر">
-        <input type="text" id="m-link" class="admin-input" placeholder="رابط الفيلم أو البث">
+    <div id="admin-panel">
+        <button class="close-admin" onclick="toggleAdmin()">X</button>
+        <h3 style="text-align: center; color: var(--main);">إضافة سيرفر</h3>
+        <input type="text" id="m-title" class="admin-input" placeholder="اسم المحتوى">
+        <input type="text" id="m-img" class="admin-input" placeholder="رابط البوستر">
+        <input type="text" id="m-link" class="admin-input" placeholder="رابط البث أو الفيلم">
         <select id="m-cat" class="admin-input">
             <option value="بث مباشر">📡 بث مباشر</option>
-            <option value="أفلام مصرية">🎥 أفلام مصرية</option>
-            <option value="أفلام أكشن">🔥 أكشن</option>
+            <option value="أفلام مصرية">🇪🇬 أفلام مصرية</option>
             <option value="قرآن كريم">📖 قرآن</option>
             <option value="كرتون">🧸 كرتون</option>
-            <option value="أغاني">🎵 أغاني</option>
         </select>
-        <button onclick="addMovie()" style="width:100%; padding:12px; background:var(--main); border:none; font-weight:bold; border-radius:5px; cursor:pointer;">✅ حفظ بالسيرفر الآن</button>
+        <button onclick="addMovie()" style="width:100%; padding:15px; background:var(--main); border:none; font-weight:bold; border-radius:8px;">نشر الآن</button>
     </div>
 
     <div class="cats">
@@ -72,20 +113,17 @@
         <button class="cat-btn" onclick="render('بث مباشر', this)">بث مباشر</button>
         <button class="cat-btn" onclick="render('أفلام مصرية', this)">أفلام</button>
         <button class="cat-btn" onclick="render('قرآن كريم', this)">قرآن</button>
-        <button class="cat-btn" onclick="render('كرتون', this)">كرتون</button>
-        <button class="cat-btn" onclick="render('أغاني', this)">أغاني</button>
     </div>
 
     <div class="grid" id="main-grid"></div>
 
     <script>
-        // رابط الفايربيز المباشر الخاص بك
         const api = "https://karim-884d-default-rtdb.firebaseio.com/movies.json";
 
         function toggleAdmin() {
-            const a = document.getElementById('admin');
-            a.style.display = a.style.display === 'block' ? 'none' : 'block';
-            a.scrollIntoView({behavior: "smooth"});
+            const p = document.getElementById('admin-panel');
+            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+            document.querySelector('.side-menu').classList.remove('active');
         }
 
         async function addMovie() {
@@ -94,49 +132,31 @@
                 img: document.getElementById('m-img').value,
                 link: document.getElementById('m-link').value,
                 cat: document.getElementById('m-cat').value,
-                year: "2026",
-                quality: "4K"
+                year: "2026", quality: "4K"
             };
-            if(!m.title || !m.img) return alert("املا البيانات!");
-            
             await fetch(api, { method: 'POST', body: JSON.stringify(m) });
-            alert("تم النشر بنجاح!");
+            alert("تم النشر!");
             toggleAdmin();
             render();
         }
 
-        async function render(filter = 'الكل', btn = null) {
-            if(btn) {
-                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+        async function render(f = 'الكل', btn = null) {
+            if(btn) { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+            const g = document.getElementById('main-grid');
+            g.innerHTML = 'جاري التحميل...';
+            const res = await fetch(api);
+            const data = await res.json();
+            g.innerHTML = '';
+            if(data) {
+                Object.keys(data).reverse().forEach(id => {
+                    const i = data[id];
+                    if(f === 'الكل' || i.cat === f) {
+                        g.innerHTML += `<div class="item"><img src="${i.img}" onclick="window.location.href='${i.link}'"><div class="title">${i.title}</div></div>`;
+                    }
+                });
             }
-            const grid = document.getElementById('main-grid');
-            grid.innerHTML = '<p style="text-align:center; width:100%;">تحميل البيانات من السيرفر...</p>';
-            
-            try {
-                const res = await fetch(api);
-                const data = await res.json();
-                grid.innerHTML = '';
-
-                if(data) {
-                    Object.keys(data).reverse().forEach(id => {
-                        const item = data[id];
-                        if(filter === 'الكل' || item.cat === filter) {
-                            grid.innerHTML += `
-                                <div class="item">
-                                    <span class="q-tag">${item.quality}</span>
-                                    <span class="y-tag">${item.year}</span>
-                                    <img src="${item.img}" onclick="window.location.href='${item.link}'" onerror="this.src='https://via.placeholder.com/150x200?text=Error'">
-                                    <div class="title">${item.title}</div>
-                                </div>
-                            `;
-                        }
-                    });
-                } else { grid.innerHTML = '<p style="text-align:center; width:100%;">السيرفر فارغ</p>'; }
-            } catch(e) { grid.innerHTML = '<p style="text-align:center; width:100%;">خطأ في السيرفر</p>'; }
         }
         window.onload = () => render();
     </script>
 </body>
-    </html>
-    
+</html>
