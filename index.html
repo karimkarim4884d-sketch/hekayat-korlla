@@ -22,43 +22,55 @@ header {
   align-items: center;
 }
 
+/* MENU */
 .menu-btn {
   font-size: 25px;
   cursor: pointer;
 }
 
-/* MENU */
 .menu {
   display: none;
   background: #111;
-  text-align: center;
 }
 
 .menu div {
   padding: 15px;
   border-bottom: 1px solid #333;
+}
+
+/* MAIN */
+.main-btn {
+  margin: 10px;
+  padding: 15px;
+  background: #111;
+  border-bottom: 1px solid #333;
+  font-size: 18px;
   cursor: pointer;
 }
 
-.menu div:hover {
-  background: #222;
+.main-btn:hover {
+  background: #1a1a1a;
 }
 
-/* LOGO */
-.logo {
-  display: none;
-  text-align: center;
-  margin: 20px;
-}
-
-.logo img {
-  width: 150px;
-}
-
-/* CONTENT */
+/* PAGES */
 .page {
   display: none;
   padding: 15px;
+}
+
+/* SERVER BUTTONS */
+.server-btn {
+  padding: 10px;
+  margin: 5px;
+  background: #222;
+  border: none;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.server-btn:hover {
+  background: red;
 }
 </style>
 
@@ -71,75 +83,93 @@ header {
   <div>🔥 هجمة ولقطة 🔥</div>
 </header>
 
-<!-- MENU -->
+<!-- MENU (الدعم) -->
 <div class="menu" id="menu">
-  <div onclick="openPage('live')">📡 بث مباشر</div>
-  <div onclick="openPage('matches')">📊 نتائج الماتشات</div>
-  <div onclick="openPage('series')">📺 مسلسلات</div>
-  <div onclick="openPage('movies')">🎬 أفلام مصرية</div>
-  <div onclick="openPage('quran')">📖 القرآن الكريم</div>
+
+  <div>📱 واتساب:<br>
+  <a href="https://wa.me/201040077271" style="color:lightgreen;">
+  01040077271</a></div>
+
+  <div>📧 البريد:<br>
+  <a href="mailto:karimkarim4884d@gmail.com" style="color:skyblue;">
+  karimkarim4884d@gmail.com</a></div>
+
+  <div>⚽ موقع هجمة ولقطة - بث مباشر ومباريات</div>
+
 </div>
 
-<!-- LOGO -->
-<div class="logo" id="logo">
-  <img src="https://i.imgur.com/8Km9tLL.png">
-</div>
+<!-- الواجهة -->
+<div onclick="openPage('live')" class="main-btn">📡 بث مباشر</div>
+<div onclick="openPage('matches')" class="main-btn">📊 نتائج الماتشات</div>
+<div onclick="openPage('series')" class="main-btn">📺 مسلسلات</div>
+<div onclick="openPage('movies')" class="main-btn">🎬 أفلام مصرية</div>
+<div onclick="openPage('quran')" class="main-btn">📖 القرآن الكريم</div>
 
-<!-- CONTENT -->
+<!-- البث -->
 <div id="live" class="page">
-  📡 اختر السيرفر 👇<br><br>
 
-  <iframe width="100%" height="200"
-  src="https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_LjQHig"
-  allowfullscreen></iframe>
+📡 اختر السيرفر 👇<br><br>
 
-  <br><br>
+<button class="server-btn" onclick="changeServer(1)">Server 1</button>
+<button class="server-btn" onclick="changeServer(2)">Server 2</button>
+<button class="server-btn" onclick="changeServer(3)">Server 3</button>
 
-  <iframe width="100%" height="200"
-  src="https://player.vimeo.com/video/76979871"
-  allowfullscreen></iframe>
+<br><br>
+
+<iframe id="player" width="100%" height="220"
+src="https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_LjQHig"
+allowfullscreen></iframe>
+
 </div>
 
+<!-- باقي الصفحات -->
 <div id="matches" class="page">
-  📊 نتائج الماتشات قريبًا ⚽
+📊 نتائج الماتشات قريبًا ⚽
 </div>
 
 <div id="series" class="page">
-  📺 مسلسلات قريبًا
+📺 مسلسلات قريبًا
 </div>
 
 <div id="movies" class="page">
-  🎬 أفلام مصرية قريبًا
+🎬 أفلام مصرية قريبًا
 </div>
 
 <div id="quran" class="page">
-  📖 القرآن الكريم<br><br>
-  <audio controls>
-    <source src="https://download.quranicaudio.com/quran/mishary_rashid_alafasy/001.mp3" type="audio/mpeg">
-  </audio>
+📖 القرآن الكريم<br><br>
+<audio controls>
+<source src="https://download.quranicaudio.com/quran/mishary_rashid_alafasy/001.mp3">
+</audio>
 </div>
 
 <script>
 function toggleMenu() {
   let menu = document.getElementById("menu");
-  let logo = document.getElementById("logo");
-
-  if (menu.style.display === "block") {
-    menu.style.display = "none";
-    logo.style.display = "none";
-  } else {
-    menu.style.display = "block";
-    logo.style.display = "block";
-  }
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
 }
 
 function openPage(pageId) {
   let pages = document.querySelectorAll(".page");
   pages.forEach(p => p.style.display = "none");
-
   document.getElementById(pageId).style.display = "block";
+}
+
+function changeServer(num) {
+  let player = document.getElementById("player");
+
+  if(num == 1) {
+    player.src = "https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_LjQHig";
+  }
+
+  if(num == 2) {
+    player.src = "https://player.vimeo.com/video/76979871";
+  }
+
+  if(num == 3) {
+    player.src = "https://www.youtube.com/embed/dQw4w9WgXcQ";
+  }
 }
 </script>
 
 </body>
-</html>
+  </html>
