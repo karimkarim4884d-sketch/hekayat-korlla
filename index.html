@@ -1,60 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARIM KHALED TV</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; margin: 0; }
+        .header { background: #b31217; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
+        .menu-icon { font-size: 28px; color: #fff; }
+        .header h1 { margin: 0; font-size: 20px; text-transform: uppercase; flex-grow: 1; }
+        .logo-kr { background: #fff; color: #b31217; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
+        .video-container { width: 95%; max-width: 700px; margin: 20px auto; border: 3px solid #b31217; border-radius: 15px; overflow: hidden; }
+        video { width: 100%; aspect-ratio: 16/9; display: block; }
+        .support-btn { background: #fff; color: #b31217; text-decoration: none; display: flex; align-items: center; justify-content: space-between; width: 90%; max-width: 400px; margin: 10px auto; padding: 15px; border-radius: 10px; font-weight: bold; border-right: 8px solid #b31217; }
+        .icon { background: #b31217; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="menu-icon">☰</div>
+        <h1>KARIM KHALED</h1>
+        <div class="logo-kr">KR</div>
+    </div>
+    <div style="margin: 10px; color: #2ecc71;">🔴 LIVE NOW</div>
+    <div class="video-container"><video id="video" controls autoplay muted playsinline></video></div>
+    <h3 style="color: #b31217;">فريق الدعم الفني</h3>
+    <a href="https://wa.me/201040077271" class="support-btn"><span>واتساب الدعم</span><div class="icon">📞</div></a>
+    <a href="mailto:karimkarim4884d@gmail.com" class="support-btn"><span>شكاوي الإيميل</span><div class="icon">📩</div></a>
+    <a href="https://wa.me/201040077271" class="support-btn"><span>المطور كريم خالد</span><div class="icon">👤</div></a>
     <script>
-        // الرابط بتاع قاعدة البيانات بتاعتك
-        const api = "https://karim-884d-default-rtdb.firebaseio.com/movies.json";
-
-        function toggleAdmin() {
-            const a = document.getElementById('admin');
-            a.style.display = a.style.display === 'block' ? 'none' : 'block';
-        }
-
-        // وظيفة الإضافة من الموقع نفسه
-        async function addMovie() {
-            const m = {
-                title: document.getElementById('m-title').value,
-                link: document.getElementById('m-link').value,
-                img: document.getElementById('m-img').value || "https://via.placeholder.com/300"
-            };
-            if(!m.title || !m.link) return alert("اكتب الاسم والرابط الأول!");
-            
-            await fetch(api, { method: 'POST', body: JSON.stringify(m) });
-            alert("تم النشر بنجاح!");
-            toggleAdmin();
-            location.reload(); // تحديث الصفحة عشان تشوف الجديد
-        }
-
-        // وظيفة عرض الأفلام (المعدلة عشان تقرأ من البوت صح)
-        async function render() {
-            const g = document.getElementById('main-grid');
-            try {
-                const res = await fetch(api);
-                const data = await res.json();
-                g.innerHTML = '';
-                
-                if(data) {
-                    // ترتيب من الأحدث للأقدم
-                    const keys = Object.keys(data).reverse();
-                    keys.forEach(id => {
-                        const i = data[id];
-                        // تأكد إن البيانات موجودة عشان مظهرش undefined
-                        const title = i.title || "بدون عنوان";
-                        const link = i.link || "#";
-                        const img = i.img || "https://via.placeholder.com/300";
-
-                        g.innerHTML += `
-                            <div class="movie-card" onclick="window.location.href='${link}'">
-                                <img src="${img}" onerror="this.src='https://via.placeholder.com/300'">
-                                <div class="movie-title">${title}</div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    g.innerHTML = '<p style="text-align:center; grid-column: 1/4;">لا يوجد محتوى حالياً.. ابعت من البوت!</p>';
-                }
-            } catch (error) {
-                console.error("خطأ في جلب البيانات:", error);
-            }
-        }
-        
-        window.onload = render;
+        var video = document.getElementById('video');
+        var videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+        if (Hls.isSupported()) {
+            var hls = new Hls(); hls.loadSource(videoSrc); hls.attachMedia(video);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) { video.src = videoSrc; }
     </script>
-    
+</body>
+                                                                                       </html>
+                                                                                       
