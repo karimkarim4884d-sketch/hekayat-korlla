@@ -1,41 +1,115 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KARIM KHALED TV</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; margin: 0; }
-        .header { background: #b31217; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .menu-icon { font-size: 28px; color: #fff; }
-        .header h1 { margin: 0; font-size: 20px; text-transform: uppercase; flex-grow: 1; }
-        .logo-kr { background: #fff; color: #b31217; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
-        .video-container { width: 95%; max-width: 700px; margin: 20px auto; border: 3px solid #b31217; border-radius: 15px; overflow: hidden; }
-        video { width: 100%; aspect-ratio: 16/9; display: block; }
-        .support-btn { background: #fff; color: #b31217; text-decoration: none; display: flex; align-items: center; justify-content: space-between; width: 90%; max-width: 400px; margin: 10px auto; padding: 15px; border-radius: 10px; font-weight: bold; border-right: 8px solid #b31217; }
-        .icon { background: #b31217; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هجمة ولقطة</title>
+
+<style>
+body {
+  margin: 0;
+  background: #000;
+  color: white;
+  font-family: Arial;
+}
+
+/* HEADER */
+header {
+  background: #c40000;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-btn {
+  font-size: 25px;
+  cursor: pointer;
+}
+
+/* MENU */
+.menu {
+  display: none;
+  background: #111;
+  padding: 20px;
+  text-align: center;
+}
+
+.menu div {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}
+
+/* LOGO */
+.logo {
+  display: none;
+  text-align: center;
+  margin: 20px;
+}
+
+.logo img {
+  width: 150px;
+}
+
+/* CONTACT */
+.section {
+  margin: 20px;
+  padding: 15px;
+  background: #111;
+  border-radius: 15px;
+}
+</style>
+
 </head>
+
 <body>
-    <div class="header">
-        <div class="menu-icon">☰</div>
-        <h1>KARIM KHALED</h1>
-        <div class="logo-kr">KR</div>
-    </div>
-    <div style="margin: 10px; color: #2ecc71;">🔴 LIVE NOW</div>
-    <div class="video-container"><video id="video" controls autoplay muted playsinline></video></div>
-    <h3 style="color: #b31217;">فريق الدعم الفني</h3>
-    <a href="https://wa.me/201040077271" class="support-btn"><span>واتساب الدعم</span><div class="icon">📞</div></a>
-    <a href="mailto:karimkarim4884d@gmail.com" class="support-btn"><span>شكاوي الإيميل</span><div class="icon">📩</div></a>
-    <a href="https://wa.me/201040077271" class="support-btn"><span>المطور كريم خالد</span><div class="icon">👤</div></a>
-    <script>
-        var video = document.getElementById('video');
-        var videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
-        if (Hls.isSupported()) {
-            var hls = new Hls(); hls.loadSource(videoSrc); hls.attachMedia(video);
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) { video.src = videoSrc; }
-    </script>
+
+<header>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div>🔥 هجمة ولقطة 🔥</div>
+</header>
+
+<!-- MENU -->
+<div class="menu" id="menu">
+  <div>📄 الشروط 1</div>
+  <div>📄 الشروط 2</div>
+  <div>📄 الشروط 3</div>
+</div>
+
+<!-- LOGO -->
+<div class="logo" id="logo">
+  <img src="PUT-YOUR-IMAGE-LINK-HERE">
+</div>
+
+<!-- CONTACT -->
+<div class="section">
+📱 تواصل عبر واتساب:<br>
+<a href="https://wa.me/201040077271" style="color:lightgreen;">
+01040077271
+</a>
+</div>
+
+<div class="section">
+📧 تواصل عبر البريد الإلكتروني:<br>
+<a href="mailto:karimkarim4884d@gmail.com" style="color:skyblue;">
+karimkarim4884d@gmail.com
+</a>
+</div>
+
+<script>
+function toggleMenu() {
+  let menu = document.getElementById("menu");
+  let logo = document.getElementById("logo");
+
+  if (menu.style.display === "block") {
+    menu.style.display = "none";
+    logo.style.display = "none";
+  } else {
+    menu.style.display = "block";
+    logo.style.display = "block";
+  }
+}
+</script>
+
 </body>
-                                                                                       </html>
-                                                                                       
+</html>
