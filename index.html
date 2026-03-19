@@ -1,44 +1,54 @@
 import telebot
 import requests
+import json
 
-# التوكن بتاعك اللي بعتهولي
+# التوكن بتاعك
 API_TOKEN = '8720735734:AAGgVuHCAvzcDDOpwkmrvomQCYHqE-LMCyA'
 bot = telebot.TeleBot(API_TOKEN)
 
-# رابط الداتا بيز بتاعتك (الفايربيز)
-FIREBASE_URL = "https://karim-884d-default-rtdb.firebaseio.com/kora.json"
+# رابط الداتا بيز (تأكد إنه movies.json عشان يظهر في الموقع القديم)
+FIREBASE_URL = "https://karim-884d-default-rtdb.firebaseio.com/movies.json"
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
-    bot.reply_to(message, "أهلاً يا زاك! أنا جاهز لتحديث السيرفر.\n\nأرسل لي البيانات بالشكل ده:\nالاسم | الرابط | الصورة\n\nمثال:\nالأهلي وسيمبا | https://link.com | https://img.com")
+    help_text = (
+        "أهلاً يا زاك! أنا بوت السيرفر المباشر ⚽\n\n"
+        "عشان تضيف ماتش أو فيلم، ابعت البيانات كدة:\n"
+        "الاسم | الرابط | الصورة | القسم\n\n"
+        "مثال:\n"
+        "ريال مدريد | https://link.com | https://img.com | بث مباشر"
+    )
+    bot.reply_to(message, help_text)
 
-@bot.message_handler(func=lambda message: True)
-def auto_update(message):
+@bot.message_handler(func=lambda message: "|" in message.text)
+def handle_update(message):
     try:
-        # تقسيم الرسالة اللي هتبعتها للبوت
-        data = message.text.split('|')
-        if len(data) < 3:
-            bot.reply_to(message, "⚠️ يا زاك ابعتهم كدة: الاسم | الرابط | الصورة")
+        # تقسيم النص
+        parts = message.text.split('|')
+        if len(parts) < 3:
+            bot.reply_to(message, "⚠️ البيانات ناقصة! لازم: الاسم | الرابط | الصورة")
             return
 
-        movie_data = {
-            "title": data[0].strip(),
-            "link": data[1].strip(),
-            "img": data[2].strip(),
-            "quality": "FHD"
+        # تجهيز البيانات بنفس تنسيق موقعك
+        payload = {
+            "title": parts[0].strip(),
+            "link": parts[1].strip(),
+            "img": parts[2].strip(),
+            "cat": parts[3].strip() if len(parts) > 3 else "بث مباشر",
+            "quality": "FHD",
+            "year": "2026"
         }
 
-        # إرسال البيانات للفايربيز فوراً
-        response = requests.post(FIREBASE_URL, json=movie_data)
-
-        if response.status_code == 200:
-            bot.reply_to(message, "✅ تم التحديث بنجاح! روح افتح الموقع هتلاقي الماتش ظهر فوراً.")
+        # إرسال للفايربيز
+        res = requests.post(FIREBASE_URL, json=payload)
+        
+        if res.status_code == 200:
+            bot.reply_to(message, "✅ تم النشر بنجاح! افتح الموقع هتلاقي البيانات ظهرت.")
         else:
-            bot.reply_to(message, "❌ فيه مشكلة في الاتصال بالفايربيز.")
+            bot.reply_to(message, f"❌ فشل الاتصال بالسيرفر: {res.status_code}")
 
     except Exception as e:
-        bot.reply_to(message, f"⚠️ حصل خطأ: {e}")
+        bot.reply_to(message, f"⚠️ حصل غلط في الكود: {str(e)}")
 
-print("بوت زاك شغال ومرتبط بالسيرفر...")
-bot.polling()
-            
+print("البوت شغال دلوقتي يا زاك.. جرب ابعت له بيانات")
+bot.polling(none_stop=True
