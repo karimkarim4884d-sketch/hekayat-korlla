@@ -2,161 +2,121 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KARIM KHALED - ZACK CINEMA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZACK TOK - KARIM KHALED</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main: #ffcc00; --bg: #0b0d17; --card: #161b22; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding-bottom: 50px; }
+        :root { --main: #ffcc00; --bg: #000; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: sans-serif; }
 
-        /* 1. الساعة (القائمة الجانبية) - الـ 3 شروط تحت بعض */
-        .side-menu {
-            position: fixed;
-            top: 20px;
-            right: -200px; /* مخفية في البداية */
-            width: 180px;
-            background: rgba(26, 26, 26, 0.95);
-            border: 2px solid var(--main);
-            border-radius: 15px 0 0 15px;
-            transition: 0.4s;
-            z-index: 2000;
-            box-shadow: -5px 0 20px rgba(0,0,0,0.8);
-        }
-        .side-menu.active { right: 0; } /* تظهر لما نضغط على الزرار */
+        /* حاوية التيك توك - سحب عمودي */
+        .tiktok-container { width: 100%; height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        .tiktok-container::-webkit-scrollbar { display: none; }
 
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            text-decoration: none;
-            color: white;
-            border-bottom: 1px solid #333;
-            font-size: 13px;
-        }
-        .menu-item i { color: var(--main); margin-left: 10px; font-size: 18px; }
+        .video-card { width: 100%; height: 100vh; scroll-snap-align: start; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
         
-        /* زرار التحكم في "الساعة" */
-        .menu-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--main);
-            color: black;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 2001;
-            box-shadow: 0 0 15px var(--main);
-        }
+        video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* اللوجو والاسم */
-        .header { text-align: center; padding: 40px 10px 20px; }
-        .logo { width: 80px; height: 80px; border: 3px solid var(--main); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; background: #222; color: var(--main); }
+        /* الأزرار الجانبية (مثل تيك توك) */
+        .side-actions { position: absolute; bottom: 100px; right: 15px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 10; }
+        .action-btn { color: white; text-align: center; font-size: 12px; cursor: pointer; }
+        .action-btn i { font-size: 30px; margin-bottom: 5px; display: block; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .action-btn.fav i { color: var(--main); }
 
-        /* الأقسام وتحت الأفلام */
-        .cats { display: flex; overflow-x: auto; padding: 15px; gap: 10px; scrollbar-width: none; }
-        .cat-btn { background: var(--card); border: 1px solid #333; color: white; padding: 10px 20px; border-radius: 25px; white-space: nowrap; }
-        .cat-btn.active { background: var(--main); color: black; font-weight: bold; }
+        /* معلومات الفيديو أسفل الشاشة */
+        .video-info { position: absolute; bottom: 30px; left: 15px; right: 80px; color: white; z-index: 10; text-shadow: 1px 1px 5px rgba(0,0,0,0.8); }
+        .video-info h3 { margin: 0; font-size: 16px; color: var(--main); }
+        .video-info p { margin: 5px 0 0; font-size: 13px; opacity: 0.9; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 15px; padding: 15px; }
-        .item { background: var(--card); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid #222; }
-        .item img { width: 100%; height: 210px; object-fit: cover; }
-        .title { padding: 10px; font-size: 13px; text-align: center; }
+        /* الساعة (القائمة) وزرار الإضافة */
+        .menu-toggle { position: fixed; top: 20px; right: 20px; background: rgba(255, 204, 0, 0.8); color: black; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1001; }
+        .side-menu { position: fixed; top: 0; right: -250px; width: 200px; height: 100%; background: rgba(0,0,0,0.9); border-left: 2px solid var(--main); transition: 0.4s; z-index: 1000; padding-top: 80px; }
+        .side-menu.active { right: 0; }
+        .menu-item { display: block; padding: 20px; color: white; text-decoration: none; border-bottom: 1px dotted #333; }
 
-        /* لوحة التحكم (بتفتح من الساعة) */
-        #admin-panel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; background: #1a1a1a; padding: 20px; border: 2px solid var(--main); border-radius: 15px; z-index: 3000; box-shadow: 0 0 50px black; }
+        /* لوحة التحكم */
+        #admin { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; background: #1a1a1a; padding: 20px; border: 2px solid var(--main); border-radius: 15px; z-index: 2000; }
         .admin-input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
-        .close-admin { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; float: left; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="menu-toggle" onclick="document.querySelector('.side-menu').classList.toggle('active')">
-        <i class="fas fa-bars"></i>
-    </div>
+    <div class="menu-toggle" onclick="document.querySelector('.side-menu').classList.toggle('active')"><i class="fas fa-bars"></i></div>
 
     <div class="side-menu">
-        <div style="padding: 20px; text-align: center; color: var(--main); font-weight: bold; border-bottom: 1px solid #444;">القائمة</div>
         <a href="https://wa.me/201040077271" class="menu-item"><i class="fab fa-whatsapp"></i> خدمة العملاء</a>
         <a href="mailto:karimkarim4884d@gmail.com" class="menu-item"><i class="fas fa-envelope"></i> الشكاوى</a>
-        <a href="javascript:void(0)" onclick="toggleAdmin()" class="menu-item"><i class="fas fa-plus-circle"></i> إضافة محتوى</a>
+        <a href="javascript:void(0)" onclick="toggleAdmin()" class="menu-item"><i class="fas fa-plus"></i> إضافة فيديو</a>
     </div>
 
-    <div class="header">
-        <div class="logo">KR</div>
-        <h2 style="color:var(--main); margin-top:15px;">KARIM KHALED</h2>
-        <p style="color: #666; font-size: 12px; margin-top: -10px;">ZACK CINEMA ENGINE</p>
+    <div id="admin">
+        <h3 style="color:var(--main); text-align:center;">إضافة فيديو تيك توك</h3>
+        <input type="text" id="v-title" class="admin-input" placeholder="عنوان الفيديو">
+        <input type="text" id="v-link" class="admin-input" placeholder="رابط الفيديو (Direct MP4)">
+        <input type="text" id="v-desc" class="admin-input" placeholder="وصف قصير">
+        <button onclick="addVideo()" style="width:100%; padding:15px; background:var(--main); border:none; font-weight:bold; border-radius:8px;">نشر الآن</button>
+        <button onclick="toggleAdmin()" style="width:100%; margin-top:10px; background:red; color:white; border:none; padding:5px; border-radius:5px;">إغلاق</button>
     </div>
 
-    <div id="admin-panel">
-        <button class="close-admin" onclick="toggleAdmin()">X</button>
-        <h3 style="text-align: center; color: var(--main);">إضافة سيرفر</h3>
-        <input type="text" id="m-title" class="admin-input" placeholder="اسم المحتوى">
-        <input type="text" id="m-img" class="admin-input" placeholder="رابط البوستر">
-        <input type="text" id="m-link" class="admin-input" placeholder="رابط البث أو الفيلم">
-        <select id="m-cat" class="admin-input">
-            <option value="بث مباشر">📡 بث مباشر</option>
-            <option value="أفلام مصرية">🇪🇬 أفلام مصرية</option>
-            <option value="قرآن كريم">📖 قرآن</option>
-            <option value="كرتون">🧸 كرتون</option>
-        </select>
-        <button onclick="addMovie()" style="width:100%; padding:15px; background:var(--main); border:none; font-weight:bold; border-radius:8px;">نشر الآن</button>
-    </div>
-
-    <div class="cats">
-        <button class="cat-btn active" onclick="render('الكل', this)">الكل</button>
-        <button class="cat-btn" onclick="render('بث مباشر', this)">بث مباشر</button>
-        <button class="cat-btn" onclick="render('أفلام مصرية', this)">أفلام</button>
-        <button class="cat-btn" onclick="render('قرآن كريم', this)">قرآن</button>
-    </div>
-
-    <div class="grid" id="main-grid"></div>
+    <div class="tiktok-container" id="video-wrapper">
+        </div>
 
     <script>
-        const api = "https://karim-884d-default-rtdb.firebaseio.com/movies.json";
+        const dbURL = "https://karim-884d-default-rtdb.firebaseio.com/tiktok.json";
 
         function toggleAdmin() {
-            const p = document.getElementById('admin-panel');
-            p.style.display = p.style.display === 'block' ? 'none' : 'block';
-            document.querySelector('.side-menu').classList.remove('active');
+            const a = document.getElementById('admin');
+            a.style.display = a.style.display === 'block' ? 'none' : 'block';
         }
 
-        async function addMovie() {
-            const m = {
-                title: document.getElementById('m-title').value,
-                img: document.getElementById('m-img').value,
-                link: document.getElementById('m-link').value,
-                cat: document.getElementById('m-cat').value,
-                year: "2026", quality: "4K"
+        async function addVideo() {
+            const v = {
+                title: document.getElementById('v-title').value,
+                link: document.getElementById('v-link').value,
+                desc: document.getElementById('v-desc').value
             };
-            await fetch(api, { method: 'POST', body: JSON.stringify(m) });
+            if(!v.link) return alert("حط رابط الفيديو!");
+            await fetch(dbURL, { method: 'POST', body: JSON.stringify(v) });
             alert("تم النشر!");
-            toggleAdmin();
-            render();
+            location.reload();
         }
 
-        async function render(f = 'الكل', btn = null) {
-            if(btn) { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-            const g = document.getElementById('main-grid');
-            g.innerHTML = 'جاري التحميل...';
-            const res = await fetch(api);
+        async function loadVideos() {
+            const container = document.getElementById('video-wrapper');
+            const res = await fetch(dbURL);
             const data = await res.json();
-            g.innerHTML = '';
             if(data) {
                 Object.keys(data).reverse().forEach(id => {
-                    const i = data[id];
-                    if(f === 'الكل' || i.cat === f) {
-                        g.innerHTML += `<div class="item"><img src="${i.img}" onclick="window.location.href='${i.link}'"><div class="title">${i.title}</div></div>`;
-                    }
+                    const vid = data[id];
+                    container.innerHTML += `
+                        <div class="video-card">
+                            <video loop onclick="this.paused ? this.play() : this.pause()">
+                                <source src="${vid.link}" type="video/mp4">
+                            </video>
+                            <div class="side-actions">
+                                <div class="action-btn fav"><i class="fas fa-heart"></i><span>1.2M</span></div>
+                                <div class="action-btn"><i class="fas fa-comment"></i><span>450</span></div>
+                                <div class="action-btn" onclick="deleteVid('${id}')"><i class="fas fa-trash" style="color:red"></i></div>
+                            </div>
+                            <div class="video-info">
+                                <h3>@karim_khaled</h3>
+                                <p>${vid.title}</p>
+                                <marquee style="width:150px; font-size:12px; margin-top:10px;"><i class="fas fa-music"></i> ${vid.desc || 'Original Sound'}</marquee>
+                            </div>
+                        </div>
+                    `;
                 });
             }
         }
-        window.onload = () => render();
+
+        async function deleteVid(id) {
+            if(confirm("تمسح الفيديو؟")) {
+                await fetch(`https://karim-884d-default-rtdb.firebaseio.com/tiktok/${id}.json`, { method: 'DELETE' });
+                location.reload();
+            }
+        }
+
+        window.onload = loadVideos;
     </script>
 </body>
 </html>
