@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karim Khaled | KR Full Platform</title>
+    <title>Karim Khaled | KR Ultimate Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background: #020617; color: white; font-family: sans-serif; overflow-x: hidden; }
-        .sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; transition: 0.4s; z-index: 200; border-left: 2px solid #eab308; }
+        .sidebar { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #0f172a; transition: 0.4s; z-index: 200; border-left: 2px solid #eab308; box-shadow: -10px 0 30px rgba(0,0,0,0.8); }
         .sidebar.active { right: 0; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 150; }
         .ostora-card { background: #1e293b; border-radius: 12px; overflow: hidden; transition: 0.3s; cursor: pointer; border: 1px solid transparent; position: relative; }
-        .ostora-card:hover { border-color: #eab308; transform: scale(1.03); }
+        .ostora-card:hover { border-color: #eab308; transform: scale(1.03); box-shadow: 0 0 15px rgba(234, 179, 8, 0.3); }
         .video-fixed { position: sticky; top: 0; z-index: 100; background: #000; border-bottom: 3px solid #eab308; }
-        .nav-tab { background: #1e293b; color: #94a3b8; padding: 10px 15px; border-radius: 10px; font-size: 10px; white-space: nowrap; font-weight: bold; }
+        .nav-tab { background: #1e293b; color: #94a3b8; padding: 10px 15px; border-radius: 10px; font-size: 10px; white-space: nowrap; font-weight: bold; transition: 0.3s; }
         .nav-tab.active { background: #eab308; color: #000; }
-        .live-tag { position: absolute; top: 5px; left: 5px; background: red; color: white; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        .admin-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f172a; padding: 20px; border-radius: 20px; border: 2px solid #eab308; z-index: 300; display: none; width: 90%; max-width: 400px; }
+        .live-tag { position: absolute; top: 8px; left: 8px; background: #ef4444; color: white; font-size: 8px; padding: 2px 8px; border-radius: 4px; font-weight: bold; animation: blink 1s infinite; z-index: 10; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .admin-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e293b; padding: 25px; border-radius: 20px; border: 2px solid #eab308; z-index: 300; display: none; width: 90%; max-width: 400px; box-shadow: 0 0 50px rgba(0,0,0,0.9); }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -30,85 +30,93 @@
             <video id="video" controls autoplay playsinline class="w-full aspect-video bg-black"></video>
             <div class="p-3 bg-[#0f172a] flex justify-between items-center">
                 <button onclick="toggleSidebar()" class="text-yellow-500 text-2xl"><i class="fas fa-bars"></i></button>
-                <span id="pTitle" class="text-[10px] font-bold text-yellow-500 italic uppercase">Karim Khaled | KR Premier</span>
-                <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-8 h-8 rounded-full border-2 border-yellow-500">
+                <div class="text-center">
+                    <p class="text-[11px] font-black text-yellow-500 italic uppercase tracking-tighter">Karim Khaled</p>
+                    <p id="pTitle" class="text-[8px] text-gray-400">KR PREMIUM PLATFORM</p>
+                </div>
+                <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-9 h-9 rounded-full border-2 border-yellow-500 shadow-lg">
             </div>
         </div>
 
         <div class="p-4">
-            <div class="flex gap-2 overflow-x-auto mb-4 pb-2">
-                <button onclick="setTab('matches', this)" class="nav-tab active">ماتشات اليوم ⚽</button>
-                <button onclick="setTab('movies', this)" class="nav-tab">أفلام مصرية 🎬</button>
-                <button onclick="setTab('kids', this)" class="nav-tab">كرتون 🧸</button>
-                <button onclick="setTab('war', this)" class="nav-tab">أخبار وحروب ⚔️</button>
-                <button onclick="setTab('quran', this)" class="nav-tab">قرآن 🕌</button>
+            <div class="flex gap-2 overflow-x-auto mb-5 pb-2">
+                <button onclick="setTab('matches', this)" class="nav-tab active text-xs">ماتشات اليوم ⚽</button>
+                <button onclick="setTab('movies', this)" class="nav-tab text-xs">أفلام مصرية 🎬</button>
+                <button onclick="setTab('kids', this)" class="nav-tab text-xs">كرتون 🧸</button>
+                <button onclick="setTab('war', this)" class="nav-tab text-xs">أخبار وحروب ⚔️</button>
+                <button onclick="setTab('quran', this)" class="nav-tab text-xs">قرآن 🕌</button>
             </div>
 
-            <button onclick="fetchLiveMatches()" class="w-full mb-6 bg-red-600 p-3 rounded-xl text-[10px] font-black uppercase shadow-lg active:scale-95">
-                تحديث سيرفر المباريات المباشرة ⚡
+            <button onclick="fetchLiveMatches()" class="w-full mb-6 bg-gradient-to-r from-red-600 to-red-800 p-4 rounded-xl text-[10px] font-black uppercase shadow-xl active:scale-95 flex items-center justify-center gap-3">
+                <i class="fas fa-sync-alt"></i> تحديث سيرفر البث المباشر
             </button>
 
-            <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+            <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
         </div>
     </div>
 
     <div id="adminModal" class="admin-modal">
-        <h3 class="text-center font-bold mb-4 text-yellow-500 uppercase">KR ADMIN PANEL</h3>
-        <input type="text" id="mName" placeholder="الاسم" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
-        <input type="text" id="mUrl" placeholder="رابط m3u8 أو mp4" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
-        <input type="text" id="mImg" placeholder="رابط البوستر" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
-        <select id="mCat" class="w-full p-3 mb-4 bg-slate-800 rounded-lg text-xs outline-none">
-            <option value="matches">ماتشات</option>
-            <option value="movies">أفلام مصرية</option>
+        <h3 class="text-center font-black mb-5 text-yellow-500 text-lg uppercase">KR Admin Panel</h3>
+        <input type="text" id="mName" placeholder="اسم الفيلم أو القناة" class="w-full p-3 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-xs outline-none focus:border-yellow-500">
+        <input type="text" id="mUrl" placeholder="رابط البث (m3u8 / mp4)" class="w-full p-3 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-xs outline-none">
+        <input type="text" id="mImg" placeholder="رابط البوستر (صورة)" class="w-full p-3 mb-3 bg-slate-900 border border-slate-700 rounded-xl text-xs outline-none">
+        <select id="mCat" class="w-full p-3 mb-5 bg-slate-900 border border-slate-700 rounded-xl text-xs outline-none">
+            <option value="matches">بث مباشر/ماتشات</option>
+            <option value="movies" selected>أفلام مصرية</option>
             <option value="kids">كرتون</option>
         </select>
         <div class="flex gap-2">
-            <button onclick="addItem()" class="flex-1 bg-green-600 p-3 rounded-lg text-xs font-bold">إضافة</button>
-            <button onclick="closeAdmin()" class="flex-1 bg-red-600 p-3 rounded-lg text-xs font-bold">إلغاء</button>
+            <button onclick="addItem()" class="flex-1 bg-green-600 hover:bg-green-700 p-3 rounded-xl text-xs font-bold transition">حفظ الآن</button>
+            <button onclick="closeAdmin()" class="flex-1 bg-red-600 hover:bg-red-700 p-3 rounded-xl text-xs font-bold transition">إلغاء</button>
         </div>
     </div>
 
-    <div id="sidebar" class="sidebar p-6">
-        <div class="text-center mb-10">
-            <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-20 h-20 rounded-full border-4 border-yellow-500 mx-auto mb-2">
-            <p class="text-xs font-black text-yellow-500 uppercase">Karim Khaled</p>
+    <div id="sidebar" class="sidebar p-6 flex flex-col justify-between">
+        <div>
+            <div class="text-center mb-10 pt-4">
+                <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-20 h-20 rounded-full border-4 border-yellow-500 mx-auto mb-3 shadow-2xl">
+                <p class="text-sm font-black text-yellow-500 uppercase italic">Karim Khaled</p>
+                <p class="text-[9px] text-gray-500">Version 4.0 Pro</p>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <button onclick="openAdmin()" class="bg-yellow-500 text-black p-4 rounded-2xl text-sm font-bold flex items-center justify-between shadow-lg">
+                    <span>لوحة إضافة المحتوى</span> <i class="fas fa-plus-circle"></i>
+                </button>
+                
+                <div class="h-[1px] bg-slate-800 my-4"></div>
+                
+                <a href="https://wa.me/201040077271" class="bg-white/5 hover:bg-white/10 p-4 rounded-2xl text-sm flex items-center justify-between transition">
+                    <span>واتساب الدعم</span> <i class="fab fa-whatsapp text-green-500 text-xl"></i>
+                </a>
+                
+                <a href="mailto:karimkarim4884d@gmail.com" class="bg-white/5 hover:bg-white/10 p-4 rounded-2xl text-sm flex items-center justify-between transition">
+                    <span>البريد الإلكتروني</span> <i class="fas fa-envelope text-blue-500 text-xl"></i>
+                </a>
+                
+                <a href="https://karimkarim4884d-sketch.github.io/hekayat-korlla/" target="_blank" class="bg-white/5 hover:bg-white/10 p-4 rounded-2xl text-sm flex items-center justify-between transition">
+                    <span>الموقع الرسمي</span> <i class="fas fa-globe text-yellow-500 text-xl"></i>
+                </a>
+            </div>
         </div>
         
-        <div class="flex flex-col gap-3">
-            <button onclick="openAdmin()" class="bg-yellow-500 text-black p-4 rounded-xl text-sm font-bold flex items-center justify-between">
-                <span>إضافة محتوى جديد</span> <i class="fas fa-plus-circle"></i>
-            </button>
-            
-            <hr class="border-slate-800 my-2">
-            
-            <a href="https://wa.me/201040077271" class="bg-white/5 p-4 rounded-xl text-sm flex items-center justify-between">
-                <span>واتساب الدعم</span> <i class="fab fa-whatsapp text-green-500"></i>
-            </a>
-            
-            <a href="mailto:karimkarim4884d@gmail.com" class="bg-white/5 p-4 rounded-xl text-sm flex items-center justify-between">
-                <span>البريد الإلكتروني</span> <i class="fas fa-envelope text-blue-500"></i>
-            </a>
-            
-            <a href="https://karimkarim4884d-sketch.github.io/hekayat-korlla/" target="_blank" class="bg-white/5 p-4 rounded-xl text-sm flex items-center justify-between">
-                <span>رابط الموقع الرسمي</span> <i class="fas fa-globe text-yellow-500"></i>
-            </a>
-        </div>
-        
-        <button onclick="toggleSidebar()" class="w-full p-4 bg-red-600 rounded-xl text-xs font-bold mt-10">إغلاق القائمة</button>
+        <button onclick="toggleSidebar()" class="w-full p-4 bg-red-600/20 border border-red-600/50 text-red-500 rounded-2xl text-xs font-bold uppercase hover:bg-red-600 hover:text-white transition">إغلاق القائمة</button>
     </div>
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('kr_mega_db')) || [];
+        let fullDB = JSON.parse(localStorage.getItem('kr_mega_v4')) || [];
         let currentTab = 'matches';
+        const hlsPlayer = new Hls();
 
-        window.onload = () => { if(db.length === 0) fetchLiveMatches(); else render(); };
+        window.onload = () => { if(fullDB.length === 0) fetchLiveMatches(); else render(); };
 
         async function fetchLiveMatches() {
-            document.getElementById('pTitle').innerText = "CONNECTING SERVERS.. 📡";
+            document.getElementById('pTitle').innerText = "جاري تحديث السيرفرات العالمية.. 📡";
             const sources = ['https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u','https://raw.githubusercontent.com/mohammadreza-erteshali/iptv/main/iptv.m3u'];
-            let fetched = [];
+            let temp = [];
             const proxy = 'https://api.allorigins.win/raw?url=';
+            
             for (let s of sources) {
                 try {
                     const res = await fetch(proxy + encodeURIComponent(s));
@@ -116,24 +124,24 @@
                     const lines = text.split('\n');
                     for(let i=0; i<lines.length; i++) {
                         if(lines[i].includes('#EXTINF')) {
-                            let name = lines[i].split(',')[1]?.trim() || 'Live Channel';
+                            let name = lines[i].split(',')[1]?.trim() || 'Channel';
                             let url = lines[i+1]?.trim();
                             if(url && url.startsWith('http')) {
                                 let cat = 'movies';
                                 if(/sport|bein|ssc|kora|كورة/i.test(name)) cat = 'matches';
                                 if(/quran|قرآن/i.test(name)) cat = 'quran';
-                                if(/kids|cartoon/i.test(name)) cat = 'kids';
+                                if(/kids|cartoon|كرتون/i.test(name)) cat = 'kids';
                                 if(/war|news|أخبار/i.test(name)) cat = 'war';
-                                fetched.push({name, url, cat, isLive: cat === 'matches'});
+                                temp.push({name, url, cat, isLive: cat === 'matches'});
                             }
                         }
                     }
                 } catch(e) {}
             }
-            if(fetched.length > 0) {
-                db = fetched;
-                localStorage.setItem('kr_mega_db', JSON.stringify(db));
-                document.getElementById('pTitle').innerText = "KR SERVER UPDATED ✅";
+            if(temp.length > 0) {
+                fullDB = temp;
+                localStorage.setItem('kr_mega_v4', JSON.stringify(fullDB));
+                document.getElementById('pTitle').innerText = "تم تحديث السيرفر بنجاح ✅";
                 render();
             }
         }
@@ -147,23 +155,27 @@
 
         function render() {
             const grid = document.getElementById('contentGrid');
-            const items = db.filter(i => i.cat === currentTab);
+            const items = fullDB.filter(i => i.cat === currentTab);
             grid.innerHTML = items.length ? items.map(i => `
-                <div onclick="play('${i.url}', '${i.name}')" class="ostora-card p-4 text-center">
+                <div onclick="play('${i.url}', '${i.name}')" class="ostora-card p-4 flex flex-col items-center justify-center min-h-[120px] text-center shadow-inner">
                     ${i.isLive ? '<span class="live-tag">LIVE</span>' : ''}
-                    <i class="fas fa-play-circle text-yellow-500 text-3xl mb-2"></i>
-                    <p class="text-[9px] font-bold truncate">${i.name}</p>
+                    ${i.img ? `<img src="${i.img}" class="absolute inset-0 w-full h-full object-cover opacity-30">` : ''}
+                    <i class="fas fa-play-circle text-yellow-500 text-4xl mb-3 z-10"></i>
+                    <p class="text-[10px] font-bold truncate w-full z-10">${i.name}</p>
                 </div>
-            `).join('') : '<p class="col-span-3 text-center py-10 text-gray-600 text-xs italic">استخدم التحديث أو لوحة التحكم</p>';
+            `).join('') : '<p class="col-span-3 text-center py-20 text-gray-500 text-xs italic">استخدم لوحة التحكم لإضافة أفلامك الخاصة هنا</p>';
         }
 
         function play(url, name) {
-            document.getElementById('pTitle').innerText = "WATCHING: " + name;
+            document.getElementById('pTitle').innerText = "مشاهدة: " + name;
             const video = document.getElementById('video');
             if (Hls.isSupported()) {
-                const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+                hlsPlayer.stopLoad();
+                hlsPlayer.loadSource(url);
+                hlsPlayer.attachMedia(video);
+                hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => video.play());
             } else { video.src = url; video.play(); }
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
         function openAdmin() { document.getElementById('adminModal').style.display = 'block'; toggleSidebar(); }
@@ -176,15 +188,17 @@
         function addItem() {
             const name = document.getElementById('mName').value;
             const url = document.getElementById('mUrl').value;
+            const img = document.getElementById('mImg').value;
             const cat = document.getElementById('mCat').value;
             if(name && url) {
-                db.unshift({name, url, cat, isLive: cat === 'matches'});
-                localStorage.setItem('kr_mega_db', JSON.stringify(db));
-                alert("تم الحفظ في سيرفر Karim Khaled!");
+                fullDB.unshift({name, url, img, cat, isLive: cat === 'matches'});
+                localStorage.setItem('kr_mega_v4', JSON.stringify(fullDB));
+                alert("تم الحفظ بنجاح في منصة Karim Khaled!");
                 closeAdmin();
                 render();
             }
         }
     </script>
 </body>
-</html>
+    </html>
+    
