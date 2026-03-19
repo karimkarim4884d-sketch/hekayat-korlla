@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karim Khaled | KR Live Sports</title>
+    <title>Karim Khaled | KR Full Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -30,7 +30,7 @@
             <video id="video" controls autoplay playsinline class="w-full aspect-video bg-black"></video>
             <div class="p-3 bg-[#0f172a] flex justify-between items-center">
                 <button onclick="toggleSidebar()" class="text-yellow-500 text-2xl"><i class="fas fa-bars"></i></button>
-                <span id="pTitle" class="text-[10px] font-bold text-yellow-500 italic uppercase">Karim Khaled Live Sports</span>
+                <span id="pTitle" class="text-[10px] font-bold text-yellow-500 italic uppercase">Karim Khaled | KR Premier</span>
                 <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-8 h-8 rounded-full border-2 border-yellow-500">
             </div>
         </div>
@@ -53,17 +53,17 @@
     </div>
 
     <div id="adminModal" class="admin-modal">
-        <h3 class="text-center font-bold mb-4 text-yellow-500 uppercase">Karim Khaled Admin</h3>
-        <input type="text" id="mName" placeholder="اسم الماتش أو الفيلم" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
-        <input type="text" id="mUrl" placeholder="رابط البث المباشر (m3u8)" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
-        <input type="text" id="mImg" placeholder="رابط البوستر (اختياري)" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
+        <h3 class="text-center font-bold mb-4 text-yellow-500 uppercase">KR ADMIN PANEL</h3>
+        <input type="text" id="mName" placeholder="الاسم" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
+        <input type="text" id="mUrl" placeholder="رابط m3u8 أو mp4" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
+        <input type="text" id="mImg" placeholder="رابط البوستر" class="w-full p-3 mb-2 bg-slate-800 rounded-lg text-xs outline-none">
         <select id="mCat" class="w-full p-3 mb-4 bg-slate-800 rounded-lg text-xs outline-none">
-            <option value="matches">ماتشات مباشر</option>
+            <option value="matches">ماتشات</option>
             <option value="movies">أفلام مصرية</option>
             <option value="kids">كرتون</option>
         </select>
         <div class="flex gap-2">
-            <button onclick="addItem()" class="flex-1 bg-green-600 p-3 rounded-lg text-xs font-bold">حفظ</button>
+            <button onclick="addItem()" class="flex-1 bg-green-600 p-3 rounded-lg text-xs font-bold">إضافة</button>
             <button onclick="closeAdmin()" class="flex-1 bg-red-600 p-3 rounded-lg text-xs font-bold">إلغاء</button>
         </div>
     </div>
@@ -73,31 +73,42 @@
             <img src="https://raw.githubusercontent.com/ZackCinema/ZK/main/ZK.png" class="w-20 h-20 rounded-full border-4 border-yellow-500 mx-auto mb-2">
             <p class="text-xs font-black text-yellow-500 uppercase">Karim Khaled</p>
         </div>
+        
         <div class="flex flex-col gap-3">
-            <button onclick="openAdmin()" class="bg-yellow-500 text-black p-4 rounded-xl text-sm font-bold flex items-center gap-3"><i class="fas fa-plus-circle"></i> إضافة بث مباشر</button>
-            <a href="https://wa.me/201040077271" class="bg-white/5 p-4 rounded-xl text-sm flex items-center gap-3"><i class="fab fa-whatsapp text-green-500"></i> واتساب الدعم</a>
+            <button onclick="openAdmin()" class="bg-yellow-500 text-black p-4 rounded-xl text-sm font-bold flex items-center justify-between">
+                <span>إضافة محتوى جديد</span> <i class="fas fa-plus-circle"></i>
+            </button>
+            
+            <hr class="border-slate-800 my-2">
+            
+            <a href="https://wa.me/201040077271" class="bg-white/5 p-4 rounded-xl text-sm flex items-center justify-between">
+                <span>واتساب الدعم</span> <i class="fab fa-whatsapp text-green-500"></i>
+            </a>
+            
+            <a href="mailto:karimkarim4884d@gmail.com" class="bg-white/5 p-4 rounded-xl text-sm flex items-center justify-between">
+                <span>البريد الإلكتروني</span> <i class="fas fa-envelope text-blue-500"></i>
+            </a>
+            
+            <a href="https://karimkarim4884d-sketch.github.io/hekayat-korlla/" target="_blank" class="bg-white/5 p-4 rounded-xl text-sm flex items-center justify-between">
+                <span>رابط الموقع الرسمي</span> <i class="fas fa-globe text-yellow-500"></i>
+            </a>
         </div>
+        
+        <button onclick="toggleSidebar()" class="w-full p-4 bg-red-600 rounded-xl text-xs font-bold mt-10">إغلاق القائمة</button>
     </div>
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('kr_final_db')) || [];
+        let db = JSON.parse(localStorage.getItem('kr_mega_db')) || [];
         let currentTab = 'matches';
 
-        window.onload = () => {
-            if(db.length === 0) fetchLiveMatches();
-            else render();
-        };
+        window.onload = () => { if(db.length === 0) fetchLiveMatches(); else render(); };
 
         async function fetchLiveMatches() {
-            document.getElementById('pTitle').innerText = "جاري سحب الماتشات.. 📡";
-            const sources = [
-                'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u',
-                'https://raw.githubusercontent.com/mohammadreza-erteshali/iptv/main/iptv.m3u'
-            ];
+            document.getElementById('pTitle').innerText = "CONNECTING SERVERS.. 📡";
+            const sources = ['https://raw.githubusercontent.com/iptv-org/iptv/master/streams/ar.m3u','https://raw.githubusercontent.com/mohammadreza-erteshali/iptv/main/iptv.m3u'];
             let fetched = [];
             const proxy = 'https://api.allorigins.win/raw?url=';
-
             for (let s of sources) {
                 try {
                     const res = await fetch(proxy + encodeURIComponent(s));
@@ -105,14 +116,14 @@
                     const lines = text.split('\n');
                     for(let i=0; i<lines.length; i++) {
                         if(lines[i].includes('#EXTINF')) {
-                            let name = lines[i].split(',')[1]?.trim() || 'قناة رياضية';
+                            let name = lines[i].split(',')[1]?.trim() || 'Live Channel';
                             let url = lines[i+1]?.trim();
                             if(url && url.startsWith('http')) {
                                 let cat = 'movies';
-                                if(/sport|bein|ssc|kora|كورة|بث/i.test(name)) cat = 'matches';
+                                if(/sport|bein|ssc|kora|كورة/i.test(name)) cat = 'matches';
                                 if(/quran|قرآن/i.test(name)) cat = 'quran';
-                                if(/cartoon|kids|كرتون/i.test(name)) cat = 'kids';
-                                if(/war|news|أخبار|الجزيرة/i.test(name)) cat = 'war';
+                                if(/kids|cartoon/i.test(name)) cat = 'kids';
+                                if(/war|news|أخبار/i.test(name)) cat = 'war';
                                 fetched.push({name, url, cat, isLive: cat === 'matches'});
                             }
                         }
@@ -121,8 +132,8 @@
             }
             if(fetched.length > 0) {
                 db = fetched;
-                localStorage.setItem('kr_final_db', JSON.stringify(db));
-                document.getElementById('pTitle').innerText = "تم تحديث السيرفر بنجاح ✅";
+                localStorage.setItem('kr_mega_db', JSON.stringify(db));
+                document.getElementById('pTitle').innerText = "KR SERVER UPDATED ✅";
                 render();
             }
         }
@@ -143,11 +154,11 @@
                     <i class="fas fa-play-circle text-yellow-500 text-3xl mb-2"></i>
                     <p class="text-[9px] font-bold truncate">${i.name}</p>
                 </div>
-            `).join('') : '<p class="col-span-3 text-center py-10 text-gray-600 text-xs">اضغط تحديث لجلب ماتشات اليوم</p>';
+            `).join('') : '<p class="col-span-3 text-center py-10 text-gray-600 text-xs italic">استخدم التحديث أو لوحة التحكم</p>';
         }
 
         function play(url, name) {
-            document.getElementById('pTitle').innerText = "LIVE: " + name;
+            document.getElementById('pTitle').innerText = "WATCHING: " + name;
             const video = document.getElementById('video');
             if (Hls.isSupported()) {
                 const hls = new Hls(); hls.loadSource(url); hls.attachMedia(video);
@@ -168,13 +179,12 @@
             const cat = document.getElementById('mCat').value;
             if(name && url) {
                 db.unshift({name, url, cat, isLive: cat === 'matches'});
-                localStorage.setItem('kr_final_db', JSON.stringify(db));
-                alert("تمت الإضافة للسيرفر بنجاح!");
+                localStorage.setItem('kr_mega_db', JSON.stringify(db));
+                alert("تم الحفظ في سيرفر Karim Khaled!");
                 closeAdmin();
                 render();
             }
         }
     </script>
 </body>
-    </html>
-    
+</html>
