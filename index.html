@@ -2,69 +2,41 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>هجمة ولقطة</title>
-
-<!-- كود التحقق من HilltopAds -->
-<meta name="50f5ff6a38b61f841a24e6794383b672f2d9c774" content="50f5ff6a38b61f841a24e6794383b672f2d9c774" />
-
-<style>
-body {
-    font-family: Arial;
-    background: #111;
-    color: #fff;
-    text-align: center;
-}
-
-.header {
-    background: #00bcd4;
-    padding: 20px;
-    font-size: 24px;
-}
-
-.container {
-    margin-top: 50px;
-}
-
-.btn {
-    display: block;
-    margin: 15px auto;
-    padding: 15px;
-    width: 250px;
-    background: #25D366;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 18px;
-}
-
-.email {
-    background: #2196F3;
-}
-</style>
-
+<title>مباريات اليوم</title>
 </head>
 
-<body>
+<body style="background:black; color:white; text-align:center;">
 
-<div class="header">
-    🎬 موقع هجمة ولقطة
-</div>
+<h2>🔴 مباريات اليوم</h2>
 
-<div class="container">
+<div id="matches"></div>
 
-    <h2>تواصل معانا</h2>
+<script>
+let key = "6f5f3573964c66a1e8ccd8599d02de13";
 
-    <!-- واتساب -->
-    <a class="btn" href="https://wa.me/201040077271" target="_blank">
-        📱 تواصل واتساب
-    </a>
+// يجيب كل المباريات
+fetch(`https://api.sportsrc.org/?data=matches&category=football&key=${key}`)
+.then(res => res.json())
+.then(data => {
 
-    <!-- ايميل -->
-    <a class="btn email" href="mailto:karimkarim4884d@gmail.com">
-        📧 تواصل بالبريد
-    </a>
+    let container = document.getElementById("matches");
 
-</div>
+    data.forEach(match => {
+
+        // يدور على ماتش فياريال
+        if(match.home.includes("Villarreal") || match.away.includes("Villarreal")) {
+
+            container.innerHTML += `
+                <h3>${match.home} 🆚 ${match.away}</h3>
+                <iframe src="https://sportsrc.org/embed/${match.id}" 
+                width="100%" height="400"></iframe>
+            `;
+        }
+
+    });
+
+});
+</script>
 
 </body>
 </html>
