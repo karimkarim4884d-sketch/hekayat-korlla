@@ -1,14 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body style="background:black; color:white; text-align:center;">
+
+<h2>🔴 مباريات اليوم</h2>
+
+<div id="matches">جاري التحميل...</div>
+
 <script>
 let key = "6f5f3573964c66a1e8ccd8599d02de13";
 
-fetch(`https://api.sportsrc.org/?data=matches&category=football&key=${key}`)
+fetch("https://api.sportsrc.org/?data=matches&category=football&key=" + key)
 .then(res => res.json())
 .then(data => {
 
-    let container = document.getElementById("matches");
+    let html = "";
 
     data.forEach(match => {
-        container.innerHTML += `
+        html += `
             <div style="margin:20px; padding:10px; background:#222;">
                 <h3>${match.home} 🆚 ${match.away}</h3>
                 <iframe src="https://sportsrc.org/embed/${match.id}" 
@@ -17,8 +25,13 @@ fetch(`https://api.sportsrc.org/?data=matches&category=football&key=${key}`)
         `;
     });
 
+    document.getElementById("matches").innerHTML = html;
+
 })
-.catch(err => {
-    document.getElementById("matches").innerHTML = "❌ في مشكلة في جلب البيانات";
+.catch(error => {
+    document.getElementById("matches").innerHTML = "❌ في مشكلة في الاتصال";
 });
 </script>
+
+</body>
+</html>
