@@ -19,7 +19,6 @@ body {
     font-weight: bold;
     background: linear-gradient(to right, purple, black);
     padding: 20px;
-    width: 100%;
 }
 
 /* عنوان الباقات */
@@ -47,20 +46,18 @@ body {
     overflow: hidden;
 }
 
-/* اللوجو داخل الكارت */
-.card::before {
-    content: "";
-    background: url("logo.png") no-repeat center;
-    background-size: 80%;
-    opacity: 0.08; /* شفافية */
+/* اللوجو الشفاف */
+.logo-bg {
     position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
+    object-fit: contain;
+    opacity: 0.1;
+    top: 0;
+    left: 0;
 }
 
-/* المحتوى فوق اللوجو */
+/* يخلي الكلام فوق اللوجو */
 .card * {
     position: relative;
     z-index: 2;
@@ -103,15 +100,13 @@ body {
 
 <body>
 
-<!-- العنوان الكبير -->
 <div class="main-title">القيصر دوت نت</div>
-
-<!-- عنوان الباقات -->
 <div class="sub-title">باقات الإنترنت</div>
 
 <div class="container">
 
     <div class="card">
+        <img src="logo.png" class="logo-bg">
         <h3>باقة 75 جيجا</h3>
         <p>سرعة 5 Mbps</p>
         <div class="price">150 جنيه</div>
@@ -119,6 +114,7 @@ body {
     </div>
 
     <div class="card">
+        <img src="logo.png" class="logo-bg">
         <h3>باقة 75 جيجا ⭐</h3>
         <p>سرعة 10 Mbps</p>
         <div class="price">200 جنيه</div>
@@ -126,6 +122,7 @@ body {
     </div>
 
     <div class="card">
+        <img src="logo.png" class="logo-bg">
         <h3>باقة 100 جيجا</h3>
         <p>سرعة 5 Mbps</p>
         <div class="price">200 جنيه</div>
@@ -133,6 +130,7 @@ body {
     </div>
 
     <div class="card">
+        <img src="logo.png" class="logo-bg">
         <h3>باقة 100 جيجا</h3>
         <p>سرعة 10 Mbps</p>
         <div class="price">250 جنيه</div>
@@ -141,8 +139,7 @@ body {
 
 </div>
 
-<!-- زر واتساب -->
-<a class="whatsapp-float" href="https://wa.me/201030434299" target="_blank">💬</a>
+<a class="whatsapp-float" href="https://wa.me/201030434299">💬</a>
 
 </body>
 </html>
