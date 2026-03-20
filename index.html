@@ -2,24 +2,27 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>بث مباشر</title>
+<title>مباريات اليوم</title>
 </head>
 
 <body style="background:black; color:white; text-align:center; font-family:Arial;">
 
-<h2>🔴 بث مباشر</h2>
+<h2>🔴 مباريات اليوم</h2>
 
-<div style="margin-top:50px;">
+<div style="margin-top:30px;">
 
-<button onclick="openMatch()" 
-style="padding:15px 30px; font-size:20px; background:red; color:white; border:none; border-radius:10px; cursor:pointer;">
-▶ مشاهدة المباراة
-</button>
+<div style="margin:20px; padding:15px; background:#222; border-radius:10px;">
+    <h3>فياريال 🆚 ريال سوسيداد</h3>
+    <button onclick="watchMatch()" 
+    style="padding:10px 20px; background:red; color:white; border:none; border-radius:10px;">
+    ▶ مشاهدة المباراة
+    </button>
+</div>
 
 </div>
 
 <script>
-function openMatch(){
+function watchMatch(){
     window.open("https://topembed.pw/", "_blank");
 }
 </script>
