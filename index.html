@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
@@ -11,6 +11,50 @@ body {
     color: #fff;
     text-align: center;
     margin: 0;
+}
+
+/* اللوجو */
+.header {
+    width: 100%;
+    background: #000;
+}
+
+.header img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+}
+
+/* شاشة الإعلانات */
+.ads {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.ads img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    position: absolute;
+    animation: slide 15s infinite;
+}
+
+.ads img:nth-child(2) {
+    animation-delay: 5s;
+}
+
+.ads img:nth-child(3) {
+    animation-delay: 10s;
+}
+
+@keyframes slide {
+    0% {opacity: 0;}
+    10% {opacity: 1;}
+    30% {opacity: 1;}
+    40% {opacity: 0;}
+    100% {opacity: 0;}
 }
 
 h1 {
@@ -43,6 +87,13 @@ h1 {
     margin: 10px 0;
 }
 
+/* إدخال سعر */
+.price-input {
+    width: 80px;
+    text-align: center;
+    margin-top: 10px;
+}
+
 .btn {
     display: inline-block;
     padding: 10px 15px;
@@ -56,7 +107,7 @@ h1 {
     background: darkgreen;
 }
 
-/* زر واتساب العايم */
+/* زر واتساب */
 .whatsapp-float {
     position: fixed;
     bottom: 20px;
@@ -74,6 +125,18 @@ h1 {
 
 <body>
 
+<!-- اللوجو -->
+<div class="header">
+    <img src="logo.jpg" alt="القيصر دوت نت">
+</div>
+
+<!-- الإعلانات -->
+<div class="ads">
+    <img src="ad1.jpg">
+    <img src="ad2.jpg">
+    <img src="ad3.jpg">
+</div>
+
 <h1>باقات الإنترنت - القيصر دوت نت</h1>
 
 <div class="container">
@@ -81,35 +144,37 @@ h1 {
     <div class="card">
         <h3>باقة 75 جيجا</h3>
         <p>سرعة 5 Mbps</p>
-        <div class="price">150 جنيه</div>
-        <a class="btn" href="https://wa.me/201030434299?text=عايز اشترك في باقة 75 جيجا سرعة 5">اشترك الآن</a>
-    </div>
 
-    <div class="card">
-        <h3>باقة 75 جيجا ⭐</h3>
-        <p>سرعة 10 Mbps</p>
-        <div class="price">200 جنيه</div>
-        <a class="btn" href="https://wa.me/201030434299?text=عايز اشترك في باقة 75 جيجا سرعة 10">اشترك الآن</a>
-    </div>
+        <div class="price" id="p1">150 جنيه</div>
+        <input class="price-input" type="number" value="150" 
+        onchange="updatePrice('p1', this.value)">
 
-    <div class="card">
-        <h3>باقة 100 جيجا</h3>
-        <p>سرعة 5 Mbps</p>
-        <div class="price">200 جنيه</div>
-        <a class="btn" href="https://wa.me/201030434299?text=عايز اشترك في باقة 100 جيجا سرعة 5">اشترك الآن</a>
+        <br><br>
+        <a class="btn" href="https://wa.me/201030434299">اشترك الآن</a>
     </div>
 
     <div class="card">
         <h3>باقة 100 جيجا</h3>
         <p>سرعة 10 Mbps</p>
-        <div class="price">250 جنيه</div>
-        <a class="btn" href="https://wa.me/201030434299?text=عايز اشترك في باقة 100 جيجا سرعة 10">اشترك الآن</a>
+
+        <div class="price" id="p2">250 جنيه</div>
+        <input class="price-input" type="number" value="250" 
+        onchange="updatePrice('p2', this.value)">
+
+        <br><br>
+        <a class="btn" href="https://wa.me/201030434299">اشترك الآن</a>
     </div>
 
 </div>
 
-<!-- زر واتساب عايم -->
+<!-- زر واتساب -->
 <a class="whatsapp-float" href="https://wa.me/201030434299" target="_blank">💬</a>
 
+<script>
+function updatePrice(id, value) {
+    document.getElementById(id).innerText = value + " جنيه";
+}
+</script>
+
 </body>
-</html>
+    </html>
