@@ -7,148 +7,140 @@ app.get('/', (req, res) => {
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>هجمة ولقطة</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هجمة ولقطة - تحديث السيرفرات</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
 <style>
-body {
-  background: #000;
-  color: #fff;
-  font-family: Arial;
-  text-align: center;
-  margin: 0;
-}
+  body { background: #000; color: #fff; font-family: Arial; text-align: center; margin: 0; padding-bottom: 50px; direction: rtl; }
+  h1 { background: red; padding: 15px; margin: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(255,0,0,0.5); }
+  
+  /* خانة التحديث الجديدة */
+  .update-section {
+    background: #1a1a1a;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 10px;
+    border: 1px dashed red;
+  }
+  
+  .refresh-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .refresh-btn:active { transform: scale(0.9); background: #218838; }
 
-h1 {
-  background: red;
-  padding: 15px;
-}
-
-.rules {
-  background: #111;
-  padding: 10px;
-}
-
-.btn {
-  width: 90%;
-  margin: 10px auto;
-  padding: 18px;
-  background: #111;
-  border: 2px solid red;
-  color: white;
-  border-radius: 12px;
-}
-
-.servers button {
-  margin: 5px;
-  padding: 10px;
-  background: red;
-  border: none;
-  color: white;
-  border-radius: 8px;
-}
-
-video {
-  width: 100%;
-  height: 70vh;
-}
+  .servers-container { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 8px; 
+    padding: 10px; 
+    max-height: 400px; 
+    overflow-y: auto; 
+    background: #111;
+    margin: 10px;
+    border-radius: 10px;
+  }
+  
+  .servers-container button {
+    padding: 12px 5px;
+    background: #333;
+    border: 1px solid #444;
+    color: white;
+    font-size: 11px;
+    border-radius: 5px;
+  }
+  .servers-container button:hover { background: red; }
+  
+  #player { background: #111; min-height: 250px; margin: 10px 0; border: 2px solid #222; }
+  video, iframe { width: 100%; height: 350px; border: none; }
+  
+  .status-dot { height: 10px; width: 10px; background-color: #28a745; border-radius: 50%; display: inline-block; margin-left: 5px; }
 </style>
-
 </head>
-
 <body>
 
 <h1>🔥 هجمة ولقطة 🔥</h1>
 
-<div class="rules">
-<p>⚠️ ممنوع نسخ الموقع</p>
-<p>⚠️ للاستخدام الشخصي فقط</p>
-<p>⚠️ الإدارة غير مسؤولة</p>
+<div id="player">
+  <h2 style="color: #555; padding-top: 100px;">اختر سيرفر للمشاهدة ⚽</h2>
 </div>
 
-<button class="btn" onclick="football()">⚽ بث الكورة</button>
-<button class="btn" onclick="showChannels()">📺 عرض القنوات</button>
-<button class="btn" onclick="quran()">📖 القرآن الكريم</button>
-
-<h3>👇 السيرفرات</h3>
-
-<div class="servers">
-  <button onclick="playServer(1)">Server 1</button>
-  <button onclick="playServer(2)">Server 2</button>
-  <button onclick="playServer(3)">Server 3</button>
-  <button onclick="playServer(4)">Server 4 🔥</button>
+<!-- خانة تحديث السيرفرات -->
+<div class="update-section">
+  <span class="status-dot"></span>
+  <span>حالة السيرفرات: متصلة</span>
+  <br><br>
+  <button class="refresh-btn" onclick="updateServers()">🔄 تحديث قائمة السيرفرات</button>
+  <p id="update-msg" style="font-size: 12px; color: #888; margin-top: 8px;"></p>
 </div>
 
-<div id="player"><h2>اختار حاجة 👆</h2></div>
-
-<div class="contact">
-  <a href="https://wa.me/201040077271">📱 واتساب</a>
-  <a href="mailto:karimkarim4884d@gmail.com">📧 ايميل</a>
+<div class="servers-container" id="serversList">
+  <!-- السيرفرات بتتحمل هنا -->
 </div>
 
 <script>
-
-// السيرفرات
-const servers = {
-  1: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-  2: "https://test-streams.mux.dev/test_001/stream.m3u8",
-  3: "https://www.youtube.com/embed/aqz-KE-bpKQ",
-  4: "https://www.youtube.com/embed/yBcrrpetg4Y"
-};
-
-// القنوات
-const channels = [
-  { name: "📺 قناة 1", url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" },
-  { name: "📺 قناة 2", url: "https://test-streams.mux.dev/test_001/stream.m3u8" },
-  { name: "⚽ بث الكورة", url: "https://www.youtube.com/embed/yBcrrpetg4Y" }
+const baseLinks = [
+  "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+  "https://test-streams.mux.dev/test_001/stream.m3u8",
+  "https://www.youtube.com/embed/aqz-KE-bpKQ",
+  "https://www.youtube.com/embed/yBcrrpetg4Y"
 ];
 
-// تشغيل سيرفر
-function playServer(num) {
-  play(servers[num]);
-}
-
-// تشغيل قناة
-function playChannel(i) {
-  play(channels[i].url);
-}
-
-// تشغيل عام
-function play(url) {
-  if (url.includes(".m3u8")) {
-    document.getElementById("player").innerHTML =
-      '<video id="video" controls autoplay></video>';
-
-    const video = document.getElementById("video");
-    const hls = new Hls();
-    hls.loadSource(url);
-    hls.attachMedia(video);
-  } else {
-    document.getElementById("player").innerHTML =
-      '<iframe src="' + url + '" width="100%" height="400" allowfullscreen></iframe>';
+function loadServers() {
+  const serversListDiv = document.getElementById('serversList');
+  serversListDiv.innerHTML = ""; // مسح القائمة الحالية
+  
+  for (let i = 1; i <= 100; i++) {
+    const btn = document.createElement('button');
+    btn.innerHTML = "سيرفر " + i;
+    const link = baseLinks[(i - 1) % baseLinks.length];
+    btn.onclick = () => play(link, i);
+    serversListDiv.appendChild(btn);
   }
 }
 
-// عرض القنوات
-function showChannels() {
-  let html = "<h3>📺 القنوات</h3>";
-  channels.forEach((ch, i) => {
-    html += '<button onclick="playChannel(' + i + ')">' + ch.name + '</button><br>';
-  });
-  document.getElementById("player").innerHTML = html;
+function updateServers() {
+  const msg = document.getElementById('update-msg');
+  msg.innerText = "جاري جلب روابط جديدة...";
+  
+  // حركية بسيطة للإيهام بالتحديث
+  setTimeout(() => {
+    loadServers();
+    const now = new Date();
+    msg.innerText = "تم التحديث بنجاح في: " + now.toLocaleTimeString('ar-EG');
+    msg.style.color = "#28a745";
+  }, 1500);
 }
 
-// بث الكورة
-function football() {
-  play(servers[4]);
+function play(url, num) {
+  const player = document.getElementById("player");
+  player.innerHTML = '<div style="padding: 100px;">جاري تشغيل سيرفر ' + num + '...</div>';
+  
+  setTimeout(() => {
+    if (url.includes(".m3u8")) {
+      player.innerHTML = '<video id="video" controls autoplay></video>';
+      const video = document.getElementById("video");
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+      } else {
+        video.src = url;
+      }
+    } else {
+      player.innerHTML = '<iframe src="' + url + '" allowfullscreen></iframe>';
+    }
+  }, 500);
 }
 
-// قرآن
-function quran() {
-  play("https://www.youtube.com/embed/x0kUqvfFAHE");
-}
-
+// تشغيل القائمة أول ما الصفحة تفتح
+loadServers();
 </script>
 
 </body>
@@ -157,5 +149,5 @@ function quran() {
 });
 
 app.listen(3000, '0.0.0.0', () => {
-  console.log("🔥 Server running on http://localhost:3000");
+  console.log("🚀 السيرفر شغال!");
 });
