@@ -3,172 +3,234 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚽ موقع الكورة - Live Matches</title>
+  <title>هجمة ولقطة - موقع الكورة</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
     body { 
       background: linear-gradient(135deg, #001f3f, #003366); 
       color: white; 
-      min-height: 100vh; 
-      padding: 20px;
+      padding: 10px;
     }
     
+    /* الشروط الثلاثة في الأعلى */
+    .conditions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .condition {
+      background: rgba(0,191,255,0.3);
+      padding: 15px 20px;
+      border-radius: 15px;
+      text-align: center;
+      flex: 1;
+      min-width: 200px;
+      border: 2px solid #00bfff;
+    }
+    
+    /* الهيدر */
     header { 
       text-align: center; 
-      padding: 30px 0; 
-      background: rgba(0,51,102,0.8);
+      padding: 20px; 
+      background: rgba(0,51,102,0.9);
       border-radius: 20px;
-      margin-bottom: 30px;
-      backdrop-filter: blur(10px);
+      margin-bottom: 20px;
     }
     
-    h1 { font-size: 2.5rem; margin-bottom: 10px; }
-    
+    /* الأقسام */
     .section { 
       max-width: 900px; 
-      margin: 30px auto; 
-      padding: 0 20px;
+      margin: 20px auto; 
+    }
+    .section-title { 
+      background: linear-gradient(90deg, #ff6b35, #00bfff); 
+      padding: 15px; 
+      border-radius: 15px; 
+      margin-bottom: 15px; 
+      text-align: center; 
+      font-size: 1.4rem;
     }
     
-    .section-title { 
-      background: linear-gradient(90deg, #ff6b35, #f7931e, #00bfff); 
-      padding: 20px; 
-      border-radius: 20px; 
-      margin-bottom: 25px; 
-      text-align: center; 
-      font-size: 1.8rem; 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    /* الدعم الفني */
+    .support-section {
+      background: linear-gradient(90deg, #28a745, #20c997);
+      padding: 25px;
+      border-radius: 20px;
+      margin: 30px auto;
+      max-width: 900px;
+      text-align: center;
+    }
+    
+    /* اسم الموقع الكبير */
+    .site-name {
+      background: linear-gradient(90deg, #ff0000, #ff6b35, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 3rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 30px 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    /* صاحب الموقع */
+    .owner {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px auto;
+      max-width: 900px;
+      text-align: center;
+      border-right: 5px solid #00bfff;
+    }
+    
+    /* شراء سيرفر */
+    .server-section {
+      background: linear-gradient(90deg, #6f42c1, #e83e8c);
+      padding: 25px;
+      border-radius: 20px;
+      margin: 30px auto;
+      max-width: 900px;
+      text-align: center;
+    }
+    
+    /* الإعلانات */
+    .ads-section {
+      background: linear-gradient(90deg, #ffc107, #fd7e14);
+      padding: 30px;
+      border-radius: 20px;
+      margin: 30px auto;
+      max-width: 900px;
+      text-align: center;
     }
     
     .match { 
-      background: rgba(0,51,102,0.9); 
-      padding: 25px; 
-      margin-bottom: 20px; 
-      border-radius: 20px; 
+      background: rgba(0,51,102,0.8); 
+      padding: 15px; 
+      margin-bottom: 10px; 
+      border-radius: 10px; 
       display: flex; 
       justify-content: space-between; 
-      align-items: center; 
-      transition: all 0.3s;
-      border-right: 6px solid #00bfff;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      align-items: center;
     }
-    
-    .match:hover { 
-      transform: translateY(-5px); 
-      box-shadow: 0 15px 40px rgba(0,191,255,0.4); 
-    }
-    
-    .teams { flex: 1; }
-    .match h3 { 
-      margin: 0 0 10px; 
-      font-size: 1.6rem; 
-      color: #00ff88;
-    }
-    
-    .match-info p { 
-      margin: 5px 0; 
-      opacity: 0.9; 
-      font-size: 1rem;
-    }
-    
     .score { 
-      font-size: 2rem; 
+      font-size: 1.5rem; 
       font-weight: bold; 
-      min-width: 120px; 
-      text-align: center;
-      padding: 15px 20px;
-      border-radius: 15px;
-      background: linear-gradient(45deg, #00ff00, #32cd32);
+      padding: 10px; 
+      border-radius: 8px; 
+      background: #00ff00;
       color: black;
-      box-shadow: 0 5px 15px rgba(0,255,0,0.3);
+      min-width: 80px;
+      text-align: center;
     }
     
-    .loading { 
-      text-align: center; 
-      padding: 60px 20px; 
-      color: #00bfff; 
-      font-size: 1.4rem; 
+    .whatsapp { 
+      background: #25D366; 
+      color: white; 
+      padding: 12px 25px; 
+      border-radius: 25px; 
+      text-decoration: none; 
+      font-weight: bold;
+      display: inline-block;
+      margin: 10px;
     }
     
-    .refresh-btn {
-      background: linear-gradient(45deg, #ff6b35, #f7931e);
-      border: none;
-      color: white;
-      padding: 12px 30px;
-      border-radius: 25px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      margin: 20px auto;
-      display: block;
-      transition: all 0.3s;
-    }
-    
-    .refresh-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 25px rgba(255,107,53,0.4);
-    }
-    
-    @media (max-width: 768px) { 
-      .match { flex-direction: column; text-align: center; gap: 20px; }
-      h1 { font-size: 2rem; }
-      .section-title { font-size: 1.4rem; }
+    @media (max-width: 768px) {
+      .conditions { flex-direction: column; }
+      .site-name { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
+  <!-- الشروط الثلاثة في الأعلى -->
+  <div class="conditions">
+    <div class="condition">
+      <h3>✅ شروط الاستخدام</h3>
+      <p>اقرأ شروط استخدام الموقع</p>
+    </div>
+    <div class="condition">
+      <h3>🔒 الخصوصية</h3>
+      <p>سياسة حماية بياناتك الشخصية</p>
+    </div>
+    <div class="condition">
+      <h3>⚠️ تنبيهات</h3>
+      <p>آخر التحديثات والإشعارات</p>
+    </div>
+  </div>
+
+  <!-- الهيدر -->
   <header>
-    <h1>⚽ موقع الكورة التلقائي</h1>
+    <h1>⚽ هجمة ولقطة</h1>
     <p>مباريات اليوم - أمس - غدًا</p>
   </header>
 
+  <!-- مباريات الأمس -->
   <div class="section">
     <h2 class="section-title">🏆 مباريات الأمس</h2>
-    <div id="yesterday" class="loading">⏳ جاري تحميل مباريات الأمس...</div>
+    <div class="match">
+      <div>
+        <h3>الأهلي VS بيراميدز</h3>
+        <p>الدوري المصري | 20/3/2026</p>
+      </div>
+      <div class="score">2-1</div>
+    </div>
   </div>
 
+  <!-- مباريات اليوم -->
   <div class="section">
     <h2 class="section-title">🔥 مباريات اليوم</h2>
-    <div id="today" class="loading">⏳ جاري تحميل مباريات اليوم...</div>
+    <div class="match">
+      <div>
+        <h3>ليفربول VS تشيلسي</h3>
+        <p>البريميرليج | 21/3/2026</p>
+      </div>
+      <div class="score">0-0</div>
+    </div>
   </div>
 
+  <!-- مباريات غدًا -->
   <div class="section">
     <h2 class="section-title">📅 مباريات غدًا</h2>
-    <div id="tomorrow" class="loading">⏳ جاري تحميل مباريات غدًا...</div>
+    <div class="match">
+      <div>
+        <h3>ريال مدريد VS برشلونة</h3>
+        <p>الليجا | 22/3/2026</p>
+      </div>
+      <div class="score">لم تبدأ</div>
+    </div>
   </div>
 
-  <button class="refresh-btn" onclick="loadMatches()">🔄 تحديث يدوي</button>
+  <!-- قسم الدعم الفني -->
+  <div class="support-section">
+    <h2>🛠️ الدعم الفني</h2>
+    <p><strong>عبر واتساب:</strong> <a href="https://wa.me/201040077271" class="whatsapp" target="_blank">01040077271</a></p>
+    <p><strong>عبر البريد الإلكتروني:</strong> karimkarim4884d@gmail.com</p>
+  </div>
 
-  <script>
-    // بيانات المباريات الحقيقية (محدثة لـ 21 مارس 2026)
-    const matchesData = [
-      // مباريات الأمس (20 مارس)
-      {home:'الأهلي',away:'بيراميدز',league:'الدوري المصري',date:'20/3/2026',time:'20:00',score:'2-1',day:'yesterday'},
-      {home:'برشلونة',away:'أتلتيكو مدريد',league:'الليجا',date:'20/3/2026',time:'22:00',score:'1-1',day:'yesterday'},
-      
-      // مباريات اليوم (21 مارس)
-      {home:'ليفربول',away:'تشيلسي',league:'البريميرليج',date:'21/3/2026',time:'20:00',score:'لم تبدأ',day:'today'},
-      {home:'الزمالك',away:'إنبي',league:'الدوري المصري',date:'21/3/2026',time:'18:00',score:'لم تبدأ',day:'today'},
-      
-      // مباريات غدًا (22 مارس)
-      {home:'ريال مدريد',away:'أتلتيكو مدريد',league:'الليجا',date:'22/3/2026',time:'22:00',score:'لم تبدأ',day:'tomorrow'},
-      {home:'مانشستر سيتي',away:'أرسنال',league:'البريميرليج',date:'22/3/2026',time:'20:00',score:'لم تبدأ',day:'tomorrow'}
-    ];
+  <!-- اسم الموقع الكبير -->
+  <h1 class="site-name">هجمة ولقطة</h1>
+  
+  <!-- صاحب الموقع -->
+  <div class="owner">
+    <h2>👨‍💻 صاحب الموقع</h2>
+    <h3>Karim Khaled</h3>
+  </div>
 
-    function loadMatches() {
-      // تصنيف المباريات
-      const sections = {
-        yesterday: document.getElementById('yesterday'),
-        today: document.getElementById('today'),
-        tomorrow: document.getElementById('tomorrow')
-      };
+  <!-- شراء سيرفر -->
+  <div class="server-section">
+    <h2>🖥️ جديد الاشتراك - سيرفر خدمات</h2>
+    <p>للاستفسار عن خدمات السيرفر تواصل عبر البريد الإلكتروني:</p>
+    <p><strong>karimkarim4884d@gmail.com</strong></p>
+  </div>
 
-      Object.keys(sections).forEach(day => {
-        const container = sections[day];
-        const dayMatches = matchesData.filter(m => m.day === day);
-        
-        if (dayMatches.length === 0) {
-          container.innerHTML = '<div class="match"><p style="text-align:center">لا توجد مباريات</p></div>';
-        } else {
-          container.innerHTML = dayMatches.map(match => `
-            <div class="match">
-              <div cla
+  <!-- قسم الإعلانات -->
+  <div class="ads-section">
+    <h2>📢 الإعلانات</h2>
+    <p>مساحة الإعلانات المتاحة للفرق والشركات</p>
+    <p>للإعلان تواصل معانا عبر الواتساب أو الإيميل</p>
+    <a href="https://wa.me/201040077271" class="whatsapp" target="_blank">احجز إعلانك الآن</a>
+  </div>
+</body>
+  </html>
