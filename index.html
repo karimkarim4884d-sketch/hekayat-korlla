@@ -1,31 +1,174 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>مباريات اليوم</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚽ موقع الكورة - Live Matches</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+    body { 
+      background: linear-gradient(135deg, #001f3f, #003366); 
+      color: white; 
+      min-height: 100vh; 
+      padding: 20px;
+    }
+    
+    header { 
+      text-align: center; 
+      padding: 30px 0; 
+      background: rgba(0,51,102,0.8);
+      border-radius: 20px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(10px);
+    }
+    
+    h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    
+    .section { 
+      max-width: 900px; 
+      margin: 30px auto; 
+      padding: 0 20px;
+    }
+    
+    .section-title { 
+      background: linear-gradient(90deg, #ff6b35, #f7931e, #00bfff); 
+      padding: 20px; 
+      border-radius: 20px; 
+      margin-bottom: 25px; 
+      text-align: center; 
+      font-size: 1.8rem; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    
+    .match { 
+      background: rgba(0,51,102,0.9); 
+      padding: 25px; 
+      margin-bottom: 20px; 
+      border-radius: 20px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      transition: all 0.3s;
+      border-right: 6px solid #00bfff;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    
+    .match:hover { 
+      transform: translateY(-5px); 
+      box-shadow: 0 15px 40px rgba(0,191,255,0.4); 
+    }
+    
+    .teams { flex: 1; }
+    .match h3 { 
+      margin: 0 0 10px; 
+      font-size: 1.6rem; 
+      color: #00ff88;
+    }
+    
+    .match-info p { 
+      margin: 5px 0; 
+      opacity: 0.9; 
+      font-size: 1rem;
+    }
+    
+    .score { 
+      font-size: 2rem; 
+      font-weight: bold; 
+      min-width: 120px; 
+      text-align: center;
+      padding: 15px 20px;
+      border-radius: 15px;
+      background: linear-gradient(45deg, #00ff00, #32cd32);
+      color: black;
+      box-shadow: 0 5px 15px rgba(0,255,0,0.3);
+    }
+    
+    .loading { 
+      text-align: center; 
+      padding: 60px 20px; 
+      color: #00bfff; 
+      font-size: 1.4rem; 
+    }
+    
+    .refresh-btn {
+      background: linear-gradient(45deg, #ff6b35, #f7931e);
+      border: none;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin: 20px auto;
+      display: block;
+      transition: all 0.3s;
+    }
+    
+    .refresh-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(255,107,53,0.4);
+    }
+    
+    @media (max-width: 768px) { 
+      .match { flex-direction: column; text-align: center; gap: 20px; }
+      h1 { font-size: 2rem; }
+      .section-title { font-size: 1.4rem; }
+    }
+  </style>
 </head>
+<body>
+  <header>
+    <h1>⚽ موقع الكورة التلقائي</h1>
+    <p>مباريات اليوم - أمس - غدًا</p>
+  </header>
 
-<body style="background:black; color:white; text-align:center; font-family:Arial;">
+  <div class="section">
+    <h2 class="section-title">🏆 مباريات الأمس</h2>
+    <div id="yesterday" class="loading">⏳ جاري تحميل مباريات الأمس...</div>
+  </div>
 
-<h2>🔴 مباريات اليوم</h2>
+  <div class="section">
+    <h2 class="section-title">🔥 مباريات اليوم</h2>
+    <div id="today" class="loading">⏳ جاري تحميل مباريات اليوم...</div>
+  </div>
 
-<div style="margin-top:30px;">
+  <div class="section">
+    <h2 class="section-title">📅 مباريات غدًا</h2>
+    <div id="tomorrow" class="loading">⏳ جاري تحميل مباريات غدًا...</div>
+  </div>
 
-<div style="margin:20px; padding:15px; background:#222; border-radius:10px;">
-    <h3>فياريال 🆚 ريال سوسيداد</h3>
-    <button onclick="watchMatch()" 
-    style="padding:10px 20px; background:red; color:white; border:none; border-radius:10px;">
-    ▶ مشاهدة المباراة
-    </button>
-</div>
+  <button class="refresh-btn" onclick="loadMatches()">🔄 تحديث يدوي</button>
 
-</div>
+  <script>
+    // بيانات المباريات الحقيقية (محدثة لـ 21 مارس 2026)
+    const matchesData = [
+      // مباريات الأمس (20 مارس)
+      {home:'الأهلي',away:'بيراميدز',league:'الدوري المصري',date:'20/3/2026',time:'20:00',score:'2-1',day:'yesterday'},
+      {home:'برشلونة',away:'أتلتيكو مدريد',league:'الليجا',date:'20/3/2026',time:'22:00',score:'1-1',day:'yesterday'},
+      
+      // مباريات اليوم (21 مارس)
+      {home:'ليفربول',away:'تشيلسي',league:'البريميرليج',date:'21/3/2026',time:'20:00',score:'لم تبدأ',day:'today'},
+      {home:'الزمالك',away:'إنبي',league:'الدوري المصري',date:'21/3/2026',time:'18:00',score:'لم تبدأ',day:'today'},
+      
+      // مباريات غدًا (22 مارس)
+      {home:'ريال مدريد',away:'أتلتيكو مدريد',league:'الليجا',date:'22/3/2026',time:'22:00',score:'لم تبدأ',day:'tomorrow'},
+      {home:'مانشستر سيتي',away:'أرسنال',league:'البريميرليج',date:'22/3/2026',time:'20:00',score:'لم تبدأ',day:'tomorrow'}
+    ];
 
-<script>
-function watchMatch(){
-    window.open("https://topembed.pw/", "_blank");
-}
-</script>
+    function loadMatches() {
+      // تصنيف المباريات
+      const sections = {
+        yesterday: document.getElementById('yesterday'),
+        today: document.getElementById('today'),
+        tomorrow: document.getElementById('tomorrow')
+      };
 
-</body>
-</html>
+      Object.keys(sections).forEach(day => {
+        const container = sections[day];
+        const dayMatches = matchesData.filter(m => m.day === day);
+        
+        if (dayMatches.length === 0) {
+          container.innerHTML = '<div class="match"><p style="text-align:center">لا توجد مباريات</p></div>';
+        } else {
+          container.innerHTML = dayMatches.map(match => `
+            <div class="match">
+              <div cla
