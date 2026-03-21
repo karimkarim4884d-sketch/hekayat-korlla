@@ -3,30 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>هجمة ولقطة - بث مباشر مصري</title>
+  <title>هجمة ولقطة - بث مباشر</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
     body { 
       background: linear-gradient(135deg, #001f3f, #003366); 
       color: white; 
       padding: 10px;
-    }
-    
-    .conditions {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .condition {
-      background: rgba(0,191,255,0.3);
-      padding: 15px 20px;
-      border-radius: 15px;
-      text-align: center;
-      flex: 1;
-      min-width: 200px;
-      border: 2px solid #00bfff;
     }
     
     header { 
@@ -37,10 +20,7 @@
       margin-bottom: 20px;
     }
     
-    .section { 
-      max-width: 900px; 
-      margin: 20px auto; 
-    }
+    .section { max-width: 1000px; margin: 20px auto; }
     .section-title { 
       background: linear-gradient(90deg, #ff6b35, #00bfff); 
       padding: 15px; 
@@ -50,6 +30,60 @@
       font-size: 1.4rem;
     }
     
+    /* مشغل الفيديو */
+    #player {
+      width: 100%;
+      max-width: 1000px;
+      height: 500px;
+      background: #000;
+      border-radius: 20px;
+      margin: 20px auto;
+      display: block;
+    }
+    
+    /* القنوات */
+    .channels {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .channel {
+      background: linear-gradient(90deg, #ff0000, #cc0000);
+      padding: 20px;
+      border-radius: 20px;
+      border-left: 6px solid #ffd700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(255,0,0,0.3);
+    }
+    
+    .channel:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(255,0,0,0.5);
+    }
+    
+    .channel-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 10px;
+    }
+    
+    .channel-desc {
+      color: #fff;
+      opacity: 0.9;
+    }
+    
+    .channel.active {
+      background: linear-gradient(90deg, #00ff00, #32cd32);
+      border-left-color: #000;
+      color: black;
+    }
+    
+    /* المباريات */
     .league {
       background: rgba(255,255,255,0.1);
       padding: 20px;
@@ -58,60 +92,16 @@
       border-right: 5px solid #00ff88;
     }
     
-    .league h3 {
-      color: #00ff88;
-      margin-bottom: 15px;
-      font-size: 1.3rem;
-    }
-    
     .match {
       background: rgba(0,51,102,0.8);
       padding: 15px;
       margin-bottom: 10px;
       border-radius: 10px;
       border-left: 4px solid #ff6b35;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
     
-    /* قنوات مصرية */
-    .egy-channel {
-      background: linear-gradient(90deg, #ff0000, #cc0000);
-      padding: 20px;
-      margin-bottom: 15px;
-      border-radius: 15px;
-      border-left: 5px solid #ffd700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 5px 15px rgba(255,0,0,0.3);
-    }
-    
-    .channel-name-egy {
-      font-weight: bold;
-      font-size: 1.3rem;
-      color: #ffd700;
-    }
-    
-    .play-egy-btn {
-      background: linear-gradient(45deg, #00ff00, #32cd32);
-      color: black;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 25px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .play-egy-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 10px 25px rgba(0,255,0,0.4);
-    }
-    
-    .support-section, .owner, .server-section, .ads-section {
+    /* الأقسام الأخرى */
+    .bottom-section {
       background: rgba(255,255,255,0.1);
       padding: 25px;
       border-radius: 20px;
@@ -119,11 +109,8 @@
       max-width: 900px;
       text-align: center;
       border-right: 5px solid #00bfff;
+      margin-bottom: 20px;
     }
-    
-    .support-section { background: linear-gradient(90deg, #28a745, #20c997); }
-    .server-section { background: linear-gradient(90deg, #6f42c1, #e83e8c); }
-    .ads-section { background: linear-gradient(90deg, #ffc107, #fd7e14); }
     
     .site-name {
       background: linear-gradient(90deg, #ff0000, #ff6b35, #ffd700);
@@ -138,131 +125,41 @@
     .whatsapp { 
       background: #25D366; 
       color: white; 
-      padding: 12px 25px; 
-      border-radius: 25px; 
+      padding: 15px 30px; 
+      border-radius: 30px; 
       text-decoration: none; 
       font-weight: bold;
       display: inline-block;
       margin: 10px;
+      font-size: 1.1rem;
     }
     
     @media (max-width: 768px) {
-      .conditions, .match, .egy-channel { flex-direction: column; gap: 10px; text-align: center; }
+      #player { height: 300px; }
       .site-name { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
-  <!-- الشروط -->
-  <div class="conditions">
-    <div class="condition"><h3>✅ شروط الاستخدام</h3><p>اقرأ شروط الموقع</p></div>
-    <div class="condition"><h3>🔒 الخصوصية</h3><p>حماية بياناتك</p></div>
-    <div class="condition"><h3>⚠️ تنبيهات</h3><p>آخر التحديثات</p></div>
-  </div>
-
   <!-- الهيدر -->
   <header>
     <h1>⚽ هجمة ولقطة</h1>
-    <p>📺 بث مباشر مصري + نتائج | 21 مارس 2026</p>
+    <p>📺 بث مباشر قنوات مصرية + نتائج مباريات</p>
   </header>
 
-  <!-- مباريات اليوم -->
+  <!-- مشغل القنوات -->
   <div class="section">
-    <h2 class="section-title">🔥 مباريات اليوم</h2>
-    <div class="league">
-      <h3>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</h3>
-      <div class="match">
-        <span>14:30 - برايتون 🆚 ليفربول</span>
-        <span>🔴 مباشر</span>
-      </div>
-      <div class="match">
-        <span>17:00 - فولهام 🆚 بيرنلي</span>
-        <span>🔴 مباشر</span>
-      </div>
-    </div>
+    <h2 class="section-title">📺 بث مباشر قنوات مصرية</h2>
+    <video id="player" controls autoplay muted>
+      <source src="" type="application/x-mpegURL">
+      متصفحك لا يدعم تشغيل الفيديو
+    </video>
     
-    <div class="league">
-      <h3>🇦🇫 دوري أبطال أفريقيا</h3>
-      <div class="match">
-        <span>18:00 - بيراميدز 🆚 الجيش الملكي</span>
-        <span>🔴 مباشر</span>
+    <div class="channels">
+      <div class="channel" onclick="playChannel(0)">
+        <div class="channel-name">🖥️ ON Time Sports 1 HD</div>
+        <div class="channel-desc">الدوري المصري + دوري أبطال أفريقيا</div>
       </div>
-      <div class="match">
-        <span>21:00 - الأهلي 🆚 الترجي</span>
-        <span>🔴 مباشر</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- قنوات البث المصرية -->
-  <div class="section">
-    <h2 class="section-title">📺 بث مباشر - قنوات مصرية 🇪🇬</h2>
-    
-    <div class="egy-channel">
-      <div>
-        <span class="channel-name-egy">🖥️ ON Time Sports 1 HD</span>
-        <p>بث مباشر مباريات الدوري المصري + أفريقيا</p>
-      </div>
-      <button class="play-egy-btn" onclick="playEgyptianChannels()">▶️ تشغيل ON Time Sports</button>
-    </div>
-
-    <div class="egy-channel">
-      <div>
-        <span class="channel-name-egy">📡 ON Time Sports 2 HD</span>
-        <p>الدوري المصري + البريميرليج</p>
-      </div>
-      <button class="play-egy-btn" onclick="playEgyptianChannels()">▶️ تشغيل ON Time Sports 2</button>
-    </div>
-
-    <div class="egy-channel">
-      <div>
-        <span class="channel-name-egy">⚽ SONY TEN / SSC Sports</span>
-        <p>الدوريات الأوروبية + التشكيلة الأساسية</span>
-      </div>
-      <button class="play-egy-btn" onclick="playEgyptianChannels()">▶️ تشغيل الدوريات الأوروبية</button>
-    </div>
-
-    <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:15px;margin:15px 0;text-align:center;">
-      <p><strong>📱 لتشغيل القنوات:</strong></p>
-      <p>VLC Player / Perfect Player / GSE Smart IPTV</p>
-      <p><strong>M3U Playlist:</strong> <a href="https://iptv-org.github.io/iptv/countries/eg.m3u" style="color:#00ff88;" target="_blank">اضغط هنا</a></p>
-    </div>
-  </div>
-
-  <!-- الدعم الفني -->
-  <div class="support-section">
-    <h2>🛠️ الدعم الفني</h2>
-    <p><strong>واتساب:</strong> <a href="https://wa.me/201040077271" class="whatsapp" target="_blank">01040077271</a></p>
-    <p><strong>إيميل:</strong> karimkarim4884d@gmail.com</p>
-  </div>
-
-  <!-- اسم الموقع الكبير -->
-  <h1 class="site-name">هجمة ولقطة</h1>
-  
-  <!-- صاحب الموقع -->
-  <div class="owner">
-    <h2>👨‍💻 صاحب الموقع</h2>
-    <h3>Karim Khaled</h3>
-  </div>
-
-  <!-- سيرفر -->
-  <div class="server-section">
-    <h2>🖥️ اشتراك سيرفر IPTV</h2>
-    <p>سيرفرات خاصة بجودة HD - تواصل: karimkarim4884d@gmail.com</p>
-  </div>
-
-  <!-- إعلانات -->
-  <div class="ads-section">
-    <h2>📢 الإعلانات</h2>
-    <p>مساحة إعلانات للفرق والشركات الرياضية</p>
-    <a href="https://wa.me/201040077271" class="whatsapp" target="_blank">احجز إعلانك الآن ➡️</a>
-  </div>
-
-  <script>
-    function playEgyptianChannels() {
-      // فتح قائمة القنوات المصرية
-      window.open('https://iptv-org.github.io/iptv/countries/eg.m3u', '_blank');
-    }
-  </script>
-</body>
-  </html>
+      
+      <div class="channel" onclick="playChannel(1)">
+        <div cla
