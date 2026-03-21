@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>هجمة ولقطة - موقع الكورة</title>
+  <title>هجمة ولقطة - بث مباشر مصري</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
     body { 
@@ -12,7 +12,6 @@
       padding: 10px;
     }
     
-    /* الشروط الثلاثة */
     .conditions {
       display: flex;
       gap: 10px;
@@ -30,7 +29,6 @@
       border: 2px solid #00bfff;
     }
     
-    /* الهيدر */
     header { 
       text-align: center; 
       padding: 20px; 
@@ -39,7 +37,6 @@
       margin-bottom: 20px;
     }
     
-    /* الأقسام */
     .section { 
       max-width: 900px; 
       margin: 20px auto; 
@@ -53,7 +50,6 @@
       font-size: 1.4rem;
     }
     
-    /* الدوري */
     .league {
       background: rgba(255,255,255,0.1);
       padding: 20px;
@@ -74,31 +70,48 @@
       margin-bottom: 10px;
       border-radius: 10px;
       border-left: 4px solid #ff6b35;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     
-    /* الدعم الفني */
-    .support-section {
-      background: linear-gradient(90deg, #28a745, #20c997);
-      padding: 25px;
-      border-radius: 20px;
-      margin: 30px auto;
-      max-width: 900px;
-      text-align: center;
+    /* قنوات مصرية */
+    .egy-channel {
+      background: linear-gradient(90deg, #ff0000, #cc0000);
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 15px;
+      border-left: 5px solid #ffd700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 5px 15px rgba(255,0,0,0.3);
     }
     
-    /* اسم الموقع الكبير */
-    .site-name {
-      background: linear-gradient(90deg, #ff0000, #ff6b35, #ffd700);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 3rem;
+    .channel-name-egy {
       font-weight: bold;
-      text-align: center;
-      margin: 30px 0;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      font-size: 1.3rem;
+      color: #ffd700;
     }
     
-    .owner, .server-section, .ads-section {
+    .play-egy-btn {
+      background: linear-gradient(45deg, #00ff00, #32cd32);
+      color: black;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .play-egy-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 25px rgba(0,255,0,0.4);
+    }
+    
+    .support-section, .owner, .server-section, .ads-section {
       background: rgba(255,255,255,0.1);
       padding: 25px;
       border-radius: 20px;
@@ -108,8 +121,19 @@
       border-right: 5px solid #00bfff;
     }
     
+    .support-section { background: linear-gradient(90deg, #28a745, #20c997); }
     .server-section { background: linear-gradient(90deg, #6f42c1, #e83e8c); }
     .ads-section { background: linear-gradient(90deg, #ffc107, #fd7e14); }
+    
+    .site-name {
+      background: linear-gradient(90deg, #ff0000, #ff6b35, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 3rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 30px 0;
+    }
     
     .whatsapp { 
       background: #25D366; 
@@ -123,92 +147,93 @@
     }
     
     @media (max-width: 768px) {
-      .conditions { flex-direction: column; }
+      .conditions, .match, .egy-channel { flex-direction: column; gap: 10px; text-align: center; }
       .site-name { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
-  <!-- الشروط الثلاثة -->
+  <!-- الشروط -->
   <div class="conditions">
-    <div class="condition">
-      <h3>✅ شروط الاستخدام</h3>
-      <p>اقرأ شروط استخدام الموقع</p>
-    </div>
-    <div class="condition">
-      <h3>🔒 الخصوصية</h3>
-      <p>سياسة حماية بياناتك الشخصية</p>
-    </div>
-    <div class="condition">
-      <h3>⚠️ تنبيهات</h3>
-      <p>آخر التحديثات والإشعارات</p>
-    </div>
+    <div class="condition"><h3>✅ شروط الاستخدام</h3><p>اقرأ شروط الموقع</p></div>
+    <div class="condition"><h3>🔒 الخصوصية</h3><p>حماية بياناتك</p></div>
+    <div class="condition"><h3>⚠️ تنبيهات</h3><p>آخر التحديثات</p></div>
   </div>
 
   <!-- الهيدر -->
   <header>
     <h1>⚽ هجمة ولقطة</h1>
-    <p>🔴 Live Matches | السبت 21 مارس 2026</p>
+    <p>📺 بث مباشر مصري + نتائج | 21 مارس 2026</p>
   </header>
 
-  <!-- قسم مباريات الأمس -->
-  <div class="section">
-    <h2 class="section-title">🏆 مباريات الأمس</h2>
-    <div class="league">
-      <h3>الدوري المصري</h3>
-      <div class="match">20:00 - الزمالك 🆚 إنبي (2-1)</div>
-      <div class="match">19:30 - بيراميدز 🆚 طلائع الجيش (1-0)</div>
-    </div>
-  </div>
-
-  <!-- قسم مباريات اليوم -->
+  <!-- مباريات اليوم -->
   <div class="section">
     <h2 class="section-title">🔥 مباريات اليوم</h2>
-    
     <div class="league">
       <h3>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</h3>
-      <div class="match">14:30 - برايتون 🆚 ليفربول</div>
-      <div class="match">17:00 - فولهام 🆚 بيرنلي</div>
-      <div class="match">19:30 - إيفرتون 🆚 تشيلسي</div>
-      <div class="match">22:00 - ليدز يونايتد 🆚 برينتفورد</div>
+      <div class="match">
+        <span>14:30 - برايتون 🆚 ليفربول</span>
+        <span>🔴 مباشر</span>
+      </div>
+      <div class="match">
+        <span>17:00 - فولهام 🆚 بيرنلي</span>
+        <span>🔴 مباشر</span>
+      </div>
     </div>
-
-    <div class="league">
-      <h3>🇪🇸 LaLiga</h3>
-      <div class="match">11:00 - إلتشي 🆚 مايوركا</div>
-      <div class="match">13:15 - إسبانيول 🆚 خيتافي</div>
-      <div class="match">15:30 - أوساسونا 🆚 جيرونا</div>
-      <div class="match">18:00 - إشبيلية 🆚 فالنسيا</div>
-    </div>
-
+    
     <div class="league">
       <h3>🇦🇫 دوري أبطال أفريقيا</h3>
-      <div class="match">18:00 - بيراميدز 🆚 الجيش الملكي</div>
-      <div class="match">21:00 - الأهلي 🆚 الترجي التونسي</div>
-    </div>
-
-    <div class="league">
-      <h3>🇩🇪 Bundesliga</h3>
-      <div class="match">16:30 - بايرن ميونخ 🆚 يونيون برلين</div>
-      <div class="match">16:30 - هايدنهايم 🆚 باير ليفركوزن</div>
+      <div class="match">
+        <span>18:00 - بيراميدز 🆚 الجيش الملكي</span>
+        <span>🔴 مباشر</span>
+      </div>
+      <div class="match">
+        <span>21:00 - الأهلي 🆚 الترجي</span>
+        <span>🔴 مباشر</span>
+      </div>
     </div>
   </div>
 
-  <!-- قسم مباريات غدًا -->
+  <!-- قنوات البث المصرية -->
   <div class="section">
-    <h2 class="section-title">📅 مباريات غدًا</h2>
-    <div class="league">
-      <h3>البريميرليج</h3>
-      <div class="match">22/3 - مانشستر سيتي 🆚 أرسنال</div>
-      <div class="match">22/3 - توتنهام 🆚 نيوكاسل</div>
+    <h2 class="section-title">📺 بث مباشر - قنوات مصرية 🇪🇬</h2>
+    
+    <div class="egy-channel">
+      <div>
+        <span class="channel-name-egy">🖥️ ON Time Sports 1 HD</span>
+        <p>بث مباشر مباريات الدوري المصري + أفريقيا</p>
+      </div>
+      <button class="play-egy-btn" onclick="playEgyptianChannels()">▶️ تشغيل ON Time Sports</button>
+    </div>
+
+    <div class="egy-channel">
+      <div>
+        <span class="channel-name-egy">📡 ON Time Sports 2 HD</span>
+        <p>الدوري المصري + البريميرليج</p>
+      </div>
+      <button class="play-egy-btn" onclick="playEgyptianChannels()">▶️ تشغيل ON Time Sports 2</button>
+    </div>
+
+    <div class="egy-channel">
+      <div>
+        <span class="channel-name-egy">⚽ SONY TEN / SSC Sports</span>
+        <p>الدوريات الأوروبية + التشكيلة الأساسية</span>
+      </div>
+      <button class="play-egy-btn" onclick="playEgyptianChannels()">▶️ تشغيل الدوريات الأوروبية</button>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.1);padding:20px;border-radius:15px;margin:15px 0;text-align:center;">
+      <p><strong>📱 لتشغيل القنوات:</strong></p>
+      <p>VLC Player / Perfect Player / GSE Smart IPTV</p>
+      <p><strong>M3U Playlist:</strong> <a href="https://iptv-org.github.io/iptv/countries/eg.m3u" style="color:#00ff88;" target="_blank">اضغط هنا</a></p>
     </div>
   </div>
 
-  <!-- قسم الدعم الفني -->
+  <!-- الدعم الفني -->
   <div class="support-section">
     <h2>🛠️ الدعم الفني</h2>
-    <p><strong>عبر واتساب:</strong> <a href="https://wa.me/201040077271" class="whatsapp" target="_blank">01040077271</a></p>
-    <p><strong>عبر البريد الإلكتروني:</strong> karimkarim4884d@gmail.com</p>
+    <p><strong>واتساب:</strong> <a href="https://wa.me/201040077271" class="whatsapp" target="_blank">01040077271</a></p>
+    <p><strong>إيميل:</strong> karimkarim4884d@gmail.com</p>
   </div>
 
   <!-- اسم الموقع الكبير -->
@@ -220,19 +245,24 @@
     <h3>Karim Khaled</h3>
   </div>
 
-  <!-- شراء سيرفر -->
+  <!-- سيرفر -->
   <div class="server-section">
-    <h2>🖥️ جديد الاشتراك - سيرفر خدمات</h2>
-    <p>للاستفسار عن خدمات السيرفر تواصل عبر البريد الإلكتروني:</p>
-    <p><strong>karimkarim4884d@gmail.com</strong></p>
+    <h2>🖥️ اشتراك سيرفر IPTV</h2>
+    <p>سيرفرات خاصة بجودة HD - تواصل: karimkarim4884d@gmail.com</p>
   </div>
 
-  <!-- قسم الإعلانات -->
+  <!-- إعلانات -->
   <div class="ads-section">
     <h2>📢 الإعلانات</h2>
-    <p>مساحة الإعلانات المتاحة للفرق والشركات</p>
-    <p>للإعلان تواصل معانا عبر الواتساب أو الإيميل</p>
-    <a href="https://wa.me/201040077271" class="whatsapp" target="_blank">احجز إعلانك الآن</a>
+    <p>مساحة إعلانات للفرق والشركات الرياضية</p>
+    <a href="https://wa.me/201040077271" class="whatsapp" target="_blank">احجز إعلانك الآن ➡️</a>
   </div>
+
+  <script>
+    function playEgyptianChannels() {
+      // فتح قائمة القنوات المصرية
+      window.open('https://iptv-org.github.io/iptv/countries/eg.m3u', '_blank');
+    }
+  </script>
 </body>
   </html>
