@@ -76,7 +76,6 @@
         .team img { width: 45px; height: 45px; object-fit: contain; }
         .team span { font-size: 0.85rem; font-weight: bold; text-align: center; max-width: 100px; }
 
-        /* النجمة */
         .star-fav {
             position: absolute; top: 10px; font-size: 1.2rem; color: #aaa;
             cursor: pointer; transition: 0.2s; z-index: 5;
@@ -110,7 +109,6 @@
             text-decoration: none; font-weight: bold; margin-top: 15px;
         }
         
-        /* مودال التشكيلة */
         .modal {
             display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); justify-content: center; align-items: center; padding: 10px;
@@ -120,6 +118,13 @@
         .player-row img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--light-blue); }
         .fav-team-item { display: flex; align-items: center; gap: 10px; background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 8px;}
         .fav-team-item img { width: 30px; }
+        
+        /* تنسيق خاص بجدول الترتيب ليتناسب مع التطبيق */
+        .scoreaxis-widget {
+            border-radius: 12px;
+            overflow: hidden !important;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -141,9 +146,13 @@
     <div id="matches-list"></div>
 </div>
 
+<!-- هنا تم وضع كود جدول الترتيب الذي أرسلته -->
 <div id="standings-section" class="section-container">
     <h3 style="color: var(--light-blue); margin-bottom: 15px;">📊 جداول الترتيب</h3>
-    <div class="placeholder-card">جاري تحديث جداول الدوريات...</div>
+    <div id="widget-9199mn1ryh0b" class="scoreaxis-widget" style="width: 100%;height: 600px;font-size: 14px;background-color: #003366;color: #ffffff;border: none;overflow: auto;">
+        <script src="https://widgets.scoreaxis.com/api/football/league-table/6232265abf1fa71a672159ec?widgetId=9199mn1ryh0b&lang=ar&teamLogo=1&tableLines=0&homeAway=1&header=1&position=1&goals=1&gamesCount=1&diff=1&winCount=1&drawCount=1&loseCount=1&lastGames=1&points=1&teamsLimit=all&links=1&font=heebo&fontSize=14&rowDensity=100&widgetWidth=100%&widgetHeight=600px&bodyColor=%23003366&textColor=%23ffffff&linkColor=%2300bfff&borderColor=%23004d99&tabColor=%23004d99" async></script>
+        <div class="widget-main-link" style="padding: 6px 12px;font-weight: 500; font-size: 10px; color: #888;">بيانات بواسطة <a href="https://www.scoreaxis.com/" style="color: inherit;">Scoreaxis</a></div>
+    </div>
 </div>
 
 <div id="transfers-section" class="section-container">
@@ -186,7 +195,6 @@
 const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
 let currentData = [];
 const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 1, 4, 233, 307, 848, 480, 202];
-// مصفوفة لتخزين الفرق المفضلة
 let favoriteTeams = JSON.parse(localStorage.getItem('favTeams')) || [];
 
 function showSection(sectionId, element) {
@@ -220,7 +228,6 @@ function render(data) {
     list.innerHTML = '';
     data.forEach(m => {
         const matchTime = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-        // التحقق إذا كان الفريق في المفضلة
         const isHomeFav = favoriteTeams.some(team => team.id === m.teams.home.id);
         const isAwayFav = favoriteTeams.some(team => team.id === m.teams.away.id);
 
@@ -238,23 +245,17 @@ function render(data) {
     });
 }
 
-// وظيفة إضافة/إزالة الفريق من المفضلة
 function toggleFavorite(teamId, teamName, teamLogo) {
     const index = favoriteTeams.findIndex(team => team.id === teamId);
     if (index === -1) {
-        // إضافة
         favoriteTeams.push({ id: teamId, name: teamName, logo: teamLogo });
     } else {
-        // إزالة
         favoriteTeams.splice(index, 1);
     }
-    // حفظ في localStorage
     localStorage.setItem('favTeams', JSON.stringify(favoriteTeams));
-    // تحديث العرض
     render(currentData);
 }
 
-// وظيفة عرض الفرق المفضلة في قسم مفضلتي
 function renderFavorites() {
     const favList = document.getElementById('fav-list');
     if (favoriteTeams.length === 0) {
@@ -308,3 +309,4 @@ getMatches(0, 'today');
 </script>
 </body>
             </html>
+            
