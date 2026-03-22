@@ -17,20 +17,18 @@
 
         header { text-align: center; padding: 15px; color: var(--accent-orange); }
 
-        /* تسيق شريط البحث */
         .search-area { max-width: 500px; margin: 0 auto 15px; }
         .search-box {
             display: flex; background: white; border-radius: 12px; overflow: hidden;
             box-shadow: 0 0 15px rgba(0,191,255, 0.2);
         }
         .search-box input {
-            flex: 1; padding: 14px; border: none; outline: none; font-size: 1rem; color: #333;
+            flex: 1; padding: 14px; border: none; outline: none; font-size: 1rem; color: #333; text-align: right;
         }
         .search-box button {
             padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; font-weight: bold;
         }
 
-        /* تنسيق أزرار الأقسام */
         .tabs { display: flex; gap: 8px; max-width: 500px; margin: 0 auto 20px; }
         .tab-btn { 
             flex: 1; padding: 12px; border: none; background: #002a4d; 
@@ -41,11 +39,10 @@
         .match-container { max-width: 550px; margin: 0 auto; }
 
         .league-title { 
-            text-align: center; font-size: 0.7rem; color: #888; 
-            margin: 25px 0 10px; border-bottom: 1px solid #111; padding-bottom: 5px;
+            text-align: center; font-size: 0.75rem; color: var(--light-blue); 
+            margin: 25px 0 10px; font-weight: bold; background: rgba(0, 191, 255, 0.1); padding: 5px; border-radius: 5px;
         }
 
-        /* كارت المباراة باللوجو والـ VS */
         .match-card {
             background: var(--card-bg);
             border-radius: 15px;
@@ -54,13 +51,11 @@
             padding: 15px;
             margin-bottom: 12px;
             border-right: 4px solid var(--light-blue);
-            transition: 0.3s;
         }
-        .match-card:hover { transform: scale(1.02); }
 
         .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .team img { width: 45px; height: 45px; object-fit: contain; }
-        .team span { font-size: 0.9rem; font-weight: bold; text-align: center; line-height: 1.2; }
+        .team span { font-size: 0.9rem; font-weight: bold; text-align: center; color: white; }
 
         .center-info { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 15px; }
         .vs-badge {
@@ -69,24 +64,20 @@
         }
         .time { font-size: 0.85rem; font-weight: bold; color: var(--light-blue); }
 
-        .no-result { text-align: center; padding: 40px; color: #666; }
+        .no-result { text-align: center; padding: 40px; color: #aaa; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>⚽ هجمة ولقطة</h1>
-</header>
+<header><h1>⚽ هجمة ولقطة</h1></header>
 
-<!-- شريط البحث الفعال -->
 <div class="search-area">
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="ابحث عن مباراة أو فريق..." onkeyup="filterData()">
-        <button>بحث</button>
+        <input type="text" id="searchInput" placeholder="ابحث باسم الفريق بالعربي أو English..." oninput="filterData()">
+        <button onclick="filterData()">بحث</button>
     </div>
 </div>
 
-<!-- الأقسام الثلاثة -->
 <div class="tabs">
     <button class="tab-btn" id="yesterday" onclick="getMatches(-1, 'yesterday')">مباريات الأمس</button>
     <button class="tab-btn active" id="today" onclick="getMatches(0, 'today')">مباريات اليوم</button>
@@ -99,14 +90,22 @@
 
 <script>
 const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-let currentData = []; // مخزن البيانات للبحث
+let currentData = []; 
 
-// دالة الترجمة
-const ar = (n) => ({
+// قاموس ترجمة شامل (ضيف فيه براحتك)
+const dictionary = {
     "Real Madrid": "ريال مدريد", "Barcelona": "برشلونة", "Liverpool": "ليفربول",
-    "Arsenal": "أرسنال", "Man City": "مان سيتي", "Al Ahly": "الأهلي", "Zamalek": "الزمالك",
-    "La Liga": "الدوري الإسباني", "Premier League": "الدوري الإنجليزي"
-})[n] || n;
+    "Manchester City": "مانشستر سيتي", "Manchester United": "مانشستر يونايتد",
+    "Arsenal": "أرسنال", "Chelsea": "تشيلسي", "Tottenham": "توتنهام",
+    "Bayern Munich": "بايرن ميونخ", "Dortmund": "دورتموند", "Paris Saint Germain": "باريس سان جيرمان",
+    "Juventus": "يوفنتوس", "AC Milan": "ميلان", "Inter": "إنتر ميلان",
+    "Al Ahly": "الأهلي", "Zamalek": "الزمالك", "Pyramids": "بيراميدز",
+    "Al Hilal": "الهلال", "Al Nassr": "النصر", "Al Ittihad": "الاتحاد",
+    "La Liga": "الدوري الإسباني", "Premier League": "الدوري الإنجليزي", 
+    "Serie A": "الدوري الإيطالي", "Bundesliga": "الدوري الألماني", "Ligue 1": "الدوري الفرنسي"
+};
+
+const ar = (name) => dictionary[name] || name;
 
 async function getMatches(offset, btnId) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -116,6 +115,9 @@ async function getMatches(offset, btnId) {
     d.setDate(d.getDate() + offset);
     const dateStr = d.toISOString().split('T')[0];
 
+    const list = document.getElementById('matches-list');
+    list.innerHTML = '<div class="no-result">⏳ جاري جلب البيانات...</div>';
+
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
             headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
@@ -124,50 +126,56 @@ async function getMatches(offset, btnId) {
         currentData = json.response;
         render(currentData);
     } catch (e) {
-        document.getElementById('matches-list').innerHTML = "⚠️ خطأ في التحميل";
+        list.innerHTML = "<div class='no-result'>⚠️ فشل في الاتصال بالبيانات</div>";
     }
 }
 
 function render(data) {
     const list = document.getElementById('matches-list');
-    list.innerHTML = data.length ? '' : '<div class="no-result">لا توجد نتائج مطابقة</div>';
-
+    if (!data || data.length === 0) {
+        list.innerHTML = '<div class="no-result">لا توجد مباريات متاحة</div>';
+        return;
+    }
+    
+    list.innerHTML = '';
     data.forEach(m => {
         const matchTime = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
         list.innerHTML += `
-            <div class="league-title">${ar(m.league.name)}</div>
-            <div class="match-card">
-                <div class="team">
-                    <img src="${m.teams.home.logo}">
-                    <span>${ar(m.teams.home.name)}</span>
-                </div>
-                <div class="center-info">
-                    <div class="vs-badge">VS</div>
-                    <div class="time">${matchTime}</div>
-                </div>
-                <div class="team">
-                    <img src="${m.teams.away.logo}">
-                    <span>${ar(m.teams.away.name)}</span>
+            <div class="match-item">
+                <div class="league-title">🏆 ${ar(m.league.name)}</div>
+                <div class="match-card">
+                    <div class="team">
+                        <img src="${m.teams.home.logo}" onerror="this.src='https://via.placeholder.com/45'">
+                        <span>${ar(m.teams.home.name)}</span>
+                    </div>
+                    <div class="center-info">
+                        <div class="vs-badge">VS</div>
+                        <div class="time">${matchTime}</div>
+                    </div>
+                    <div class="team">
+                        <img src="${m.teams.away.logo}" onerror="this.src='https://via.placeholder.com/45'">
+                        <span>${ar(m.teams.away.name)}</span>
+                    </div>
                 </div>
             </div>
         `;
     });
 }
 
-// وظيفة البحث الذكي
 function filterData() {
-    const val = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = currentData.filter(m => 
-        m.teams.home.name.toLowerCase().includes(val) || 
-        m.teams.away.name.toLowerCase().includes(val) ||
-        m.league.name.toLowerCase().includes(val)
-    );
+    const val = document.getElementById('searchInput').value.toLowerCase().trim();
+    const filtered = currentData.filter(m => {
+        const hEn = m.teams.home.name.toLowerCase();
+        const aEn = m.teams.away.name.toLowerCase();
+        const hAr = ar(m.teams.home.name);
+        const aAr = ar(m.teams.away.name);
+        
+        return hEn.includes(val) || aEn.includes(val) || hAr.includes(val) || aAr.includes(val);
+    });
     render(filtered);
 }
 
-// تشغيل افتراضي
 getMatches(0, 'today');
 </script>
-
 </body>
 </html>
