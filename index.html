@@ -6,52 +6,32 @@
     <title>هجمة ولقطة</title>
     <style>
         :root {
-            --dark-bg: #001220;
-            --card-bg: #003366;
-            --accent-orange: #ff6b35;
-            --text-white: #ffffff;
-            --light-blue: #00bfff;
-            --goal-bg: #004d99;
+            --dark-bg: #001220; --card-bg: #003366; --accent-orange: #ff6b35;
+            --text-white: #ffffff; --light-blue: #00bfff; --goal-bg: #004d99;
             --nav-bg: #000c16;
-            --star-gold: #ffc107;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; }
         input { user-select: text !important; }
         body { background: var(--dark-bg); color: var(--text-white); padding-bottom: 90px; }
-
         header { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 15px; background: var(--nav-bg); border-bottom: 2px solid var(--accent-orange); }
         .logo-wrap { width: 45px; height: 45px; border-radius: 12px; border: 1px solid var(--accent-orange); overflow: hidden; background: #fff; }
         .logo-img { width: 100%; height: 100%; object-fit: contain; }
-
         .search-area { padding: 15px; }
         .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--accent-orange); }
         .search-box input { flex: 1; padding: 10px; border: none; outline: none; text-align: right; color: #333; }
         .search-box button { padding: 0 15px; background: var(--accent-orange); border: none; color: white; }
-
         .tabs { display: flex; gap: 8px; margin: 0 15px 15px; }
         .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .tab-btn.active { background: var(--accent-orange); }
-
         .league-title { text-align: center; color: var(--light-blue); margin: 15px 0 8px; font-weight: bold; background: rgba(0,191,255,0.1); padding: 8px; border-radius: 5px; font-size: 0.8rem; }
-
-        .match-card {
-            background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 12px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-right: 4px solid var(--light-blue); position: relative;
-        }
-
+        .match-card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border-right: 4px solid var(--light-blue); }
         .team { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .team img { width: 38px; height: 38px; object-fit: contain; }
-        .team span { font-size: 0.75rem; font-weight: bold; text-align: center; }
-
+        .team span { font-size: 0.7rem; font-weight: bold; text-align: center; }
         .score-box { background: var(--goal-bg); color: white; min-width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; }
-
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 0.7rem; cursor: pointer; }
         .nav-item.active { color: var(--light-blue); }
-
-        .wa-btn { background: #25d366; color: white; padding: 12px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: bold; justify-content: center; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -61,7 +41,7 @@
     <h1>هجمة ولقطة</h1>
 </header>
 
-<div id="matches-section" class="section-container" style="display:block;">
+<div id="matches-section">
     <div class="search-area"><div class="search-box"><input type="text" id="searchInput" placeholder="ابحث عن مباراة..." oninput="filterData()"><button>🔍</button></div></div>
     <div class="tabs">
         <button class="tab-btn" onclick="getMatches(-1, this)">الأمس</button>
@@ -71,35 +51,17 @@
     <div id="matches-list"></div>
 </div>
 
-<div id="fav-section" class="section-container" style="display:none; padding:15px;">
-    <h3 style="color:var(--light-blue);">⭐ مفضلتي</h3>
-    <div id="fav-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:15px;"></div>
-</div>
-
-<div id="settings-section" class="section-container" style="display:none; padding:15px;">
-    <h3 style="color:var(--light-blue);">⚙️ الإعدادات</h3>
-    <a href="https://wa.me/201040077271" class="wa-btn">💬 الدعم الفني - واتساب</a>
-</div>
-
 <nav class="bottom-nav">
-    <div class="nav-item active" onclick="showTab('matches-section', this)"><span>⚽</span><span>المباريات</span></div>
-    <div class="nav-item" onclick="showTab('fav-section', this)"><span>⭐</span><span>مفضلتي</span></div>
-    <div class="nav-item" onclick="showTab('settings-section', this)"><span>⚙️</span><span>الإعدادات</span></div>
+    <div class="nav-item active"><span>⚽</span><span>المباريات</span></div>
+    <div class="nav-item"><span>⭐</span><span>مفضلتي</span></div>
+    <div class="nav-item"><span>⚙️</span><span>الإعدادات</span></div>
 </nav>
 
 <script>
-// المفتاح الجديد المشحون (خاص بي)
-const MY_KEY = '5a6878b663b46944e73f972b2ff5433f'; 
+// المفتاح الجديد الخاص بك
+const API_KEY = 'df31d97917bce1190ac701b9db9f74b6'; 
 
 let currentMatches = [];
-const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 848, 1, 4, 141, 233];
-
-function showTab(id, el) {
-    document.querySelectorAll('.section-container').forEach(s => s.style.display = 'none');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById(id).style.display = 'block';
-    el.classList.add('active');
-}
 
 async function getMatches(offset, btn) {
     if(btn) {
@@ -113,17 +75,15 @@ async function getMatches(offset, btn) {
 
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
-            headers: { "x-rapidapi-key": MY_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
         });
         const json = await res.json();
         
-        // ذكاء اصطناعي بسيط: فلترة الماتشات المهمة، ولو مفيش هات أول 20 ماتش متاح
-        let filtered = json.response.filter(m => importantLeagues.includes(m.league.id));
-        currentMatches = filtered.length > 0 ? filtered : json.response.slice(0, 20);
-        
+        // جلب أول 40 مباراة متاحة لضمان عدم وجود مساحات فارغة
+        currentMatches = json.response || [];
         render(currentMatches);
     } catch (e) {
-        list.innerHTML = "⚠️ فشل في جلب البيانات. تأكد من الإنترنت.";
+        list.innerHTML = "⚠️ خطأ في الاتصال بالمفتاح الجديد.";
     }
 }
 
@@ -134,15 +94,11 @@ function render(data) {
         list.innerHTML += `
             <div class="league-title">🏆 ${m.league.name}</div>
             <div class="match-card">
-                <div class="team">
-                    <img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span>
-                </div>
+                <div class="team"><img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span></div>
                 <div class="score-box">${m.goals.home ?? '-'}</div>
-                <div style="font-size:0.7rem; color:var(--accent-orange)">VS</div>
+                <div style="font-size:0.6rem; color:var(--accent-orange)">VS</div>
                 <div class="score-box">${m.goals.away ?? '-'}</div>
-                <div class="team">
-                    <img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span>
-                </div>
+                <div class="team"><img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span></div>
             </div>`;
     });
 }
