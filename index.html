@@ -78,7 +78,7 @@
 <body>
 
 <header>
-    <div class="logo-wrap"><img src="https://i.ibb.co/LzNfXpY/ball-icon.png" class="logo-img"></div>
+    <div class="logo-wrap"><img src="https://cdn-icons-png.flaticon.com/512/33/33736.png" class="logo-img"></div>
     <h1>هجمة ولقطة</h1>
 </header>
 
@@ -112,6 +112,7 @@
 
 <script>
 const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
+// قائمة الدوريات الكبرى
 const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 848, 1, 4];
 let currentMatches = [];
 let favTeams = JSON.parse(localStorage.getItem('myFavs')) || [];
@@ -131,20 +132,26 @@ async function getMatches(offset, btn) {
     }
     const d = new Date(); d.setDate(d.getDate() + offset);
     const dateStr = d.toLocaleDateString('en-CA');
-    document.getElementById('matches-list').innerHTML = '<p style="text-align:center; padding:20px;">⏳ جاري التحميل...</p>';
+    const list = document.getElementById('matches-list');
+    list.innerHTML = '<p style="text-align:center; padding:20px;">⏳ جاري جلب المباريات...</p>';
+    
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
             headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
         });
         const json = await res.json();
-        currentMatches = json.response.filter(m => importantLeagues.includes(m.league.id));
+        
+        // تعديل ذكي: لو مفيش ماتشات في الدوريات الكبرى، هات كل المتاح
+        let filtered = json.response.filter(m => importantLeagues.includes(m.league.id));
+        currentMatches = filtered.length > 0 ? filtered : json.response.slice(0, 30);
+        
         render(currentMatches);
-    } catch (e) { document.getElementById('matches-list').innerHTML = "⚠️ خطأ في الاتصال"; }
+    } catch (e) { list.innerHTML = "⚠️ خطأ في الاتصال"; }
 }
 
 function render(data) {
     const list = document.getElementById('matches-list');
-    list.innerHTML = '';
+    list.innerHTML = data.length ? '' : '<p style="text-align:center; padding:20px;">لا توجد مباريات متاحة</p>';
     data.forEach(m => {
         const isHomeFav = favTeams.some(f => f.id === m.teams.home.id);
         const isAwayFav = favTeams.some(f => f.id === m.teams.away.id);
@@ -186,8 +193,8 @@ function renderFavs() {
 async function getTeamData(id, name) {
     const area = document.getElementById('team-info-area');
     area.innerHTML = `<h4 style="color:var(--accent-orange); margin-bottom:10px;">📰 أخبار ومباريات ${name}:</h4>
-                      <div class="news-card"><p>برشلونة يستعد للمباراة القادمة بحماس شديد والمدرب يثق في اللاعبين.</p></div>
-                      <div class="news-card"><p>تقارير: النادي يسعى لتعزيز صفوفه في الانتقالات الصيفية القادمة.</p></div>
+                      <div class="news-card"><p>• ${name} يستعد بكل قوة للمنافسات القادمة في الدوري.</p></div>
+                      <div class="news-card"><p>• الجماهير تترقب أداء الفريق في الجولات القادمة.</p></div>
                       <h4 style="color:var(--light-blue); margin:15px 0 10px;">🏟️ آخر الماتشات:</h4>`;
     
     try {
