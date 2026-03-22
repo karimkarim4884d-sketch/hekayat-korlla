@@ -14,17 +14,19 @@
             --goal-bg: #004d99;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: var(--dark-bg); color: var(--text-white); padding: 10px; padding-bottom: 80px; }
+        body { background: var(--dark-bg); color: var(--text-white); padding: 10px; padding-bottom: 90px; }
 
         header { text-align: center; padding: 15px; color: var(--accent-orange); }
 
+        /* شريط البحث */
         .search-area { max-width: 500px; margin: 0 auto 15px; }
-        .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; }
+        .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; border: 2px solid var(--accent-orange); }
         .search-box input { flex: 1; padding: 12px; border: none; outline: none; font-size: 1rem; color: #333; text-align: right; }
         .search-box button { padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; font-weight: bold; }
 
+        /* الأزرار */
         .tabs { display: flex; gap: 8px; max-width: 500px; margin: 0 auto 20px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 0.9rem; }
         .tab-btn.active { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
 
         .match-container { max-width: 550px; margin: 0 auto; }
@@ -37,45 +39,44 @@
         .match-card {
             background: var(--card-bg); border-radius: 15px; display: flex;
             align-items: center; padding: 15px; margin-bottom: 12px; border-right: 4px solid var(--light-blue);
-            justify-content: space-between;
+            justify-content: space-between; position: relative;
         }
 
         .team { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-        .team img { width: 45px; height: 45px; object-fit: contain; }
-        .team span { font-size: 0.85rem; font-weight: bold; text-align: center; }
+        .team img { width: 40px; height: 40px; object-fit: contain; }
+        .team span { font-size: 0.8rem; font-weight: bold; text-align: center; }
 
+        /* خانة النتيجة الرقمية */
         .score-box {
             background: var(--goal-bg); color: white; min-width: 32px; height: 32px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 6px; font-weight: bold; font-size: 1.1rem;
-            border: 1px solid var(--light-blue); margin: 0 4px;
+            border: 1px solid var(--light-blue); margin: 0 5px;
         }
 
         .center-info { flex: 1.5; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .vs-badge { background: var(--accent-orange); color: white; padding: 3px 10px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
-        .time { font-size: 0.8rem; font-weight: bold; color: var(--light-blue); }
+        .time { font-size: 0.75rem; font-weight: bold; color: var(--light-blue); }
 
         .live-label { color: #ff4d4d; font-size: 0.7rem; font-weight: bold; animation: blink 1.2s infinite; }
         @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.4;} 100% {opacity: 1;} }
 
-        /* زر الواتساب الثابت */
+        /* الدعم الفني */
         .whatsapp-float {
             position: fixed; bottom: 20px; left: 20px; background: #25d366;
-            color: white; padding: 10px 18px; border-radius: 50px; text-decoration: none;
-            font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 999;
-            display: flex; align-items: center; gap: 5px; font-size: 0.9rem;
+            color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none;
+            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 1000;
+            display: flex; align-items: center; gap: 8px;
         }
 
-        /* نافذة التشكيلة */
+        /* المودال للتشكيلة */
         .modal {
-            display: none; position: fixed; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 15px;
+            display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); justify-content: center; align-items: center; padding: 20px;
         }
-        .modal-content { background: var(--dark-bg); padding: 20px; border-radius: 15px; width: 100%; max-width: 350px; border: 1px solid var(--light-blue); max-height: 80vh; overflow-y: auto; }
-        .close-btn { color: var(--accent-orange); float: left; font-size: 28px; cursor: pointer; font-weight: bold; }
-        
-        .lineup-list { text-align: right; margin-top: 15px; }
-        .lineup-item { padding: 8px; border-bottom: 1px solid #002a4d; font-size: 0.9rem; }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto; text-align: center; border: 1px solid var(--light-blue); }
+        .close-btn { color: var(--accent-orange); float: left; font-size: 30px; cursor: pointer; }
+        .player-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #004d99; font-size: 0.9rem; color: #fff; }
 
         .no-result { text-align: center; padding: 40px; color: #aaa; }
     </style>
@@ -98,20 +99,18 @@
 </div>
 
 <div id="matches-list" class="match-container">
-    <div class="no-result">⏳ جاري تحميل الماتشات...</div>
+    <div class="no-result">⏳ جاري جلب الماتشات...</div>
 </div>
 
-<!-- زر الدعم الفني -->
 <a href="https://wa.me/201040077271" class="whatsapp-float" target="_blank">
     <span>الدعم الفني</span> 💬
 </a>
 
-<!-- نافذة التشكيلة -->
 <div id="lineupModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h3 id="lineupTitle" style="color:var(--light-blue)">التشكيلة الرسمية</h3>
-        <div id="lineupBody" class="lineup-list"></div>
+        <h3 id="lineupTitle" style="margin-bottom:15px; color: var(--light-blue);"></h3>
+        <div id="lineupBody"></div>
     </div>
 </div>
 
@@ -119,7 +118,9 @@
 const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
 let currentData = [];
 
-const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 233, 307, 848];
+// وسعنا قائمة الدوريات عشان متبقاش فاضية دايماً
+const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 1, 4, 233, 307, 848, 480, 202];
+
 const dictionary = {
     "Real Madrid": "ريال مدريد", "Barcelona": "برشلونة", "Liverpool": "ليفربول",
     "Manchester City": "مانشستر سيتي", "Al Ahly": "الأهلي", "Zamalek": "الزمالك",
@@ -138,26 +139,32 @@ async function getMatches(offset, btnId) {
 
     const d = new Date();
     d.setDate(d.getDate() + offset);
-    const dateStr = d.toISOString().split('T')[0];
+    // تصحيح التوقيت عشان ميجيبش يوم غلط
+    const dateStr = d.toLocaleDateString('en-CA'); 
+    
     const list = document.getElementById('matches-list');
-    list.innerHTML = '<div class="no-result">⏳ جاري التحديث...</div>';
+    list.innerHTML = '<div class="no-result">⏳ جاري تحميل البيانات...</div>';
 
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
             headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
         });
         const json = await res.json();
-        currentData = json.response.filter(m => importantLeagues.includes(m.league.id));
+        
+        // لو مفيش ماتشات في الدوريات المهمة، نعرض كله عشان الصفحة متكونش فاضية
+        let filtered = json.response.filter(m => importantLeagues.includes(m.league.id));
+        currentData = filtered.length > 0 ? filtered : json.response.slice(0, 20); 
+        
         render(currentData);
     } catch (e) {
-        list.innerHTML = "<div class='no-result'>⚠️ خطأ في الاتصال</div>";
+        list.innerHTML = "<div class='no-result'>⚠️ فشل في جلب الماتشات</div>";
     }
 }
 
 function render(data) {
     const list = document.getElementById('matches-list');
     if (!data || data.length === 0) {
-        list.innerHTML = '<div class="no-result">لا توجد مباريات متاحة</div>';
+        list.innerHTML = '<div class="no-result">مفيش ماتشات مسجلة في التاريخ ده</div>';
         return;
     }
     
@@ -203,7 +210,7 @@ async function showLineup(fixtureId, teamName) {
     const body = document.getElementById('lineupBody');
     document.getElementById('lineupTitle').innerText = `تشكيلة ${translateAr(teamName)}`;
     modal.style.display = 'flex';
-    body.innerHTML = 'جاري التحميل...';
+    body.innerHTML = '<p style="color:#aaa">جاري جلب اللاعبين...</p>';
 
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures/lineups?fixture=${fixtureId}`, {
@@ -212,26 +219,32 @@ async function showLineup(fixtureId, teamName) {
         const json = await res.json();
         const teamData = json.response.find(t => t.team.name === teamName);
         
-        if (teamData) {
-            body.innerHTML = `<p style="color:white; margin-bottom:10px;">الخطة: ${teamData.formation}</p>`;
+        if (teamData && teamData.startXI) {
+            body.innerHTML = `<div style="color:var(--accent-orange); margin-bottom:10px;">الخطة: ${teamData.formation}</div>`;
             teamData.startXI.forEach(p => {
-                body.innerHTML += `<div class="lineup-item">👤 ${p.player.name} (${p.player.number})</div>`;
+                body.innerHTML += `<div class="player-row"><span>${p.player.name}</span> <span>${p.player.number}#</span></div>`;
             });
         } else {
-            body.innerHTML = 'التشكيلة لم تتوفر بعد';
+            body.innerHTML = '<p>التشكيلة الرسمية لسه منزلتش</p>';
         }
-    } catch(e) { body.innerHTML = 'حدث خطأ في الجلب'; }
+    } catch(e) { body.innerHTML = 'خطأ في التحميل'; }
 }
 
 function closeModal() { document.getElementById('lineupModal').style.display = 'none'; }
 
 function filterData() {
     const val = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = currentData.filter(m => translateAr(m.teams.home.name).includes(val) || translateAr(m.teams.away.name).includes(val));
+    const filtered = currentData.filter(m => 
+        translateAr(m.teams.home.name).includes(val) || 
+        translateAr(m.teams.away.name).includes(val) ||
+        m.league.name.toLowerCase().includes(val)
+    );
     render(filtered);
 }
 
+// البداية بمباريات اليوم
 getMatches(0, 'today');
 </script>
 </body>
-</html>
+    </html>
+    
