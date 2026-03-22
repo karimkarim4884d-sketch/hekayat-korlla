@@ -16,38 +16,28 @@
             --star-gold: #ffc107;
         }
 
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            -webkit-user-select: none; user-select: none;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-user-select: none; user-select: none; }
         input { user-select: text !important; }
-
         body { background: var(--dark-bg); color: var(--text-white); padding-bottom: 90px; }
 
-        header { 
-            display: flex; align-items: center; justify-content: center; 
-            gap: 12px; padding: 20px; background: var(--nav-bg); border-bottom: 2px solid var(--accent-orange);
-        }
-        
-        .logo-wrap { width: 50px; height: 50px; border-radius: 12px; border: 1px solid var(--accent-orange); overflow: hidden; background: #fff; }
-        .logo-img { width: 100%; height: 100%; object-fit: cover; }
+        header { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 15px; background: var(--nav-bg); border-bottom: 2px solid var(--accent-orange); }
+        .logo-wrap { width: 45px; height: 45px; border-radius: 12px; border: 2px solid var(--accent-orange); overflow: hidden; background: #fff; }
+        .logo-img { width: 100%; height: 100%; object-fit: contain; }
 
-        .search-area { max-width: 500px; margin: 15px; }
-        .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; border: 2px solid var(--accent-orange); }
+        .search-area { padding: 15px; }
+        .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--accent-orange); }
         .search-box input { flex: 1; padding: 12px; border: none; outline: none; text-align: right; color: #333; }
         .search-box button { padding: 0 15px; background: var(--accent-orange); border: none; color: white; }
 
-        .tabs { display: flex; gap: 8px; margin: 0 15px 20px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .tabs { display: flex; gap: 8px; margin: 0 15px 15px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; font-weight: bold; font-size: 0.8rem; }
         .tab-btn.active { background: var(--accent-orange); }
 
         .section-container { display: none; padding: 0 15px; }
         .section-container.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .league-title { text-align: center; color: var(--light-blue); margin: 20px 0 10px; font-weight: bold; background: rgba(0,191,255,0.1); padding: 8px; border-radius: 5px; font-size: 0.8rem; }
+        .league-title { text-align: center; color: var(--light-blue); margin: 15px 0 8px; font-weight: bold; background: rgba(0,191,255,0.1); padding: 8px; border-radius: 5px; font-size: 0.8rem; }
 
         .match-card {
             background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 12px;
@@ -56,7 +46,7 @@
         }
 
         .team { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; }
-        .team img { width: 40px; height: 40px; object-fit: contain; }
+        .team img { width: 38px; height: 38px; object-fit: contain; }
         .team span { font-size: 0.75rem; font-weight: bold; text-align: center; }
 
         .star-icon { position: absolute; top: -10px; right: 0; color: #555; font-size: 1.2rem; cursor: pointer; }
@@ -64,14 +54,10 @@
 
         .score-box { background: var(--goal-bg); color: white; min-width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; border: 1px solid var(--light-blue); }
 
-        .news-card { background: #002a4d; padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--accent-orange); }
-        .news-card p { font-size: 0.85rem; color: #eee; line-height: 1.4; }
-
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 0.7rem; cursor: pointer; }
         .nav-item.active { color: var(--light-blue); }
 
-        .setting-item { background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
         .wa-btn { background: #25d366; color: white; padding: 12px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: bold; justify-content: center; margin-top: 20px; }
     </style>
 </head>
@@ -93,14 +79,14 @@
 </div>
 
 <div id="fav-section" class="section-container">
-    <h3 style="color:var(--light-blue); margin-top:15px;">⭐ المفضلات</h3>
+    <h3 style="color:var(--light-blue); margin-top:15px;">⭐ مفضلتي</h3>
     <div id="fav-grid" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin:15px 0;"></div>
     <div id="team-info-area"></div>
 </div>
 
 <div id="settings-section" class="section-container">
     <h3 style="color:var(--light-blue); margin:15px 0;">⚙️ الإعدادات</h3>
-    <div class="setting-item"><span>اللغة</span><span>العربية</span></div>
+    <div class="setting-item" style="background:var(--card-bg); padding:15px; border-radius:10px; margin-bottom:10px;"><span>اللغة</span><span>العربية</span></div>
     <a href="https://wa.me/201040077271" class="wa-btn">💬 الدعم الفني - واتساب</a>
 </div>
 
@@ -111,9 +97,13 @@
 </nav>
 
 <script>
-const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-// قائمة الدوريات الكبرى
-const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 848, 1, 4];
+// المفاتيح المدمجة (سيتم التبديل بينهم تلقائياً)
+const KEYS = ['Df31d97917bce1190ac701b9db9f74b6', 'bf7d42ac856fecc0e1e6ad24debe9c5e'];
+let currentKeyIndex = 0;
+
+// معرفات الدوريات المهمة (إنجلترا، إسبانيا، إيطاليا، مصر، السعودية، أبطال أوروبا، إلخ)
+const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 848, 233, 307, 1, 4, 141];
+
 let currentMatches = [];
 let favTeams = JSON.parse(localStorage.getItem('myFavs')) || [];
 
@@ -133,20 +123,39 @@ async function getMatches(offset, btn) {
     const d = new Date(); d.setDate(d.getDate() + offset);
     const dateStr = d.toLocaleDateString('en-CA');
     const list = document.getElementById('matches-list');
-    list.innerHTML = '<p style="text-align:center; padding:20px;">⏳ جاري جلب المباريات...</p>';
-    
+    list.innerHTML = '<p style="text-align:center; padding:20px;">⏳ جاري تحديث المباريات المهمة...</p>';
+
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
-            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+            headers: { 
+                "x-rapidapi-key": KEYS[currentKeyIndex], 
+                "x-rapidapi-host": "v3.football.api-sports.io" 
+            }
         });
         const json = await res.json();
+
+        if (!json.response || json.response.length === 0) {
+            throw new Error('No data');
+        }
+
+        // فلترة الماتشات المهمة فقط
+        currentMatches = json.response.filter(m => importantLeagues.includes(m.league.id));
         
-        // تعديل ذكي: لو مفيش ماتشات في الدوريات الكبرى، هات كل المتاح
-        let filtered = json.response.filter(m => importantLeagues.includes(m.league.id));
-        currentMatches = filtered.length > 0 ? filtered : json.response.slice(0, 30);
-        
+        // لو مفيش ماتشات مهمة النهاردة، اعرض أول 15 ماتش متاحين وخلاص
+        if (currentMatches.length === 0) {
+            currentMatches = json.response.slice(0, 15);
+        }
+
         render(currentMatches);
-    } catch (e) { list.innerHTML = "⚠️ خطأ في الاتصال"; }
+    } catch (e) {
+        // لو المفتاح الأول خلص، جرب التاني تلقائياً
+        if (currentKeyIndex < KEYS.length - 1) {
+            currentKeyIndex++;
+            getMatches(offset);
+        } else {
+            list.innerHTML = "⚠️ تعذر جلب البيانات، جرب مرة أخرى لاحقاً";
+        }
+    }
 }
 
 function render(data) {
@@ -163,6 +172,8 @@ function render(data) {
                     <img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span>
                 </div>
                 <div class="score-box">${m.goals.home ?? '-'}</div>
+                <div style="font-size:0.7rem; color:var(--accent-orange)">VS</div>
+                <div class="score-box">${m.goals.away ?? '-'}</div>
                 <div class="team">
                     <span class="star-icon ${isAwayFav?'active':''}" onclick="toggleFav(${m.teams.away.id}, '${m.teams.away.name}', '${m.teams.away.logo}')">★</span>
                     <img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span>
@@ -181,7 +192,7 @@ function toggleFav(id, name, logo) {
 
 function renderFavs() {
     const grid = document.getElementById('fav-grid');
-    grid.innerHTML = favTeams.length ? '' : '<p>أضف فرقك بالضغط على النجمة</p>';
+    grid.innerHTML = favTeams.length ? '' : '<p style="padding:10px; font-size:0.8rem;">اضغط على النجمة لإضافة فريقك</p>';
     favTeams.forEach(t => {
         grid.innerHTML += `
             <div onclick="getTeamData(${t.id}, '${t.name}')" style="background:var(--card-bg); padding:10px; border-radius:10px; text-align:center; border: 1px solid #555;">
@@ -193,25 +204,22 @@ function renderFavs() {
 async function getTeamData(id, name) {
     const area = document.getElementById('team-info-area');
     area.innerHTML = `<h4 style="color:var(--accent-orange); margin-bottom:10px;">📰 أخبار ومباريات ${name}:</h4>
-                      <div class="news-card"><p>• ${name} يستعد بكل قوة للمنافسات القادمة في الدوري.</p></div>
-                      <div class="news-card"><p>• الجماهير تترقب أداء الفريق في الجولات القادمة.</p></div>
-                      <h4 style="color:var(--light-blue); margin:15px 0 10px;">🏟️ آخر الماتشات:</h4>`;
-    
+                      <div style="background:#002a4d; padding:10px; border-radius:8px; font-size:0.8rem; margin-bottom:10px;">• ترقب كبير لمباراة ${name} القادمة وتوقعات بأداء قوي.</div>`;
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures?team=${id}&last=5`, {
-            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+            headers: { "x-rapidapi-key": KEYS[currentKeyIndex], "x-rapidapi-host": "v3.football.api-sports.io" }
         });
         const json = await res.json();
         json.response.forEach(m => {
             area.innerHTML += `
-                <div class="match-card" style="border-right-color:#ccc; opacity:0.9">
+                <div class="match-card" style="opacity:0.9">
                     <div class="team"><img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span></div>
                     <div class="score-box">${m.goals.home}</div>
                     <div class="score-box">${m.goals.away}</div>
                     <div class="team"><img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span></div>
                 </div>`;
         });
-    } catch(e) { area.innerHTML += "تعذر تحميل الماتشات"; }
+    } catch(e) {}
 }
 
 function filterData() {
@@ -222,5 +230,4 @@ function filterData() {
 getMatches(0);
 </script>
 </body>
-    </html>
-    
+</html>
