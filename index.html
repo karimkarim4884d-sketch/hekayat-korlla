@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هجمة ولقطة - النسخة الاحترافية</title>
+    <title>هجمة ولقطة - الجدول العالمي</title>
     <style>
         :root {
             --dark-bg: #001220;
@@ -17,51 +17,35 @@
 
         header { text-align: center; padding: 15px; color: var(--accent-orange); }
 
+        /* شريط البحث */
         .search-area { max-width: 500px; margin: 0 auto 15px; }
-        .search-box {
-            display: flex; background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 0 15px rgba(0,191,255, 0.2);
-        }
-        .search-box input {
-            flex: 1; padding: 14px; border: none; outline: none; font-size: 1rem; color: #333; text-align: right;
-        }
-        .search-box button {
-            padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; font-weight: bold;
-        }
+        .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; }
+        .search-box input { flex: 1; padding: 12px; border: none; outline: none; font-size: 1rem; color: #333; text-align: right; }
+        .search-box button { padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; font-weight: bold; }
 
+        /* الأقسام الثلاثة */
         .tabs { display: flex; gap: 8px; max-width: 500px; margin: 0 auto 20px; }
-        .tab-btn { 
-            flex: 1; padding: 12px; border: none; background: #002a4d; 
-            color: white; border-radius: 8px; cursor: pointer; font-weight: bold;
-        }
-        .tab-btn.active { background: var(--accent-orange); transform: translateY(-2px); }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .tab-btn.active { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
 
         .match-container { max-width: 550px; margin: 0 auto; }
 
         .league-title { 
-            text-align: center; font-size: 0.75rem; color: var(--light-blue); 
-            margin: 25px 0 10px; font-weight: bold; background: rgba(0, 191, 255, 0.1); padding: 5px; border-radius: 5px;
+            text-align: center; font-size: 0.85rem; color: var(--light-blue); 
+            margin: 25px 0 10px; font-weight: bold; background: rgba(0, 191, 255, 0.1); padding: 8px; border-radius: 5px;
         }
 
         .match-card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-right: 4px solid var(--light-blue);
+            background: var(--card-bg); border-radius: 15px; display: flex;
+            align-items: center; padding: 15px; margin-bottom: 12px; border-right: 4px solid var(--light-blue);
         }
 
         .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .team img { width: 45px; height: 45px; object-fit: contain; }
-        .team span { font-size: 0.9rem; font-weight: bold; text-align: center; color: white; }
+        .team span { font-size: 0.9rem; font-weight: bold; text-align: center; }
 
-        .center-info { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 15px; }
-        .vs-badge {
-            background: var(--accent-orange); color: white; padding: 4px 12px;
-            border-radius: 6px; font-weight: bold; font-size: 0.8rem;
-        }
+        .center-info { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 10px; }
+        .vs-badge { background: var(--accent-orange); color: white; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
         .time { font-size: 0.85rem; font-weight: bold; color: var(--light-blue); }
 
         .no-result { text-align: center; padding: 40px; color: #aaa; }
@@ -73,7 +57,7 @@
 
 <div class="search-area">
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="ابحث باسم الفريق بالعربي أو English..." oninput="filterData()">
+        <input type="text" id="searchInput" placeholder="ابحث عن مباراة أو فريق بالعربي..." oninput="filterData()">
         <button onclick="filterData()">بحث</button>
     </div>
 </div>
@@ -85,27 +69,28 @@
 </div>
 
 <div id="matches-list" class="match-container">
-    <div class="no-result">⏳ جاري تحميل الماتشات...</div>
+    <div class="no-result">⏳ جاري تحميل الماتشات المترجمة...</div>
 </div>
 
 <script>
 const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-let currentData = []; 
+let currentData = [];
 
-// قاموس ترجمة شامل (ضيف فيه براحتك)
+// الدوريات المهمة فقط
+const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 233, 307, 848];
+
+// قاموس الترجمة الذكي
 const dictionary = {
     "Real Madrid": "ريال مدريد", "Barcelona": "برشلونة", "Liverpool": "ليفربول",
-    "Manchester City": "مانشستر سيتي", "Manchester United": "مانشستر يونايتد",
-    "Arsenal": "أرسنال", "Chelsea": "تشيلسي", "Tottenham": "توتنهام",
-    "Bayern Munich": "بايرن ميونخ", "Dortmund": "دورتموند", "Paris Saint Germain": "باريس سان جيرمان",
-    "Juventus": "يوفنتوس", "AC Milan": "ميلان", "Inter": "إنتر ميلان",
-    "Al Ahly": "الأهلي", "Zamalek": "الزمالك", "Pyramids": "بيراميدز",
-    "Al Hilal": "الهلال", "Al Nassr": "النصر", "Al Ittihad": "الاتحاد",
-    "La Liga": "الدوري الإسباني", "Premier League": "الدوري الإنجليزي", 
-    "Serie A": "الدوري الإيطالي", "Bundesliga": "الدوري الألماني", "Ligue 1": "الدوري الفرنسي"
+    "Manchester City": "مانشستر سيتي", "Al Ahly": "الأهلي", "Zamalek": "الزمالك",
+    "Arsenal": "أرسنال", "Chelsea": "تشيلسي", "Bayern Munich": "بايرن ميونخ",
+    "Paris Saint Germain": "باريس سان جيرمان", "Al Hilal": "الهلال", "Al Nassr": "النصر",
+    "Premier League": "الدوري الإنجليزي", "La Liga": "الدوري الإسباني",
+    "UEFA Champions League": "دوري أبطال أوروبا", "Egyptian Premier League": "الدوري المصري",
+    "Saudi Pro League": "الدوري السعودي", "Serie A": "الدوري الإيطالي"
 };
 
-const ar = (name) => dictionary[name] || name;
+const translateAr = (name) => dictionary[name] || name;
 
 async function getMatches(offset, btnId) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -114,7 +99,6 @@ async function getMatches(offset, btnId) {
     const d = new Date();
     d.setDate(d.getDate() + offset);
     const dateStr = d.toISOString().split('T')[0];
-
     const list = document.getElementById('matches-list');
     list.innerHTML = '<div class="no-result">⏳ جاري جلب البيانات...</div>';
 
@@ -123,17 +107,19 @@ async function getMatches(offset, btnId) {
             headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
         });
         const json = await res.json();
-        currentData = json.response;
+        
+        // تصفية الدوريات المهمة فقط
+        currentData = json.response.filter(m => importantLeagues.includes(m.league.id));
         render(currentData);
     } catch (e) {
-        list.innerHTML = "<div class='no-result'>⚠️ فشل في الاتصال بالبيانات</div>";
+        list.innerHTML = "<div class='no-result'>⚠️ خطأ في الاتصال</div>";
     }
 }
 
 function render(data) {
     const list = document.getElementById('matches-list');
     if (!data || data.length === 0) {
-        list.innerHTML = '<div class="no-result">لا توجد مباريات متاحة</div>';
+        list.innerHTML = '<div class="no-result">لا توجد مباريات "مهمة" متاحة</div>';
         return;
     }
     
@@ -142,19 +128,19 @@ function render(data) {
         const matchTime = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
         list.innerHTML += `
             <div class="match-item">
-                <div class="league-title">🏆 ${ar(m.league.name)}</div>
+                <div class="league-title">🏆 ${translateAr(m.league.name)}</div>
                 <div class="match-card">
                     <div class="team">
-                        <img src="${m.teams.home.logo}" onerror="this.src='https://via.placeholder.com/45'">
-                        <span>${ar(m.teams.home.name)}</span>
+                        <img src="${m.teams.home.logo}">
+                        <span>${translateAr(m.teams.home.name)}</span>
                     </div>
                     <div class="center-info">
                         <div class="vs-badge">VS</div>
                         <div class="time">${matchTime}</div>
                     </div>
                     <div class="team">
-                        <img src="${m.teams.away.logo}" onerror="this.src='https://via.placeholder.com/45'">
-                        <span>${ar(m.teams.away.name)}</span>
+                        <img src="${m.teams.away.logo}">
+                        <span>${translateAr(m.teams.away.name)}</span>
                     </div>
                 </div>
             </div>
@@ -167,9 +153,8 @@ function filterData() {
     const filtered = currentData.filter(m => {
         const hEn = m.teams.home.name.toLowerCase();
         const aEn = m.teams.away.name.toLowerCase();
-        const hAr = ar(m.teams.home.name);
-        const aAr = ar(m.teams.away.name);
-        
+        const hAr = translateAr(m.teams.home.name);
+        const aAr = translateAr(m.teams.away.name);
         return hEn.includes(val) || aEn.includes(val) || hAr.includes(val) || aAr.includes(val);
     });
     render(filtered);
