@@ -6,109 +6,305 @@
     <title>هجمة ولقطة</title>
     <style>
         :root {
-            --dark-bg: #001220; --card-bg: #003366; --accent-orange: #ff6b35;
-            --text-white: #ffffff; --light-blue: #00bfff; --goal-bg: #004d99;
+            --dark-bg: #001220;
+            --card-bg: #003366;
+            --accent-orange: #ff6b35;
+            --text-white: #ffffff;
+            --light-blue: #00bfff;
+            --goal-bg: #004d99;
             --nav-bg: #000c16;
+            --star-color: #ffc107; /* لون النجمة الذهبي */
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-user-select: none; user-select: none; }
-        input { user-select: text !important; }
-        body { background: var(--dark-bg); color: var(--text-white); padding-bottom: 90px; }
-        header { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 15px; background: var(--nav-bg); border-bottom: 2px solid var(--accent-orange); }
-        .logo-wrap { width: 45px; height: 45px; border-radius: 12px; border: 1px solid var(--accent-orange); overflow: hidden; background: #fff; }
-        .logo-img { width: 100%; height: 100%; object-fit: contain; }
-        .search-area { padding: 15px; }
-        .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--accent-orange); }
-        .search-box input { flex: 1; padding: 10px; border: none; outline: none; text-align: right; color: #333; }
-        .search-box button { padding: 0 15px; background: var(--accent-orange); border: none; color: white; }
-        .tabs { display: flex; gap: 8px; margin: 0 15px 15px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .tab-btn.active { background: var(--accent-orange); }
-        .league-title { text-align: center; color: var(--light-blue); margin: 15px 0 8px; font-weight: bold; background: rgba(0,191,255,0.1); padding: 8px; border-radius: 5px; font-size: 0.8rem; }
-        .match-card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border-right: 4px solid var(--light-blue); }
-        .team { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .team img { width: 38px; height: 38px; object-fit: contain; }
-        .team span { font-size: 0.7rem; font-weight: bold; text-align: center; }
-        .score-box { background: var(--goal-bg); color: white; min-width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 0.7rem; cursor: pointer; }
+
+        /* منع النسخ والتحديد تماماً لإعطاء إحساس التطبيق */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        input { user-select: text !important; -webkit-user-select: text !important; }
+
+        body { background: var(--dark-bg); color: var(--text-white); padding-bottom: 90px; overflow-x: hidden; }
+
+        /* تنسيق الهيدر واللوجو المظبوط */
+        header { 
+            display: flex; align-items: center; justify-content: center; 
+            gap: 15px; padding: 20px; color: var(--accent-orange);
+            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+        }
+        
+        .logo-container {
+            width: 55px; height: 55px; border-radius: 15px; 
+            overflow: hidden; box-shadow: 0 0 15px rgba(255,107,53,0.5);
+            background: var(--card-bg); display: flex; align-items: center; justify-content: center;
+        }
+
+        .logo-img { width: 100%; height: 100%; object-fit: cover; }
+
+        h1 { font-size: 1.6rem; }
+
+        .search-area { max-width: 500px; margin: 0 15px 15px; }
+        .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; border: 2px solid var(--accent-orange); }
+        .search-box input { flex: 1; padding: 12px; border: none; outline: none; font-size: 1rem; color: #333; text-align: right; }
+        .search-box button { padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; }
+
+        .tabs { display: flex; gap: 8px; max-width: 500px; margin: 0 15px 20px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .tab-btn.active { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
+
+        .section-container { display: none; padding: 0 15px; }
+        .section-container.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .league-title { 
+            text-align: center; font-size: 0.85rem; color: var(--light-blue); 
+            margin: 25px 0 10px; font-weight: bold; background: rgba(0, 191, 255, 0.1); padding: 8px; border-radius: 5px;
+        }
+
+        /* تنسيق كارت المباراة */
+        .match-card {
+            background: var(--card-bg); border-radius: 18px; display: flex;
+            align-items: center; padding: 15px; margin-bottom: 15px; border-right: 5px solid var(--light-blue);
+            justify-content: space-between; position: relative;
+        }
+
+        .team { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+        .team img { width: 45px; height: 45px; object-fit: contain; }
+        .team span { font-size: 0.85rem; font-weight: bold; text-align: center; max-width: 100px; }
+
+        /* النجمة */
+        .star-fav {
+            position: absolute; top: 10px; font-size: 1.2rem; color: #aaa;
+            cursor: pointer; transition: 0.2s; z-index: 5;
+        }
+        .star-fav.home { right: 10px; }
+        .star-fav.away { left: 10px; }
+        .star-fav.active { color: var(--star-color); text-shadow: 0 0 5px var(--star-color); }
+
+        .score-box {
+            background: var(--goal-bg); color: white; min-width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; font-weight: bold; font-size: 1.2rem; border: 1px solid var(--light-blue);
+        }
+
+        .center-info { flex: 1.5; display: flex; flex-direction: column; align-items: center; gap: 5px; margin: 0 5px;}
+        .vs-badge { background: var(--accent-orange); color: white; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
+        .live-label { color: #ff4d4d; font-size: 0.7rem; font-weight: bold; animation: blink 1.2s infinite; }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--nav-bg);
+            display: flex; justify-content: space-around; padding: 12px 0;
+            border-top: 1px solid #002a4d; z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 0.7rem; cursor: pointer; }
         .nav-item.active { color: var(--light-blue); }
+
+        .placeholder-card { background: var(--card-bg); padding: 25px; border-radius: 12px; margin-top: 20px; text-align: center; border: 1px dashed var(--light-blue); }
+        .contact-btn {
+            background: #25d366; color: white; padding: 15px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-decoration: none; font-weight: bold; margin-top: 15px;
+        }
+        
+        /* مودال التشكيلة */
+        .modal {
+            display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); justify-content: center; align-items: center; padding: 10px;
+        }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 18px; width: 100%; max-width: 400px; max-height: 85vh; overflow-y: auto; text-align: center; border: 2px solid var(--light-blue); }
+        .player-row { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #004d99; gap: 12px; }
+        .player-row img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--light-blue); }
+        .fav-team-item { display: flex; align-items: center; gap: 10px; background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 8px;}
+        .fav-team-item img { width: 30px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo-wrap"><img src="https://cdn-icons-png.flaticon.com/512/33/33736.png" class="logo-img"></div>
+    <div class="logo-container">
+        <img src="https://i.ibb.co/LzNfXpY/ball-icon.png" class="logo-img" alt="⚽">
+    </div>
     <h1>هجمة ولقطة</h1>
 </header>
 
-<div id="matches-section">
+<div id="matches-section" class="section-container active">
     <div class="search-area"><div class="search-box"><input type="text" id="searchInput" placeholder="ابحث عن مباراة..." oninput="filterData()"><button>🔍</button></div></div>
     <div class="tabs">
-        <button class="tab-btn" onclick="getMatches(-1, this)">الأمس</button>
-        <button class="tab-btn active" onclick="getMatches(0, this)">اليوم</button>
-        <button class="tab-btn" onclick="getMatches(1, this)">الغد</button>
+        <button class="tab-btn" id="yesterday" onclick="getMatches(-1, 'yesterday')">الأمس</button>
+        <button class="tab-btn active" id="today" onclick="getMatches(0, 'today')">اليوم</button>
+        <button class="tab-btn" id="tomorrow" onclick="getMatches(1, 'tomorrow')">الغد</button>
     </div>
     <div id="matches-list"></div>
 </div>
 
+<div id="standings-section" class="section-container">
+    <h3 style="color: var(--light-blue); margin-bottom: 15px;">📊 جداول الترتيب</h3>
+    <div class="placeholder-card">جاري تحديث جداول الدوريات...</div>
+</div>
+
+<div id="transfers-section" class="section-container">
+    <h3 style="color: var(--light-blue); margin-bottom: 15px;">🔄 الانتقالات</h3>
+    <div class="placeholder-card">أحدث الصفقات قريباً...</div>
+</div>
+
+<div id="fav-section" class="section-container">
+    <h3 style="color: var(--light-blue); margin-bottom: 15px;">⭐ مفضلتي</h3>
+    <div id="fav-list">
+        <div class="placeholder-card">اضغط على النجمة ⭐ بجوار الفريق لإضافته هنا</div>
+    </div>
+</div>
+
+<div id="more-section" class="section-container">
+    <h3 style="color: var(--light-blue); margin-bottom: 15px;">➕ المزيد</h3>
+    <div class="placeholder-card">
+        <p style="margin-bottom: 15px;">لأي استفسار أو دعم فني تواصل معنا مباشرة:</p>
+        <a href="https://wa.me/201040077271" class="contact-btn">💬 تواصل عبر واتساب</a>
+    </div>
+</div>
+
 <nav class="bottom-nav">
-    <div class="nav-item active"><span>⚽</span><span>المباريات</span></div>
-    <div class="nav-item"><span>⭐</span><span>مفضلتي</span></div>
-    <div class="nav-item"><span>⚙️</span><span>الإعدادات</span></div>
+    <div class="nav-item active" onclick="showSection('matches-section', this)"><span>⚽</span><span>المباريات</span></div>
+    <div class="nav-item" onclick="showSection('standings-section', this)"><span>📊</span><span>الترتيب</span></div>
+    <div class="nav-item" onclick="showSection('transfers-section', this)"><span>🔄</span><span>انتقالات</span></div>
+    <div class="nav-item" onclick="showSection('fav-section', this)"><span>⭐</span><span>مفضلتي</span></div>
+    <div class="nav-item" onclick="showSection('more-section', this)"><span>➕</span><span>المزيد</span></div>
 </nav>
 
+<div id="lineupModal" style="display:none;" class="modal">
+    <div class="modal-content">
+        <span onclick="closeModal()" style="float: left; cursor: pointer; color: var(--accent-orange); font-size: 28px;">&times;</span>
+        <h3 id="lineupTitle" style="color: var(--light-blue);"></h3>
+        <div id="lineupBody"></div>
+    </div>
+</div>
+
 <script>
-// المفتاح الجديد الخاص بك
-const API_KEY = 'df31d97917bce1190ac701b9db9f74b6'; 
+const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
+let currentData = [];
+const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 1, 4, 233, 307, 848, 480, 202];
+// مصفوفة لتخزين الفرق المفضلة
+let favoriteTeams = JSON.parse(localStorage.getItem('favTeams')) || [];
 
-let currentMatches = [];
+function showSection(sectionId, element) {
+    document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    element.classList.add('active');
+    if(sectionId === 'fav-section') renderFavorites();
+}
 
-async function getMatches(offset, btn) {
-    if(btn) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+async function getMatches(offset, btnId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(btnId).classList.add('active');
     const d = new Date(); d.setDate(d.getDate() + offset);
-    const dateStr = d.toLocaleDateString('en-CA');
+    const dateStr = d.toLocaleDateString('en-CA'); 
     const list = document.getElementById('matches-list');
-    list.innerHTML = '<p style="text-align:center; padding:20px;">⏳ جاري جلب المباريات...</p>';
-
+    list.innerHTML = '<div class="placeholder-card">⏳ جاري تحميل المباريات...</div>';
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
             headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
         });
         const json = await res.json();
-        
-        // جلب أول 40 مباراة متاحة لضمان عدم وجود مساحات فارغة
-        currentMatches = json.response || [];
-        render(currentMatches);
-    } catch (e) {
-        list.innerHTML = "⚠️ خطأ في الاتصال بالمفتاح الجديد.";
-    }
+        let filtered = json.response.filter(m => importantLeagues.includes(m.league.id));
+        currentData = filtered.length > 0 ? filtered : json.response.slice(0, 15); 
+        render(currentData);
+    } catch (e) { list.innerHTML = "⚠️ خطأ اتصال، تأكد من الإنترنت"; }
 }
 
 function render(data) {
     const list = document.getElementById('matches-list');
-    list.innerHTML = data.length ? '' : '<p style="text-align:center; padding:20px;">لا توجد مباريات متاحة الآن</p>';
+    list.innerHTML = '';
     data.forEach(m => {
+        const matchTime = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+        // التحقق إذا كان الفريق في المفضلة
+        const isHomeFav = favoriteTeams.some(team => team.id === m.teams.home.id);
+        const isAwayFav = favoriteTeams.some(team => team.id === m.teams.away.id);
+
         list.innerHTML += `
             <div class="league-title">🏆 ${m.league.name}</div>
             <div class="match-card">
-                <div class="team"><img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span></div>
+                <span class="star-fav home ${isHomeFav ? 'active' : ''}" onclick="toggleFavorite(${m.teams.home.id}, '${m.teams.home.name}', '${m.teams.home.logo}')">⭐</span>
+                <div class="team" onclick="showLineup(${m.fixture.id}, '${m.teams.home.name}')"><img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span></div>
                 <div class="score-box">${m.goals.home ?? '-'}</div>
-                <div style="font-size:0.6rem; color:var(--accent-orange)">VS</div>
+                <div class="center-info"><div class="vs-badge">VS</div><div style="font-size:0.8rem">${matchTime}</div></div>
                 <div class="score-box">${m.goals.away ?? '-'}</div>
-                <div class="team"><img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span></div>
+                <div class="team" onclick="showLineup(${m.fixture.id}, '${m.teams.away.name}')"><img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span></div>
+                <span class="star-fav away ${isAwayFav ? 'active' : ''}" onclick="toggleFavorite(${m.teams.away.id}, '${m.teams.away.name}', '${m.teams.away.logo}')">⭐</span>
             </div>`;
     });
 }
 
-function filterData() {
-    const val = document.getElementById('searchInput').value.toLowerCase();
-    render(currentMatches.filter(m => m.teams.home.name.toLowerCase().includes(val) || m.teams.away.name.toLowerCase().includes(val)));
+// وظيفة إضافة/إزالة الفريق من المفضلة
+function toggleFavorite(teamId, teamName, teamLogo) {
+    const index = favoriteTeams.findIndex(team => team.id === teamId);
+    if (index === -1) {
+        // إضافة
+        favoriteTeams.push({ id: teamId, name: teamName, logo: teamLogo });
+    } else {
+        // إزالة
+        favoriteTeams.splice(index, 1);
+    }
+    // حفظ في localStorage
+    localStorage.setItem('favTeams', JSON.stringify(favoriteTeams));
+    // تحديث العرض
+    render(currentData);
 }
 
-getMatches(0);
+// وظيفة عرض الفرق المفضلة في قسم مفضلتي
+function renderFavorites() {
+    const favList = document.getElementById('fav-list');
+    if (favoriteTeams.length === 0) {
+        favList.innerHTML = '<div class="placeholder-card">اضغط على النجمة ⭐ بجوار الفريق لإضافته هنا</div>';
+        return;
+    }
+    favList.innerHTML = '';
+    favoriteTeams.forEach(team => {
+        favList.innerHTML += `
+            <div class="fav-team-item">
+                <img src="${team.logo}" alt="">
+                <span>${team.name}</span>
+                <span style="color:#aaa; font-size:0.7rem; margin-right: auto;">(سيتم إضافة الأخبار قريباً)</span>
+            </div>
+        `;
+    });
+}
+
+async function showLineup(fixtureId, teamName) {
+    const modal = document.getElementById('lineupModal');
+    modal.style.display = 'flex';
+    document.getElementById('lineupBody').innerHTML = '⏳ جاري تحميل التشكيلة...';
+    try {
+        const res = await fetch(`https://v3.football.api-sports.io/fixtures/lineups?fixture=${fixtureId}`, {
+            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+        });
+        const json = await res.json();
+        const teamLineup = json.response.find(t => t.team.name === teamName);
+        if (teamLineup) {
+            let html = `<p style="color:var(--accent-orange); margin-bottom:10px;">الخطة: ${teamLineup.formation}</p>`;
+            teamLineup.startXI.forEach(p => {
+                html += `<div class="player-row">
+                    <img src="https://media.api-sports.io/football/players/${p.player.id}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+                    <div style="text-align:right">
+                        <div style="font-weight:bold">${p.player.name}</div>
+                        <div style="font-size:0.7rem; color:#aaa">#${p.player.number} | ${p.player.pos}</div>
+                    </div></div>`;
+            });
+            document.getElementById('lineupBody').innerHTML = html;
+        } else { document.getElementById('lineupBody').innerHTML = 'التشكيلة الرسمية غير متوفرة حالياً'; }
+    } catch(e) { document.getElementById('lineupBody').innerHTML = 'خطأ اتصال'; }
+}
+
+function closeModal() { document.getElementById('lineupModal').style.display = 'none'; }
+function filterData() {
+    const val = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = currentData.filter(m => m.teams.home.name.toLowerCase().includes(val) || m.teams.away.name.toLowerCase().includes(val));
+    render(filtered);
+}
+getMatches(0, 'today');
 </script>
 </body>
-</html>
+            </html>
