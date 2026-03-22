@@ -19,16 +19,12 @@
         * { 
             margin: 0; padding: 0; box-sizing: border-box; 
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            -webkit-touch-callout: none; /* iOS Safari */
-            -webkit-user-select: none;   /* Safari */
-            -khtml-user-select: none;    /* Konqueror HTML */
-            -moz-user-select: none;      /* Firefox */
-            -ms-user-select: none;       /* Internet Explorer/Edge */
-            user-select: none;           /* Non-prefixed version */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* السماح بالتحديد فقط في خانة البحث */
         input { user-select: text !important; -webkit-user-select: text !important; }
 
         body { background: var(--dark-bg); color: var(--text-white); padding-bottom: 90px; overflow-x: hidden; }
@@ -37,15 +33,20 @@
             display: flex; align-items: center; justify-content: center; 
             gap: 12px; padding: 20px; color: var(--accent-orange);
         }
-        .logo-img { width: 45px; height: 45px; border-radius: 12px; box-shadow: 0 0 10px rgba(255,107,53,0.3); }
+        
+        /* تحسين ظهور اللوجو */
+        .logo-img { 
+            width: 50px; height: 50px; border-radius: 12px; 
+            box-shadow: 0 0 15px rgba(255,107,53,0.5);
+            background: var(--card-bg); /* خلفية احتياطية لو الصورة متأخرة */
+            object-fit: cover;
+        }
 
-        /* شريط البحث */
         .search-area { max-width: 500px; margin: 0 15px 15px; }
         .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; border: 2px solid var(--accent-orange); }
         .search-box input { flex: 1; padding: 12px; border: none; outline: none; font-size: 1rem; color: #333; text-align: right; }
-        .search-box button { padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; font-weight: bold; }
+        .search-box button { padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; }
 
-        /* أزرار الأيام */
         .tabs { display: flex; gap: 8px; max-width: 500px; margin: 0 15px 20px; }
         .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
         .tab-btn.active { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
@@ -78,113 +79,79 @@
         .center-info { flex: 1.5; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .vs-badge { background: var(--accent-orange); color: white; padding: 3px 10px; border-radius: 6px; font-weight: bold; font-size: 0.7rem; }
         .live-label { color: #ff4d4d; font-size: 0.7rem; font-weight: bold; animation: blink 1.2s infinite; }
-        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.4;} 100% {opacity: 1;} }
 
-        /* شريط التنقل السفلي */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; background: var(--nav-bg);
             display: flex; justify-content: space-around; padding: 12px 0;
             border-top: 1px solid #002a4d; z-index: 1000;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 0.7rem; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { color: var(--light-blue); transform: translateY(-3px); }
-        .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 0.7rem; cursor: pointer; }
+        .nav-item.active { color: var(--light-blue); }
 
-        /* المودال */
-        .modal {
-            display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto; text-align: center; border: 1px solid var(--light-blue); }
-        .player-row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #004d99; gap: 12px; }
-        .player-row img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--light-blue); }
-        
-        /* تنسيق الأقسام الإضافية */
         .placeholder-card { background: var(--card-bg); padding: 20px; border-radius: 12px; margin-top: 20px; text-align: center; border: 1px dashed var(--light-blue); }
+        
+        /* تنسيق زر التواصل */
+        .contact-btn {
+            background: #25d366; color: white; padding: 15px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-decoration: none; font-weight: bold; margin-top: 15px;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" class="logo-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+    <img src="logo.png" class="logo-img" alt="⚽">
     <h1>هجمة ولقطة</h1>
 </header>
 
-<!-- قسم المباريات -->
 <div id="matches-section" class="section-container active">
-    <div class="search-area">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="ابحث عن مباراة أو فريق..." oninput="filterData()">
-            <button>🔍</button>
-        </div>
-    </div>
+    <div class="search-area"><div class="search-box"><input type="text" id="searchInput" placeholder="ابحث عن مباراة..." oninput="filterData()"><button>🔍</button></div></div>
     <div class="tabs">
         <button class="tab-btn" id="yesterday" onclick="getMatches(-1, 'yesterday')">الأمس</button>
         <button class="tab-btn active" id="today" onclick="getMatches(0, 'today')">اليوم</button>
         <button class="tab-btn" id="tomorrow" onclick="getMatches(1, 'tomorrow')">الغد</button>
     </div>
-    <div id="matches-list">
-        <div class="placeholder-card">⏳ جاري تحميل المباريات...</div>
-    </div>
+    <div id="matches-list"></div>
 </div>
 
-<!-- قسم الترتيب -->
 <div id="standings-section" class="section-container">
     <h3 style="color: var(--light-blue); margin-bottom: 15px;">📊 جداول الترتيب</h3>
-    <div class="placeholder-card">سيتم إضافة جداول الدوريات الكبرى قريباً</div>
+    <div class="placeholder-card">جاري تحديث جداول الدوريات...</div>
 </div>
 
-<!-- قسم الانتقالات -->
 <div id="transfers-section" class="section-container">
-    <h3 style="color: var(--light-blue); margin-bottom: 15px;">🔄 سوق الانتقالات</h3>
-    <div class="placeholder-card">آخر صفقات الميركاتو وتحديثات اللاعبين</div>
+    <h3 style="color: var(--light-blue); margin-bottom: 15px;">🔄 الانتقالات</h3>
+    <div class="placeholder-card">أحدث الصفقات قريباً...</div>
 </div>
 
-<!-- قسم التفضيلات -->
 <div id="fav-section" class="section-container">
-    <h3 style="color: var(--light-blue); margin-bottom: 15px;">⭐ مفضلتي</h3>
-    <div class="placeholder-card">تابع فرقك ودورياتك المفضلة من هنا</div>
+    <h3 style="color: var(--light-blue); margin-bottom: 15px;">⭐ المفضلات</h3>
+    <div class="placeholder-card">قائمة الفرق التي تتابعها</div>
 </div>
 
-<!-- قسم المزيد -->
 <div id="more-section" class="section-container">
     <h3 style="color: var(--light-blue); margin-bottom: 15px;">➕ المزيد</h3>
-    <div class="placeholder-card" style="text-align: right;">
-        <p style="margin-bottom: 10px;">• الإعدادات</p>
-        <p style="margin-bottom: 10px;">• من نحن</p>
-        <p>• تواصل معنا</p>
+    <div class="placeholder-card">
+        <p style="margin-bottom: 15px;">لأي استفسار أو دعم فني تواصل معنا مباشرة:</p>
+        <a href="https://wa.me/201040077271" class="contact-btn">
+             💬 تواصل عبر واتساب
+        </a>
     </div>
 </div>
 
-<!-- شريط التنقل -->
 <nav class="bottom-nav">
-    <div class="nav-item active" onclick="showSection('matches-section', this)">
-        <span class="nav-icon">⚽</span>
-        <span>المباريات</span>
-    </div>
-    <div class="nav-item" onclick="showSection('standings-section', this)">
-        <span class="nav-icon">📊</span>
-        <span>الترتيب</span>
-    </div>
-    <div class="nav-item" onclick="showSection('transfers-section', this)">
-        <span class="nav-icon">🔄</span>
-        <span>انتقالات</span>
-    </div>
-    <div class="nav-item" onclick="showSection('fav-section', this)">
-        <span class="nav-icon">⭐</span>
-        <span>مفضلتي</span>
-    </div>
-    <div class="nav-item" onclick="showSection('more-section', this)">
-        <span class="nav-icon">➕</span>
-        <span>المزيد</span>
-    </div>
+    <div class="nav-item active" onclick="showSection('matches-section', this)"><span>⚽</span><span>المباريات</span></div>
+    <div class="nav-item" onclick="showSection('standings-section', this)"><span>📊</span><span>الترتيب</span></div>
+    <div class="nav-item" onclick="showSection('transfers-section', this)"><span>🔄</span><span>انتقالات</span></div>
+    <div class="nav-item" onclick="showSection('fav-section', this)"><span>⭐</span><span>مفضلتي</span></div>
+    <div class="nav-item" onclick="showSection('more-section', this)"><span>➕</span><span>المزيد</span></div>
 </nav>
 
-<!-- مودال التشكيلة -->
-<div id="lineupModal" class="modal">
+<div id="lineupModal" style="display:none;" class="modal">
     <div class="modal-content">
         <span onclick="closeModal()" style="float: left; cursor: pointer; color: var(--accent-orange); font-size: 24px;">&times;</span>
-        <h3 id="lineupTitle" style="color: var(--light-blue); margin-bottom: 15px;"></h3>
+        <h3 id="lineupTitle" style="color: var(--light-blue);"></h3>
         <div id="lineupBody"></div>
     </div>
 </div>
@@ -194,37 +161,20 @@ const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
 let currentData = [];
 const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 1, 4, 233, 307, 848, 480, 202];
 
-const dictionary = {
-    "Real Madrid": "ريال مدريد", "Barcelona": "برشلونة", "Liverpool": "ليفربول",
-    "Manchester City": "مانشستر سيتي", "Al Ahly": "الأهلي", "Zamalek": "الزمالك",
-    "Arsenal": "أرسنال", "Chelsea": "تشيلسي", "Bayern Munich": "بايرن ميونخ",
-    "Paris Saint Germain": "باريس سان جيرمان", "Premier League": "الدوري الإنجليزي",
-    "La Liga": "الدوري الإسباني", "UEFA Champions League": "دوري أبطال أوروبا"
-};
-
-const translateAr = (name) => dictionary[name] || name;
-
-// وظيفة التنقل بين الأقسام
 function showSection(sectionId, element) {
     document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-    
     document.getElementById(sectionId).classList.add('active');
     element.classList.add('active');
-    window.scrollTo(0,0);
 }
 
 async function getMatches(offset, btnId) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(btnId).classList.add('active');
-
-    const d = new Date();
-    d.setDate(d.getDate() + offset);
+    const d = new Date(); d.setDate(d.getDate() + offset);
     const dateStr = d.toLocaleDateString('en-CA'); 
-    
     const list = document.getElementById('matches-list');
-    list.innerHTML = '<div class="placeholder-card">⏳ جاري تحميل البيانات...</div>';
-
+    list.innerHTML = '<div class="placeholder-card">⏳ تحميل...</div>';
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
             headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
@@ -233,87 +183,56 @@ async function getMatches(offset, btnId) {
         let filtered = json.response.filter(m => importantLeagues.includes(m.league.id));
         currentData = filtered.length > 0 ? filtered : json.response.slice(0, 15); 
         render(currentData);
-    } catch (e) {
-        list.innerHTML = "<div class='placeholder-card'>⚠️ تأكد من الاتصال بالإنترنت</div>";
-    }
+    } catch (e) { list.innerHTML = "⚠️ خطأ اتصال"; }
 }
 
 function render(data) {
     const list = document.getElementById('matches-list');
-    if (!data.length) { list.innerHTML = '<div class="placeholder-card">لا توجد مباريات متاحة</div>'; return; }
-    
     list.innerHTML = '';
     data.forEach(m => {
         const matchTime = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-        const isLive = ['1H', '2H', 'HT', 'ET', 'P'].includes(m.fixture.status.short);
-        const isFinished = m.fixture.status.short === 'FT';
-
         list.innerHTML += `
-            <div class="league-title">🏆 ${translateAr(m.league.name)}</div>
+            <div class="league-title">🏆 ${m.league.name}</div>
             <div class="match-card">
-                <div class="team" onclick="showLineup(${m.fixture.id}, '${m.teams.home.name}')">
-                    <img src="${m.teams.home.logo}">
-                    <span>${translateAr(m.teams.home.name)}</span>
-                </div>
+                <div class="team" onclick="showLineup(${m.fixture.id}, '${m.teams.home.name}')"><img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span></div>
                 <div class="score-box">${m.goals.home ?? '-'}</div>
-                <div class="center-info">
-                    ${isLive ? '<div class="live-label">● مباشر</div>' : isFinished ? '<div class="vs-badge">انتهت</div>' : '<div class="vs-badge">VS</div>'}
-                    <div style="font-size: 0.75rem;">${matchTime}</div>
-                </div>
+                <div class="center-info"><div class="vs-badge">VS</div><div>${matchTime}</div></div>
                 <div class="score-box">${m.goals.away ?? '-'}</div>
-                <div class="team" onclick="showLineup(${m.fixture.id}, '${m.teams.away.name}')">
-                    <img src="${m.teams.away.logo}">
-                    <span>${translateAr(m.teams.away.name)}</span>
-                </div>
-            </div>
-        `;
+                <div class="team" onclick="showLineup(${m.fixture.id}, '${m.teams.away.name}')"><img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span></div>
+            </div>`;
     });
 }
 
 async function showLineup(fixtureId, teamName) {
     const modal = document.getElementById('lineupModal');
-    const body = document.getElementById('lineupBody');
-    document.getElementById('lineupTitle').innerText = `تشكيلة ${translateAr(teamName)}`;
     modal.style.display = 'flex';
-    body.innerHTML = '⏳ جاري التحميل...';
-
+    document.getElementById('lineupBody').innerHTML = '⏳ تحميل...';
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures/lineups?fixture=${fixtureId}`, {
             headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
         });
         const json = await res.json();
         const teamLineup = json.response.find(t => t.team.name === teamName);
-        
-        if (teamLineup && teamLineup.startXI) {
-            body.innerHTML = '';
+        if (teamLineup) {
+            let html = '';
             teamLineup.startXI.forEach(p => {
-                const img = `https://media.api-sports.io/football/players/${p.player.id}.png`;
-                body.innerHTML += `
-                    <div class="player-row">
-                        <img src="${img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
-                        <div style="text-align: right; flex: 1;">
-                            <div style="font-weight: bold;">${p.player.name}</div>
-                            <div style="font-size: 0.7rem; color: #aaa;">مركز: ${p.player.pos} | رقم: ${p.player.number}</div>
-                        </div>
-                    </div>`;
+                html += `<div style="display:flex; align-items:center; gap:10px; padding:8px; border-bottom:1px solid #004d99;">
+                    <img src="https://media.api-sports.io/football/players/${p.player.id}.png" style="width:30px; border-radius:50%;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+                    <span>${p.player.name} (${p.player.number})</span></div>`;
             });
-        } else { body.innerHTML = 'التشكيلة غير متوفرة حالياً'; }
-    } catch(e) { body.innerHTML = 'خطأ في التحميل'; }
+            document.getElementById('lineupBody').innerHTML = html;
+        } else { document.getElementById('lineupBody').innerHTML = 'غير متوفر'; }
+    } catch(e) { document.getElementById('lineupBody').innerHTML = 'خطأ'; }
 }
 
 function closeModal() { document.getElementById('lineupModal').style.display = 'none'; }
-
 function filterData() {
     const val = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = currentData.filter(m => 
-        translateAr(m.teams.home.name).includes(val) || 
-        translateAr(m.teams.away.name).includes(val)
-    );
+    const filtered = currentData.filter(m => m.teams.home.name.toLowerCase().includes(val) || m.teams.away.name.toLowerCase().includes(val));
     render(filtered);
 }
-
 getMatches(0, 'today');
 </script>
 </body>
-        </html>
+    </html>
     
