@@ -5,155 +5,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>هجمة ولقطة - بث مباشر مصري</title>
   <style>
+    /* ... (نفس الستايل بتاعك مع إضافة بسيطة للوميض) ... */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { 
-      background: linear-gradient(135deg, #001f3f, #003366); 
-      color: white; 
-      padding: 10px;
-    }
+    body { background: linear-gradient(135deg, #001f3f, #003366); color: white; padding: 10px; }
     
-    .conditions {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .condition {
-      background: rgba(0,191,255,0.3);
-      padding: 15px 20px;
-      border-radius: 15px;
-      text-align: center;
-      flex: 1;
-      min-width: 200px;
-      border: 2px solid #00bfff;
-    }
+    .section { max-width: 900px; margin: 20px auto; }
+    .section-title { background: linear-gradient(90deg, #ff6b35, #00bfff); padding: 15px; border-radius: 15px; margin-bottom: 15px; text-align: center; font-size: 1.4rem; }
     
-    header { 
-      text-align: center; 
-      padding: 20px; 
-      background: rgba(0,51,102,0.9);
-      border-radius: 20px;
-      margin-bottom: 20px;
-    }
+    .big-match-table { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin-bottom: 15px; min-height: 100px; }
     
-    .section { 
-      max-width: 900px; 
-      margin: 20px auto; 
-    }
-    .section-title { 
-      background: linear-gradient(90deg, #ff6b35, #00bfff); 
-      padding: 15px; 
-      border-radius: 15px; 
-      margin-bottom: 15px; 
-      text-align: center; 
-      font-size: 1.4rem;
-    }
-    
-    /* جدول مباريات اليوم كبير */
-    .big-match-table {
-      background: rgba(255,255,255,0.1);
-      padding: 20px;
-      border-radius: 15px;
-      margin-bottom: 15px;
-    }
     .match-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 15px;
-      background: rgba(0,51,102,0.8);
-      border-radius: 10px;
-      border-left: 5px solid #00ff88;
-      margin-bottom: 8px;
-      font-size: 1.1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 15px; background: rgba(0,51,102,0.8);
+      border-radius: 10px; border-left: 5px solid #00ff88; margin-bottom: 8px; font-size: 1.1rem;
     }
-    .match-time {
-      font-weight: bold;
-      color: #00ff88;
+
+    /* ستايل كلمة مباشر الآن */
+    .live-status {
+      color: #ff0000; font-weight: bold; animation: blink 1s infinite;
     }
-    .match-league {
-      font-size: 0.9rem;
-      color: #ddd;
-    }
-    
-    .support-section, .owner, .server-section, .ads-section {
-      background: rgba(255,255,255,0.1);
-      padding: 25px;
-      border-radius: 20px;
-      margin: 20px auto;
-      max-width: 900px;
-      text-align: center;
-      border-right: 5px solid #00bfff;
-    }
-    
-    .support-section { background: linear-gradient(90deg, #28a745, #20c997); }
-    .server-section { background: linear-gradient(90deg, #6f42c1, #e83e8c); }
-    .ads-section { background: linear-gradient(90deg, #ffc107, #fd7e14); }
-    
-    .site-name {
-      background: linear-gradient(90deg, #ff0000, #ff6b35, #ffd700);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 3rem;
-      font-weight: bold;
-      text-align: center;
-      margin: 30px 0;
-    }
-    
-    .whatsapp { 
-      background: #25D366; 
-      color: white; 
-      padding: 12px 25px; 
-      border-radius: 25px; 
-      text-decoration: none; 
-      font-weight: bold;
-      display: inline-block;
-      margin: 10px;
-    }
-    
-    @media (max-width: 768px) {
-      .conditions, .match-row { flex-direction: column; gap: 5px; text-align: center; }
-      .match-time { margin-bottom: 5px; }
-      .site-name { font-size: 2rem; }
-    }
+    @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+
+    .match-time { font-weight: bold; color: #00ff88; }
+    .match-league { font-size: 0.8rem; color: #aaa; max-width: 150px; text-align: left; }
+    .loading { text-align: center; padding: 20px; color: #00bfff; }
   </style>
 </head>
 <body>
-  <!-- الشروط -->
-  <div class="conditions">
-    <div class="condition"><h3>✅ شروط الاستخدام</h3><p>اقرأ شروط الموقع</p></div>
-    <div class="condition"><h3>🔒 الخصوصية</h3><p>حماية بياناتك</p></div>
-    <div class="condition"><h3>⚠️ تنبيهات</h3><p>آخر التحديثات</p></div>
-  </div>
 
-  <!-- الهيدر -->
-  <header>
+  <header style="text-align: center; padding: 20px; background: rgba(0,51,102,0.9); border-radius: 20px; margin-bottom: 20px;">
     <h1>⚽ هجمة ولقطة</h1>
-    <p>📺 بث مباشر مصري + نتائج | 21 مارس 2026</p>
+    <p id="current-date">📺 بث مباشر تلقائي | جاري التحميل...</p>
   </header>
 
-  <!-- جدول مباريات اليوم الكبير -->
   <div class="section">
-    <h2 class="section-title">📅 جدول مباريات اليوم الكبير</h2>
+    <h2 class="section-title">📅 جدول مباريات اليوم المباشر</h2>
+    <div id="match-container" class="big-match-table">
+        <div class="loading">جاري سحب المباريات من السيرفر...</div>
+    </div>
+  </div>
+
+  <script>
+    // الإعدادات الخاصة بك
+    const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
+    const container = document.getElementById('match-container');
     
-    <div class="big-match-table">
-      <!-- برايتون 🆚 ليفربول -->
-      <div class="match-row">
-        <span class="match-time">14:30</span>
-        <span>برايتن 🆚 ليفربول</span>
-        <span class="match-league">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</span>
-      </div>
+    // ضبط التاريخ في الهيدر
+    const today = new Date();
+    document.getElementById('current-date').innerText = "📅 مباريات اليوم: " + today.toLocaleDateString('ar-EG');
 
-      <!-- فولهام 🆚 بيرنلي -->
-      <div class="match-row">
-        <span class="match-time">17:00</span>
-        <span>فولهام 🆚 بيرنلي</span>
-        <span class="match-league">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</span>
-      </div>
+    async function fetchMatches() {
+        const dateStr = today.toISOString().split('T')[0];
+        const url = `https://v3.football.api-sports.io/fixtures?date=${dateStr}`;
 
-      <!-- بيراميدز 🆚 الجيش الملكي -->
-      <div class="match-row">
-        <span class="match-time">18:00</span>
-        <span>بيراميدز 🆚 الجيش الملكي</span>
-        <span class="match-league">🇦🇫 دوري أبطال أفريقيا</span>
-      </
+        try {
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "x-rapidapi-host": "v3.football.api-sports.io",
+                    "x-rapidapi-key": API_KEY
+                }
+            });
+
+            const data = await response.json();
+            const matches = data.response;
+
+            if (!matches || matches.length === 0) {
+                container.innerHTML = '<div style="text-align:center">لا توجد مباريات مسجلة اليوم.</div>';
+                return;
+            }
+
+            container.innerHTML = ''; // مسح رسالة التحميل
+
+            matches.forEach(m => {
+                const status = m.fixture.status.short;
+                let timeOrStatus = "";
+                let rowClass = "";
+
+                // التحقق إذا كان الماتش "مباشر الآن"
+                if (["1H", "2H", "HT", "ET", "P"].includes(status)) {
+                    timeOrStatus = `<span class="live-status">🔴 مباشر الآن (${m.goals.home}-${m.goals.away})</span>`;
+                } else if (status === "FT") {
+                    timeOrStatus = `<span>انتهت (${m.goals.home}-${m.goals.away})</span>`;
+                } else {
+                    // تحويل الوقت لتوقيت مصر المحلي
+                    const matchDate = new Date(m.fixture.date);
+                    timeOrStatus = `<span class="match-time">${matchDate.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}</span>`;
+                }
+
+                const html = `
+                    <div class="match-row">
+                        ${timeOrStatus}
+                        <div style="flex:1; text-align:center;">
+                            ${m.teams.home.name} 🆚 ${m.teams.away.name}
+                        </div>
+                        <span class="match-league">${m.league.name}</span>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+
+        } catch (error) {
+            container.innerHTML = '<div style="text-align:center; color:red">فشل في جلب البيانات. تأكد من اتصالك بالإنترنت.</div>';
+            console.error(error);
+        }
+    }
+
+    // تشغيل الدالة
+    fetchMatches();
+  </script>
+</body>
+</html>
