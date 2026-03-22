@@ -14,7 +14,7 @@
             --goal-bg: #004d99;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background: var(--dark-bg); color: var(--text-white); padding: 10px; }
+        body { background: var(--dark-bg); color: var(--text-white); padding: 10px; padding-bottom: 80px; }
 
         header { text-align: center; padding: 15px; color: var(--accent-orange); }
 
@@ -40,11 +40,11 @@
             justify-content: space-between;
         }
 
-        .team { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .team { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+        .team:hover { transform: scale(1.05); }
         .team img { width: 45px; height: 45px; object-fit: contain; }
         .team span { font-size: 0.9rem; font-weight: bold; text-align: center; }
 
-        /* خانة النتيجة الصغيرة */
         .score-box {
             background: var(--goal-bg); color: white; min-width: 35px; height: 35px;
             display: flex; align-items: center; justify-content: center;
@@ -56,9 +56,24 @@
         .vs-badge { background: var(--accent-orange); color: white; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
         .time { font-size: 0.85rem; font-weight: bold; color: var(--light-blue); }
 
-        /* حالة مباشر */
         .live-label { color: #ff4d4d; font-size: 0.75rem; font-weight: bold; animation: blink 1.2s infinite; }
         @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.4;} 100% {opacity: 1;} }
+
+        /* زر الواتساب */
+        .whatsapp-btn {
+            position: fixed; bottom: 20px; left: 20px; background: #25d366;
+            color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none;
+            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; z-index: 1000;
+        }
+
+        /* نافذة التشكيلة */
+        .modal {
+            display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
+        .modal-content img { width: 100%; border-radius: 10px; margin-top: 15px; }
+        .close-btn { color: white; float: left; font-size: 24px; cursor: pointer; }
 
         .no-result { text-align: center; padding: 40px; color: #aaa; }
     </style>
@@ -82,6 +97,24 @@
 
 <div id="matches-list" class="match-container">
     <div class="no-result">⏳ جاري تحميل الماتشات المترجمة...</div>
+</div>
+
+<!-- زر الواتساب للدعم -->
+<a href="https://wa.me/201040077271" class="whatsapp-btn" target="_blank">
+    <span>الدعم الفني</span>
+    <span>💬</span>
+</a>
+
+<!-- نافذة التشكيلة -->
+<div id="lineupModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h3 id="lineupTitle">تشكيلة الفريق</h3>
+        <div id="lineupBody">
+            <p style="margin-top:20px;">جاري تحميل التشكيلة الرسمية...</p>
+            <!-- هنا يتم عرض صورة التشكيلة أو الأسماء -->
+        </div>
+    </div>
 </div>
 
 <script>
@@ -127,7 +160,7 @@ async function getMatches(offset, btnId) {
 function render(data) {
     const list = document.getElementById('matches-list');
     if (!data || data.length === 0) {
-        list.innerHTML = '<div class="no-result">لا توجد مباريات "مهمة" متاحة</div>';
+        list.innerHTML = '<div class="no-result">لا توجد مباريات متاحة لهذا اليوم</div>';
         return;
     }
     
@@ -138,7 +171,6 @@ function render(data) {
         const isStarted = status !== 'NS' && status !== 'TBD';
         const isLive = ['1H', '2H', 'HT', 'ET', 'P'].includes(status);
         
-        // النتيجة
         const homeScore = m.goals.home !== null ? m.goals.home : 0;
         const awayScore = m.goals.away !== null ? m.goals.away : 0;
 
@@ -146,16 +178,13 @@ function render(data) {
             <div class="match-item">
                 <div class="league-title">🏆 ${translateAr(m.league.name)}</div>
                 <div class="match-card">
-                    <!-- فريق صاحب الأرض -->
-                    <div class="team">
+                    <div class="team" onclick="showLineup(${m.fixture.id}, '${m.teams.home.name}')">
                         <img src="${m.teams.home.logo}">
                         <span>${translateAr(m.teams.home.name)}</span>
                     </div>
                     
-                    <!-- خانة أهداف صاحب الأرض -->
                     ${isStarted ? `<div class="score-box">${homeScore}</div>` : ''}
 
-                    <!-- منطقة الوسط -->
                     <div class="center-info">
                         ${isLive ? '<div class="live-label">● مباشر</div>' : 
                           isStarted ? '<div class="vs-badge">انتهت</div>' : 
@@ -163,11 +192,9 @@ function render(data) {
                         <div class="time">${matchTime}</div>
                     </div>
 
-                    <!-- خانة أهداف الضيف -->
                     ${isStarted ? `<div class="score-box">${awayScore}</div>` : ''}
 
-                    <!-- فريق الضيف -->
-                    <div class="team">
+                    <div class="team" onclick="showLineup(${m.fixture.id}, '${m.teams.away.name}')">
                         <img src="${m.teams.away.logo}">
                         <span>${translateAr(m.teams.away.name)}</span>
                     </div>
@@ -175,6 +202,45 @@ function render(data) {
             </div>
         `;
     });
+}
+
+// وظيفة عرض التشكيلة
+async function showLineup(fixtureId, teamName) {
+    const modal = document.getElementById('lineupModal');
+    const body = document.getElementById('lineupBody');
+    document.getElementById('lineupTitle').innerText = `تشكيلة ${translateAr(teamName)}`;
+    modal.style.display = 'flex';
+    body.innerHTML = '<p>جاري البحث عن التشكيلة الرسمية واللاعبين...</p>';
+
+    try {
+        const res = await fetch(`https://v3.football.api-sports.io/fixtures/lineups?fixture=${fixtureId}`, {
+            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+        });
+        const json = await res.json();
+        
+        if(json.response && json.response.length > 0) {
+            // عرض أول 11 لاعب إذا لم تتوفر صورة
+            body.innerHTML = '<div style="text-align:right; font-size:0.9rem;">';
+            const teamLineup = json.response.find(t => t.team.name === teamName);
+            if(teamLineup) {
+                body.innerHTML += `<p><b>الخطة:</b> ${teamLineup.formation}</p><br>`;
+                teamLineup.startXI.forEach(p => {
+                    body.innerHTML += `<div>👤 ${p.player.number} - ${p.player.name} (${p.player.pos})</div>`;
+                });
+            } else {
+                body.innerHTML = 'التشكيلة غير متوفرة حالياً';
+            }
+            body.innerHTML += '</div>';
+        } else {
+            body.innerHTML = 'التشكيلة لم تعلن بعد لهذا الماتش';
+        }
+    } catch(e) {
+        body.innerHTML = 'حدث خطأ أثناء تحميل البيانات';
+    }
+}
+
+function closeModal() {
+    document.getElementById('lineupModal').style.display = 'none';
 }
 
 function filterData() {
