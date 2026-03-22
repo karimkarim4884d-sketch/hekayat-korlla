@@ -12,6 +12,7 @@
             --text-white: #ffffff;
             --light-blue: #00bfff;
             --goal-bg: #004d99;
+            --nav-bg: #000c16;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background: var(--dark-bg); color: var(--text-white); padding: 10px; padding-bottom: 90px; }
@@ -24,12 +25,13 @@
         .search-box input { flex: 1; padding: 12px; border: none; outline: none; font-size: 1rem; color: #333; text-align: right; }
         .search-box button { padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; font-weight: bold; }
 
-        /* الأزرار */
+        /* أزرار الأيام */
         .tabs { display: flex; gap: 8px; max-width: 500px; margin: 0 auto 20px; }
         .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 0.9rem; }
         .tab-btn.active { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
 
-        .match-container { max-width: 550px; margin: 0 auto; }
+        .match-container { max-width: 550px; margin: 0 auto; display: none; } /* مخفي افتراضياً */
+        .match-container.active { display: block; }
 
         .league-title { 
             text-align: center; font-size: 0.85rem; color: var(--light-blue); 
@@ -61,14 +63,6 @@
         .live-label { color: #ff4d4d; font-size: 0.7rem; font-weight: bold; animation: blink 1.2s infinite; }
         @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.4;} 100% {opacity: 1;} }
 
-        /* الدعم الفني */
-        .whatsapp-float {
-            position: fixed; bottom: 20px; left: 20px; background: #25d366;
-            color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none;
-            font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 1000;
-            display: flex; align-items: center; gap: 8px;
-        }
-
         /* المودال للتشكيلة */
         .modal {
             display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%;
@@ -76,35 +70,117 @@
         }
         .modal-content { background: var(--card-bg); padding: 20px; border-radius: 15px; width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto; text-align: center; border: 1px solid var(--light-blue); }
         .close-btn { color: var(--accent-orange); float: left; font-size: 30px; cursor: pointer; }
-        .player-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #004d99; font-size: 0.9rem; color: #fff; }
+        
+        /* تصميم صف اللاعب الجديد بالصور */
+        .player-row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #004d99; color: #fff; gap: 10px; text-align: right;}
+        .player-row img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--light-blue); }
+        .player-info { display: flex; flex-direction: column; flex: 1; }
+        .player-name { font-size: 0.95rem; font-weight: bold; }
+        .player-number { font-size: 0.8rem; color: #aaa; }
 
         .no-result { text-align: center; padding: 40px; color: #aaa; }
+
+        /* شريط التنقل السفلي الجديد */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--nav-bg);
+            display: flex; justify-content: space-around; padding: 10px;
+            border-top: 1px solid #002a4d; z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #aaa; text-decoration: none; font-size: 0.75rem; cursor: pointer; }
+        .nav-item.active { color: var(--light-blue); }
+        .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
+
+        /* تنسيق الأقسام الإضافية */
+        .extra-section { display: none; max-width: 550px; margin: 20px auto; text-align: center; padding: 20px; }
+        .extra-section.active { display: block; }
+        
+        /* تنسيق التفضيلات */
+        .pref-item { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid var(--light-blue); }
+        .pref-star { color: #aaa; cursor: pointer; font-size: 1.2rem; }
+        .pref-star.active { color: gold; }
+
+        /* تنسيق المزيد */
+        .more-item { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-right: 4px solid var(--accent-orange); }
     </style>
 </head>
 <body>
 
 <header><h1>⚽ هجمة ولقطة</h1></header>
 
-<div class="search-area">
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="ابحث عن مباراة أو فريق..." oninput="filterData()">
-        <button onclick="filterData()">بحث</button>
+<div id="search-days-area">
+    <div class="search-area">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="ابحث عن مباراة أو فريق..." oninput="filterData()">
+            <button onclick="filterData()">بحث</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn" id="yesterday" onclick="getMatches(-1, 'yesterday')">مباريات الأمس</button>
+        <button class="tab-btn active" id="today" onclick="getMatches(0, 'today')">مباريات اليوم</button>
+        <button class="tab-btn" id="tomorrow" onclick="getMatches(1, 'tomorrow')">مباريات الغد</button>
     </div>
 </div>
 
-<div class="tabs">
-    <button class="tab-btn" id="yesterday" onclick="getMatches(-1, 'yesterday')">مباريات الأمس</button>
-    <button class="tab-btn active" id="today" onclick="getMatches(0, 'today')">مباريات اليوم</button>
-    <button class="tab-btn" id="tomorrow" onclick="getMatches(1, 'tomorrow')">مباريات الغد</button>
-</div>
-
-<div id="matches-list" class="match-container">
+<div id="matches-list" class="match-container active">
     <div class="no-result">⏳ جاري جلب الماتشات...</div>
 </div>
 
-<a href="https://wa.me/201040077271" class="whatsapp-float" target="_blank">
-    <span>الدعم الفني</span> 💬
-</a>
+<div id="standings-section" class="extra-section">
+    <h2 style="color:var(--light-blue); margin-bottom: 15px;">📊 الترتيب العالمي</h2>
+    <div class="no-result">جاري العمل على جلب جداول الترتيب...</div>
+</div>
+
+<div id="transfers-section" class="extra-section">
+    <h2 style="color:var(--light-blue); margin-bottom: 15px;">🔄 سوق الانتقالات</h2>
+    <div class="no-result">آخر أخبار الصفقات قريباً...</div>
+</div>
+
+<div id="prefs-section" class="extra-section">
+    <h2 style="color:var(--light-blue); margin-bottom: 15px;">⭐ تفضيلاتي</h2>
+    <div class="pref-item">
+        <span>الدوري الإنجليزي 🇬🇧</span>
+        <span class="pref-star active">★</span>
+    </div>
+    <div class="pref-item">
+        <span>ريال مدريد 🇪🇸</span>
+        <span class="pref-star active">★</span>
+    </div>
+    <div class="pref-item">
+        <span>المنتخب المصري 🇪🇬</span>
+        <span class="pref-star">★</span>
+    </div>
+</div>
+
+<div id="more-section" class="extra-section">
+    <h2 style="color:var(--light-blue); margin-bottom: 15px;">➕ المزيد</h2>
+    <div class="more-item"><span>📞</span> التواصل معنا</div>
+    <div class="more-item"><span>⚙️</span> الإعدادات</div>
+    <div class="more-item"><span>📄</span> الشروط والأحكام</div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchMainSection('matches', this)">
+        <span class="nav-icon">⚽</span>
+        <span>المباريات</span>
+    </div>
+    <div class="nav-item" onclick="switchMainSection('standings', this)">
+        <span class="nav-icon">📊</span>
+        <span>الترتيب</span>
+    </div>
+    <div class="nav-item" onclick="switchMainSection('transfers', this)">
+        <span class="nav-icon">🔄</span>
+        <span>الانتقالات</span>
+    </div>
+    <div class="nav-item" onclick="switchMainSection('prefs', this)">
+        <span class="nav-icon">⭐</span>
+        <span>التفضيلات</span>
+    </div>
+    <div class="nav-item" onclick="switchMainSection('more', this)">
+        <span class="nav-icon">➕</span>
+        <span>المزيد</span>
+    </div>
+</div>
 
 <div id="lineupModal" class="modal">
     <div class="modal-content">
@@ -115,6 +191,7 @@
 </div>
 
 <script>
+// *** الكود الأصلي - تم الحفاظ عليه ***
 const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
 let currentData = [];
 
@@ -205,12 +282,13 @@ function render(data) {
     });
 }
 
+// *** الكود الجديد - التشكيلة مع صور اللاعبين (من الـ API) ***
 async function showLineup(fixtureId, teamName) {
     const modal = document.getElementById('lineupModal');
     const body = document.getElementById('lineupBody');
     document.getElementById('lineupTitle').innerText = `تشكيلة ${translateAr(teamName)}`;
     modal.style.display = 'flex';
-    body.innerHTML = '<p style="color:#aaa">جاري جلب اللاعبين...</p>';
+    body.innerHTML = '<p style="color:#aaa">جاري جلب اللاعبين وصورهم...</p>';
 
     try {
         const res = await fetch(`https://v3.football.api-sports.io/fixtures/lineups?fixture=${fixtureId}`, {
@@ -222,12 +300,21 @@ async function showLineup(fixtureId, teamName) {
         if (teamData && teamData.startXI) {
             body.innerHTML = `<div style="color:var(--accent-orange); margin-bottom:10px;">الخطة: ${teamData.formation}</div>`;
             teamData.startXI.forEach(p => {
-                body.innerHTML += `<div class="player-row"><span>${p.player.name}</span> <span>${p.player.number}#</span></div>`;
+                // استخدام رابط صورة اللاعب من الـ API مباشرة
+                const playerImageUrl = `https://media.api-sports.io/football/players/${p.player.id}.png`;
+                body.innerHTML += `
+                    <div class="player-row">
+                        <img src="${playerImageUrl}" onerror="this.src='https://media.api-sports.io/football/players/notfound.png'" alt="${p.player.name}">
+                        <div class="player-info">
+                            <span class="player-name">${p.player.name}</span>
+                            <span class="player-number">رقم ${p.player.number}#</span>
+                        </div>
+                    </div>`;
             });
         } else {
             body.innerHTML = '<p>التشكيلة الرسمية لسه منزلتش</p>';
         }
-    } catch(e) { body.innerHTML = 'خطأ في التحميل'; }
+    } catch(e) { body.innerHTML = 'خطأ في تحميل التشكيلة'; }
 }
 
 function closeModal() { document.getElementById('lineupModal').style.display = 'none'; }
@@ -240,6 +327,31 @@ function filterData() {
         m.league.name.toLowerCase().includes(val)
     );
     render(filtered);
+}
+
+// *** الكود الجديد - نظام التنقل بين الأقسام الرئيسية ***
+function switchMainSection(sectionName, navElement) {
+    // 1. إخفاء كافة الحاويات
+    document.querySelectorAll('.match-container, .extra-section').forEach(el => el.classList.remove('active'));
+    document.getElementById('search-days-area').style.display = 'none'; // إخفاء البحث/الأيام
+
+    // 2. تحديث شريط التنقل العلوي
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    navElement.classList.add('active');
+
+    // 3. إظهار الحاوية المطلوبة
+    if (sectionName === 'matches') {
+        document.getElementById('matches-list').classList.add('active');
+        document.getElementById('search-days-area').style.display = 'block'; // إظهار البحث/الأيام
+    } else if (sectionName === 'standings') {
+        document.getElementById('standings-section').classList.add('active');
+    } else if (sectionName === 'transfers') {
+        document.getElementById('transfers-section').classList.add('active');
+    } else if (sectionName === 'prefs') {
+        document.getElementById('prefs-section').classList.add('active');
+    } else if (sectionName === 'more') {
+        document.getElementById('more-section').classList.add('active');
+    }
 }
 
 // البداية بمباريات اليوم
