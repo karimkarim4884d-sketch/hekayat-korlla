@@ -11,19 +11,18 @@
             --accent-orange: #ff6b35;
             --text-white: #ffffff;
             --light-blue: #00bfff;
+            --goal-bg: #004d99;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background: var(--dark-bg); color: var(--text-white); padding: 10px; }
 
         header { text-align: center; padding: 15px; color: var(--accent-orange); }
 
-        /* شريط البحث */
         .search-area { max-width: 500px; margin: 0 auto 15px; }
         .search-box { display: flex; background: white; border-radius: 12px; overflow: hidden; }
         .search-box input { flex: 1; padding: 12px; border: none; outline: none; font-size: 1rem; color: #333; text-align: right; }
         .search-box button { padding: 0 20px; background: var(--accent-orange); border: none; color: white; cursor: pointer; font-weight: bold; }
 
-        /* الأقسام الثلاثة */
         .tabs { display: flex; gap: 8px; max-width: 500px; margin: 0 auto 20px; }
         .tab-btn { flex: 1; padding: 12px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .tab-btn.active { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
@@ -38,15 +37,28 @@
         .match-card {
             background: var(--card-bg); border-radius: 15px; display: flex;
             align-items: center; padding: 15px; margin-bottom: 12px; border-right: 4px solid var(--light-blue);
+            justify-content: space-between;
         }
 
-        .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .team { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .team img { width: 45px; height: 45px; object-fit: contain; }
         .team span { font-size: 0.9rem; font-weight: bold; text-align: center; }
 
-        .center-info { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 10px; }
+        /* خانة النتيجة الصغيرة */
+        .score-box {
+            background: var(--goal-bg); color: white; min-width: 35px; height: 35px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; font-weight: bold; font-size: 1.2rem;
+            border: 1px solid var(--light-blue); margin: 0 5px;
+        }
+
+        .center-info { flex: 1.5; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .vs-badge { background: var(--accent-orange); color: white; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
         .time { font-size: 0.85rem; font-weight: bold; color: var(--light-blue); }
+
+        /* حالة مباشر */
+        .live-label { color: #ff4d4d; font-size: 0.75rem; font-weight: bold; animation: blink 1.2s infinite; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.4;} 100% {opacity: 1;} }
 
         .no-result { text-align: center; padding: 40px; color: #aaa; }
     </style>
@@ -76,10 +88,8 @@
 const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
 let currentData = [];
 
-// الدوريات المهمة فقط
 const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 233, 307, 848];
 
-// قاموس الترجمة الذكي
 const dictionary = {
     "Real Madrid": "ريال مدريد", "Barcelona": "برشلونة", "Liverpool": "ليفربول",
     "Manchester City": "مانشستر سيتي", "Al Ahly": "الأهلي", "Zamalek": "الزمالك",
@@ -107,8 +117,6 @@ async function getMatches(offset, btnId) {
             headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
         });
         const json = await res.json();
-        
-        // تصفية الدوريات المهمة فقط
         currentData = json.response.filter(m => importantLeagues.includes(m.league.id));
         render(currentData);
     } catch (e) {
@@ -126,18 +134,39 @@ function render(data) {
     list.innerHTML = '';
     data.forEach(m => {
         const matchTime = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+        const status = m.fixture.status.short;
+        const isStarted = status !== 'NS' && status !== 'TBD';
+        const isLive = ['1H', '2H', 'HT', 'ET', 'P'].includes(status);
+        
+        // النتيجة
+        const homeScore = m.goals.home !== null ? m.goals.home : 0;
+        const awayScore = m.goals.away !== null ? m.goals.away : 0;
+
         list.innerHTML += `
             <div class="match-item">
                 <div class="league-title">🏆 ${translateAr(m.league.name)}</div>
                 <div class="match-card">
+                    <!-- فريق صاحب الأرض -->
                     <div class="team">
                         <img src="${m.teams.home.logo}">
                         <span>${translateAr(m.teams.home.name)}</span>
                     </div>
+                    
+                    <!-- خانة أهداف صاحب الأرض -->
+                    ${isStarted ? `<div class="score-box">${homeScore}</div>` : ''}
+
+                    <!-- منطقة الوسط -->
                     <div class="center-info">
-                        <div class="vs-badge">VS</div>
+                        ${isLive ? '<div class="live-label">● مباشر</div>' : 
+                          isStarted ? '<div class="vs-badge">انتهت</div>' : 
+                          '<div class="vs-badge">VS</div>'}
                         <div class="time">${matchTime}</div>
                     </div>
+
+                    <!-- خانة أهداف الضيف -->
+                    ${isStarted ? `<div class="score-box">${awayScore}</div>` : ''}
+
+                    <!-- فريق الضيف -->
                     <div class="team">
                         <img src="${m.teams.away.logo}">
                         <span>${translateAr(m.teams.away.name)}</span>
@@ -151,11 +180,9 @@ function render(data) {
 function filterData() {
     const val = document.getElementById('searchInput').value.toLowerCase().trim();
     const filtered = currentData.filter(m => {
-        const hEn = m.teams.home.name.toLowerCase();
-        const aEn = m.teams.away.name.toLowerCase();
         const hAr = translateAr(m.teams.home.name);
         const aAr = translateAr(m.teams.away.name);
-        return hEn.includes(val) || aEn.includes(val) || hAr.includes(val) || aAr.includes(val);
+        return hAr.includes(val) || aAr.includes(val);
     });
     render(filtered);
 }
