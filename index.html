@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>هجمة ولقطة - التطبيق الكامل المطور</title>
+    <title>هجمة ولقطة - النسخة الاحترافية</title>
     <style>
         :root {
             --bg-dark: #0f172a; --bg-card: #1e293b; --accent: #00bfff;
             --text-main: #ffffff; --text-dim: #94a3b8; --live-red: #ef4444;
             --vs-gold: #fbbf24;
         }
-        /* منع تحديد النص في الموقع بالكامل */
+        /* منع النسخ والتحديد */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif;
             -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
@@ -22,42 +22,46 @@
         .icon-btn { font-size: 1.2rem; cursor: pointer; color: var(--text-main); }
         .current-date { font-size: 0.85rem; color: var(--accent); font-weight: bold; }
 
-        /* الصفحات */
         .page-content { display: none; padding: 15px; min-height: 80vh; }
         .page-content.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* كروت المباريات */
         .date-tabs { display: flex; background: var(--bg-card); border-radius: 12px; margin-bottom: 15px; overflow: hidden; }
         .date-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: var(--text-dim); font-size: 0.8rem; border-left: 1px solid rgba(255,255,255,0.05); }
         .date-tab.active { background: var(--accent); color: white; }
         
-        .league-title { font-size: 0.9rem; color: var(--accent); margin: 15px 0 10px; border-right: 3px solid var(--accent); padding-right: 8px; }
-        .match-card { background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .team-box { flex: 1; text-align: center; }
-        .team-box img { width: 30px; height: 30px; object-fit: contain; }
-        .team-box p { font-size: 0.75rem; margin-top: 5px; }
-        .status-box { flex: 1; text-align: center; }
-        .score-val { font-size: 1.2rem; font-weight: bold; }
-        .vs-text { color: var(--vs-gold); font-weight: bold; }
+        .league-header { background: rgba(0, 191, 255, 0.1); padding: 8px 12px; border-radius: 8px; margin: 15px 0 10px; font-size: 0.85rem; color: var(--accent); border-right: 4px solid var(--accent); display: flex; align-items: center; gap: 10px; }
+        .league-header img { width: 20px; height: 20px; object-fit: contain; }
 
-        /* القائمة السفلية */
+        .match-card { background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .team-box { flex: 1.2; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .team-box img { width: 35px; height: 35px; object-fit: contain; }
+        .team-box p { font-size: 0.8rem; font-weight: 500; }
+        
+        .status-box { flex: 1; text-align: center; display: flex; flex-direction: column; gap: 4px; }
+        .score-val { font-size: 1.3rem; font-weight: bold; letter-spacing: 2px; }
+        .vs-text { color: var(--vs-gold); font-weight: bold; font-size: 1.1rem; }
+        .live-label { color: var(--live-red); font-size: 0.65rem; font-weight: bold; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--bg-card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
         .nav-item { text-align: center; color: var(--text-dim); font-size: 0.7rem; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--accent); font-weight: bold; }
-        .nav-item i { font-size: 1.2rem; display: block; margin-bottom: 3px; }
+        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 3px; }
 
         #calendar-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); padding: 20px; border-radius: 15px; z-index: 2000; width: 90%; }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body oncontextmenu="return false;"> <div class="top-bar">
+<body oncontextmenu="return false;">
+
+    <div class="top-bar">
         <div class="top-icons">
             <i class="fas fa-search icon-btn"></i>
             <i class="fas fa-calendar-alt icon-btn" onclick="document.getElementById('calendar-modal').style.display='block'"></i>
             <span class="current-date">2026/03/23</span>
         </div>
-        <img src="https://i.ibb.co/5T0S1S3/image-1.png" style="height: 35px;" alt="Logo">
+        <img src="https://i.ibb.co/5T0S1S3/image-1.png" style="height: 40px; width: 40px; object-fit: contain;" alt="هجمة ولقطة">
     </div>
 
     <div id="matches-page" class="page-content active">
@@ -69,26 +73,10 @@
         <div id="matches-container"></div>
     </div>
 
-    <div id="news-page" class="page-content">
-        <h3>آخر الأخبار</h3>
-        <p style="padding: 20px; color: var(--text-dim);">لا توجد أخبار جديدة حالياً.</p>
-    </div>
-
-    <div id="standings-page" class="page-content">
-        <h3>ترتيب الدوريات</h3>
-        <p style="padding: 20px; color: var(--text-dim);">جاري العمل على تحديث الجداول...</p>
-    </div>
-
-    <div id="transfers-page" class="page-content">
-        <h3>سوق الانتقالات</h3>
-        <p style="padding: 20px; color: var(--text-dim);">قريباً سيتم تفعيل قسم الانتقالات.</p>
-    </div>
-
-    <div id="more-page" class="page-content">
-        <div style="background: var(--bg-card); padding: 20px; border-radius: 12px; text-align: center;">
-            <p>مرحباً بك في هجمة ولقطة</p>
-        </div>
-    </div>
+    <div id="standings-page" class="page-content"><h3>جدول الترتيب</h3><p style="padding:20px; color:var(--text-dim);">جاري تحميل البيانات...</p></div>
+    <div id="transfers-page" class="page-content"><h3>الانتقالات</h3><p style="padding:20px; color:var(--text-dim);">لا توجد انتقالات اليوم.</p></div>
+    <div id="news-page" class="page-content"><h3>الأخبار</h3><p style="padding:20px; color:var(--text-dim);">تحميل آخر الأخبار...</p></div>
+    <div id="more-page" class="page-content"><h3>المزيد</h3><p style="padding:20px; color:var(--text-dim);">إعدادات الحساب.</p></div>
 
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('matches', this)"><i class="fas fa-volleyball-ball"></i>المباريات</div>
@@ -99,14 +87,15 @@
     </nav>
 
     <script>
-        // منع اختصارات الكيبورد (نسخ، قص، فحص العنصر)
-        document.onkeydown = function(e) {
-            if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 83)) return false;
+        // منع النسخ والاختصارات
+        document.onkeydown = (e) => {
+            if (e.ctrlKey && [67, 86, 85, 83].includes(e.keyCode)) return false;
             if (e.keyCode === 123) return false;
         };
 
         const API_KEYS = ["bf7d42ac856fecc0e1e6ad24debe9c5e", "df31d97917bce1190ac701b9db9f74b6"];
-        const IMPORTANT_LEAGUES = [39, 140, 78, 135, 61, 2, 233];
+        // تعريف الدوريات المهمة (إنجليزي، إسباني، ألماني، إيطالي، فرنسي، أبطال أوروبا، مصري، سعودي)
+        const IMPORTANT_IDS = [39, 140, 78, 135, 61, 2, 233, 307];
 
         function switchTab(pageId, el) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -122,9 +111,8 @@
             }
 
             const container = document.getElementById('matches-container');
-            container.innerHTML = '<p style="text-align:center; padding:20px;">جاري التحميل...</p>';
+            container.innerHTML = '<p style="text-align:center; padding:30px; color:var(--text-dim);">جاري جلب المباريات الهامة...</p>';
 
-            // كود الـ Caching والـ API المدمج
             let date = new Date();
             if(type === 'yesterday') date.setDate(date.getDate() - 1);
             if(type === 'tomorrow') date.setDate(date.getDate() + 1);
@@ -136,35 +124,66 @@
                         headers: {'x-rapidapi-host': 'v3.football.api-sports.io', 'x-rapidapi-key': key}
                     });
                     const data = await res.json();
-                    if(data.response) {
-                        renderMatches(data.response.filter(m => IMPORTANT_LEAGUES.includes(m.league.id)));
+                    
+                    if(data.response && data.response.length > 0) {
+                        // تصفية المباريات عشان نعرض المهمة فقط
+                        const important = data.response.filter(m => IMPORTANT_IDS.includes(m.league.id));
+                        // لو ملقاش مهمة في اللحظة دي، اعرض أول 15 مباراة متاحة عالمياً عشان الموقع ميبقاش فاضي
+                        renderMatches(important.length > 0 ? important : data.response.slice(0, 15));
                         return;
                     }
-                } catch(e) { console.log("Key failed, trying next..."); }
+                } catch(e) { console.log("Key failed"); }
             }
+            container.innerHTML = '<p style="text-align:center; padding:20px;">لا توجد مباريات مسجلة حالياً.</p>';
         }
 
         function renderMatches(matches) {
             const container = document.getElementById('matches-container');
-            container.innerHTML = matches.length ? '' : '<p style="text-align:center; padding:20px;">لا توجد مباريات هامة.</p>';
+            container.innerHTML = '';
             
-            matches.forEach(m => {
-                let status = m.fixture.status.short;
-                let score = `<div class="vs-text">SV</div>`;
-                if(status !== 'NS') score = `<div class="score-val">${m.goals.home} - ${m.goals.away}</div>`;
-                if(['1H','2H','HT'].includes(status)) score += `<div style="color:red; font-size:10px;">مباشر</div>`;
+            // تجميع حسب الدوري
+            const grouped = matches.reduce((acc, m) => {
+                const id = m.league.name;
+                if (!acc[id]) acc[id] = {info: m.league, games: []};
+                acc[id].games.push(m);
+                return acc;
+            }, {});
 
-                container.innerHTML += `
-                    <div class="match-card">
-                        <div class="team-box"><img src="${m.teams.home.logo}"><p>${m.teams.home.name}</p></div>
-                        <div class="status-box">${score}</div>
-                        <div class="team-box"><img src="${m.teams.away.logo}"><p>${m.teams.away.name}</p></div>
+            for (let leagueName in grouped) {
+                const league = grouped[leagueName];
+                let leagueHTML = `
+                    <div class="league-header">
+                        <img src="${league.info.logo}">
+                        <span>${league.info.name}</span>
                     </div>`;
-            });
+                
+                league.games.forEach(m => {
+                    let status = m.fixture.status.short;
+                    let score = `<div class="vs-text">SV</div>`;
+                    let liveLabel = '';
+
+                    if(status !== 'NS' && status !== 'TBD') {
+                        score = `<div class="score-val">${m.goals.home} - ${m.goals.away}</div>`;
+                    }
+                    if(['1H','2H','HT'].includes(status)) {
+                        liveLabel = `<div class="live-label">● مباشر ${m.fixture.status.elapsed}'</div>`;
+                    } else if (status === 'FT') {
+                        liveLabel = `<div style="font-size:0.7rem; color:var(--text-dim);">انتهت</div>`;
+                    }
+
+                    leagueHTML += `
+                        <div class="match-card">
+                            <div class="team-box"><img src="${m.teams.home.logo}"><p>${m.teams.home.name}</p></div>
+                            <div class="status-box">${score}${liveLabel}</div>
+                            <div class="team-box"><img src="${m.teams.away.logo}"><p>${m.teams.away.name}</p></div>
+                        </div>`;
+                });
+                container.innerHTML += leagueHTML;
+            }
         }
 
         window.onload = () => fetchMatches('today');
     </script>
 </body>
-    </html>
-    
+            </html>
+            
