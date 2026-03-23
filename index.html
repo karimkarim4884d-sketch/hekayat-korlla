@@ -9,20 +9,25 @@
             --dark-bg: #0b1118;
             --card-bg: #1a222d;
             --accent-cyan: #00f2ff;
+            --accent-green: #00ff88;
             --text-gray: #a0aab2;
             --nav-active: #00f2ff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark-bg); color: white; padding-bottom: 70px; overflow-x: hidden; }
+        /* الوضع الليلي والحجم */
+        body.light-mode { --dark-bg: #f5f5f5; --card-bg: #ffffff; color: #111; }
+        body.large-font { font-size: 1.25rem; }
 
-        /* الهيدر الجديد نسخة من الصورة */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--dark-bg); color: white; padding-bottom: 70px; transition: 0.3s; overflow-x: hidden; }
+
+        /* الهيدر (نسخة الصورة) */
         .top-bar {
             display: flex; align-items: center; justify-content: space-between;
             padding: 15px 20px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000;
         }
         .top-icons { display: flex; gap: 20px; align-items: center; }
-        .icon-btn { color: white; font-size: 1.3rem; cursor: pointer; text-decoration: none; background: none; border: none; }
+        .icon-btn { color: white; font-size: 1.3rem; cursor: pointer; background: none; border: none; }
         .logo-small { height: 30px; }
 
         .date-display { text-align: center; padding: 10px; color: var(--text-gray); font-size: 0.9rem; border-bottom: 1px solid #1e2732; }
@@ -31,11 +36,12 @@
         .section-container { display: none; padding: 10px; min-height: 80vh; }
         .section-container.active { display: block; }
 
-        /* كروت الماتشات (نسخة 1000014754.jpg) */
-        .league-header { display: flex; align-items: center; gap: 10px; padding: 10px; color: var(--text-gray); font-size: 0.85rem; }
+        /* كروت المباريات */
+        .league-header { display: flex; align-items: center; gap: 10px; padding: 10px; color: var(--accent-cyan); font-size: 0.85rem; font-weight: bold; }
         .match-row {
             background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 8px;
             display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .team-box { display: flex; align-items: center; gap: 10px; flex: 1; }
         .team-box.left { justify-content: flex-end; }
@@ -46,52 +52,76 @@
             position: fixed; bottom: 0; left: 0; width: 100%; background: #0f171f;
             display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #1e2732;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 0.75rem; cursor: pointer; transition: 0.3s; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 0.75rem; cursor: pointer; }
         .nav-item.active { color: var(--nav-active); }
         .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
 
-        /* Input التقويم المخفي */
-        #datePicker { position: absolute; visibility: hidden; }
+        /* مودال القوائم */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+        .menu-card { background: var(--card-bg); width: 85%; border-radius: 15px; padding: 20px; }
+        .menu-item { padding: 15px; border-bottom: 1px solid #333; cursor: pointer; text-align: center; color: white; }
 
-        /* لودر التحليل (AI) */
-        .ai-badge { background: linear-gradient(to right, #7b2ff7, #00f2ff); color: white; padding: 2px 8px; border-radius: 5px; font-size: 0.6rem; margin-top: 5px; cursor: pointer; display: inline-block; }
+        /* أزرار الترتيب السريعة */
+        .league-btns { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .league-btns::-webkit-scrollbar { display: none; }
+        .l-btn { padding: 8px 18px; border-radius: 20px; background: #242f3d; color: white; border: 1px solid transparent; white-space: nowrap; font-size: 0.8rem; }
+        .l-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body id="mainBody">
 
     <div class="top-bar">
         <div class="top-icons">
             <button class="icon-btn" onclick="openCalendar()"><i class="fa-regular fa-calendar-days"></i></button>
             <button class="icon-btn" onclick="toggleSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <button class="icon-btn"><i class="fa-solid fa-sliders"></i></button>
-            <input type="date" id="datePicker" onchange="handleDateChange(this.value)">
+            <button class="icon-btn" onclick="openFilter()"><i class="fa-solid fa-sliders"></i></button>
+            <input type="date" id="datePicker" style="display:none" onchange="handleDateChange(this.value)">
         </div>
-        <img src="https://i.ibb.co/LzNfXpY/ball-icon.png" class="logo-small" alt="Logo">
+        <img src="https://i.ibb.co/LzNfXpY/ball-icon.png" class="logo-small">
     </div>
 
-    <div class="date-display" id="currentDateLabel">الاثنين، 23/03/2026</div>
+    <div class="date-display" id="dateLabel">الاثنين، 23/03/2026</div>
 
     <div id="matches-section" class="section-container active">
         <div id="matches-list"></div>
     </div>
 
     <div id="news-section" class="section-container">
-        <div id="news-list"></div>
+        <div id="news-list"><p style="text-align:center; padding:20px;">جاري تحميل الأخبار العربية...</p></div>
     </div>
 
     <div id="transfers-section" class="section-container">
+        <div class="match-row" onclick="askAI('داري', 'الأهلي')">
+            <span>صفقة أشرف داري (تحليل AI)</span>
+            <span style="background:var(--accent-green); color:black; padding:2px 8px; border-radius:5px; font-size:0.7rem">جديد</span>
+        </div>
         <div id="transfers-list"></div>
     </div>
 
     <div id="standings-section" class="section-container">
+        <div class="league-btns">
+            <button class="l-btn active" onclick="loadStandings(39, this)">🏴󠁧󠁢󠁥󠁮󠁧󠁿 إنجليزي</button>
+            <button class="l-btn" onclick="loadStandings(140, this)">🇪🇸 إسباني</button>
+            <button class="l-btn" onclick="loadStandings(233, this)">🇪🇬 مصري</button>
+            <button class="l-btn" onclick="loadStandings(307, this)">🇸🇦 سعودي</button>
+        </div>
         <div id="standings-list"></div>
     </div>
 
     <div id="more-section" class="section-container">
-        <div class="match-row"><span>الوضع الليلي</span><i class="fa-solid fa-moon"></i></div>
-        <div class="match-row"><span>حجم الخط</span><i class="fa-solid fa-font"></i></div>
-        <div class="match-row" onclick="window.location.href='https://wa.me/201040077271'"><span>اتصل بنا</span><i class="fa-brands fa-whatsapp"></i></div>
+        <div class="match-row" onclick="openLanguages()"><span>🌐 اللغة (العربية)</span><i class="fa-solid fa-language"></i></div>
+        <div class="match-row" onclick="toggleDarkMode()"><span>🌙 الوضع الليلي</span><i class="fa-solid fa-moon"></i></div>
+        <div class="match-row" onclick="toggleFontSize()"><span>AA حجم الخط</span><i class="fa-solid fa-font"></i></div>
+        <div class="match-row" onclick="window.location.href='https://wa.me/201040077271'"><span>💬 اتصل بنا (واتساب)</span><i class="fa-brands fa-whatsapp"></i></div>
+    </div>
+
+    <div id="langModal" class="overlay" onclick="this.style.display='none'">
+        <div class="menu-card">
+            <div class="menu-item">العربية</div>
+            <div class="menu-item">English</div>
+            <div class="menu-item">Français</div>
+        </div>
     </div>
 
     <nav class="bottom-nav">
@@ -103,47 +133,38 @@
     </nav>
 
 <script>
-    const FOOTBALL_API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-    let currentActiveTab = 'matches-section';
+    const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
+    // الدوريات المهمة: أبطال أوروبا (2)، إنجليزي (39)، إسباني (140)، مصري (233)، سعودي (307)
+    const IMPORTANT_LEAGUES = [2, 39, 140, 233, 307, 135, 78, 61]; 
 
-    // تبديل الأقسام بدون Refresh كامل للصفحة
-    function switchTab(tabId, el) {
-        currentActiveTab = tabId;
+    function switchTab(id, el) {
         document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        
-        document.getElementById(tabId).classList.add('active');
+        document.getElementById(id).classList.add('active');
         el.classList.add('active');
-
-        // جلب الداتا للقسم النشط فقط
-        refreshCurrentSection();
-    }
-
-    // وظيفة الـ Refresh الذكي (تحدث القسم اللي إنت فيه بس)
-    function refreshCurrentSection() {
-        if(currentActiveTab === 'matches-section') loadMatches(new Date().toISOString().split('T')[0]);
-        if(currentActiveTab === 'transfers-section') loadTransfers();
-        if(currentActiveTab === 'standings-section') loadStandings();
+        // تحديث القسم الحالي فقط دون العودة للرئيسية
+        if(id === 'matches-section') loadMatches(new Date().toISOString().split('T')[0]);
+        if(id === 'standings-section') loadStandings(39);
     }
 
     async function loadMatches(date) {
         const list = document.getElementById('matches-list');
-        list.innerHTML = '<p style="text-align:center; padding:20px;">جاري التحديث...</p>';
+        list.innerHTML = '<p style="text-align:center; padding:20px;">⏳ جاري جلب مباريات العمالقة...</p>';
         try {
             const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${date}`, {
-                headers: { "x-rapidapi-key": FOOTBALL_API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+                headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
             });
             const data = await res.json();
-            renderMatches(data.response);
-        } catch(e) { list.innerHTML = "خطأ في الاتصال"; }
+            // فلترة الدوريات الإنجليزية والإسبانية والأبطال (برشلونة)
+            const filtered = data.response.filter(m => IMPORTANT_LEAGUES.includes(m.league.id));
+            renderMatches(filtered.length > 0 ? filtered : data.response.slice(0, 10));
+        } catch(e) { list.innerHTML = "خطأ في الشبكة"; }
     }
 
     function renderMatches(matches) {
         const list = document.getElementById('matches-list');
         list.innerHTML = '';
-        if(matches.length === 0) { list.innerHTML = '<p style="text-align:center; padding:20px;">لا يوجد مباريات في هذا التاريخ</p>'; return; }
-        
-        matches.slice(0, 15).forEach(m => {
+        matches.forEach(m => {
             list.innerHTML += `
                 <div class="league-header">🏆 ${m.league.name}</div>
                 <div class="match-row">
@@ -154,19 +175,19 @@
         });
     }
 
-    // التحكم في التقويم
+    async function askAI(player, team) {
+        alert(`الذكاء الاصطناعي يحلل صفقة ${player} إلى ${team}...`);
+        // هنا يتم ربط Gemini API كما في الكود السابق
+    }
+
+    function toggleDarkMode() { document.body.classList.toggle('light-mode'); }
+    function toggleFontSize() { document.body.classList.toggle('large-font'); }
+    function openLanguages() { document.getElementById('langModal').style.display = 'flex'; }
     function openCalendar() { document.getElementById('datePicker').showPicker(); }
-    function handleDateChange(date) {
-        document.getElementById('currentDateLabel').innerText = date;
-        loadMatches(date);
-    }
+    function handleDateChange(d) { document.getElementById('dateLabel').innerText = d; loadMatches(d); }
+    function toggleSearch() { prompt("ابحث عن فريقك المفضل:"); }
+    function openFilter() { alert("تصفية الدوريات المفضلة..."); }
 
-    function toggleSearch() {
-        const query = prompt("ابحث عن فريق أو بطولة:");
-        if(query) alert("جاري البحث عن: " + query);
-    }
-
-    // تشغيل التطبيق على اليوم
     window.onload = () => loadMatches(new Date().toISOString().split('T')[0]);
 </script>
 </body>
