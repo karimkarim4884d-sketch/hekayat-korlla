@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هجمة ولقطة - الماتشات</title>
+    <title>هجمة ولقطة & زاك سينما</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
+            --bg-color: #0b0b0b;
+            --card-bg: #161616;
             --text-color: #ffffff;
             --accent-color: #00ff88;
+            --nav-bg: #1a1a1a;
         }
 
         .light-mode {
-            --bg-color: #ffffff;
-            --card-bg: #f0f0f0;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
             --text-color: #121212;
             --accent-color: #007bff;
+            --nav-bg: #eeeeee;
         }
 
         body {
@@ -24,143 +27,192 @@
             color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            padding-bottom: 70px; /* عشان الشريط السفلي */
             transition: 0.3s;
         }
 
-        /* نظام التبويبات */
+        /* الهيدر العلوي */
+        .header {
+            background: var(--card-bg);
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* نظام التبويبات العلوي للمباريات */
         .tabs {
             display: flex;
             justify-content: space-around;
-            background: var(--card-bg);
+            background: var(--nav-bg);
             padding: 10px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .tab-btn {
             background: none;
             border: none;
             color: var(--text-color);
-            padding: 10px;
+            padding: 8px 15px;
             cursor: pointer;
-            font-weight: bold;
             font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
         }
 
         .tab-btn.active {
-            border-bottom: 3px solid var(--accent-color);
-            color: var(--accent-color);
+            background: var(--accent-color);
+            color: #000;
         }
 
-        /* حاوية الماتشات */
-        .matches-container {
-            padding: 15px;
-            min-height: 200px;
-        }
-
-        .match-card {
+        /* الحاويات */
+        .container { padding: 15px; }
+        .card {
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* الشريط السفلي (المنيو) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #333;
+            z-index: 2000;
+        }
+
+        .nav-item {
+            color: #888;
+            text-decoration: none;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+        .nav-item.active { color: var(--accent-color); }
+
+        /* قسم اللغات والإعدادات */
+        .settings-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        /* قسم المزيد */
-        .more-section {
-            padding: 20px;
-            background: var(--card-bg);
-            margin-top: 30px;
-            border-radius: 20px 20px 0 0;
-        }
-
-        .more-section h3 {
-            margin-top: 0;
+            padding: 15px;
             border-bottom: 1px solid #333;
-            padding-bottom: 10px;
         }
 
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 18px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            text-decoration: none;
-            color: var(--text-color);
-            font-size: 16px;
-        }
-
-        .btn-toggle {
+        .hidden { display: none; }
+        
+        .btn-action {
             background: var(--accent-color);
             color: #000;
             border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 8px;
             font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <div class="tabs">
-        <button class="tab-btn" onclick="showMatches('أمس')">ماتشات أمس</button>
-        <button class="tab-btn active" onclick="showMatches('اليوم')">ماتشات اليوم</button>
-        <button class="tab-btn" onclick="showMatches('غداً')">ماتشات غداً</button>
-    </div>
+    <div class="header" id="page-title">هجمة ولقطة</div>
 
-    <div class="matches-container" id="match-list">
-        <div class="match-card">
-            <span>الفريق الأول</span>
-            <span style="color: var(--accent-color); font-weight: bold;">18:00</span>
-            <span>الفريق الثاني</span>
+    <div id="home-page" class="main-content">
+        <div class="tabs">
+            <button class="tab-btn" onclick="filterMatches('أمس')">ماتشات أمس</button>
+            <button class="tab-btn active" onclick="filterMatches('اليوم')">ماتشات اليوم</button>
+            <button class="tab-btn" onclick="filterMatches('غداً')">ماتشات غداً</button>
+        </div>
+        <div class="container">
+            <div class="card">عرض مباريات اليوم...</div>
         </div>
     </div>
 
-    <div class="more-section">
-        <h3>المزيد</h3>
-        
-        <a href="https://wa.me/201040077271" target="_blank" class="menu-item">
-            <span>💬 خدمة العملاء (واتساب)</span>
-        </a>
-
-        <div class="menu-item">
-            <span>📱 رقمي: 01040077271</span>
+    <div id="movies-page" class="main-content hidden">
+        <div class="container">
+            <input type="text" placeholder="ابحث عن فيلم..." style="width:100%; padding:12px; border-radius:10px; border:none; margin-bottom:15px; background:#222; color:white;">
+            <div class="card">🎥 فيلم الناصر صلاح الدين (1963)</div>
+            <div class="card">🎥 فيلم الإرهاب والكباب</div>
         </div>
+    </div>
 
-        <div class="menu-item" style="justify-content: space-between;">
-            <span>الوضع الداكن / الأبيض</span>
-            <button class="btn-toggle" id="theme-btn" onclick="toggleTheme()">تفعيل الأبيض</button>
+    <div id="more-page" class="main-content hidden">
+        <div class="container">
+            <div class="card" style="padding:0;">
+                <div class="settings-row">
+                    <span>الوضع الداكن / الفاتح</span>
+                    <button class="btn-action" onclick="toggleTheme()" id="theme-btn">تفعيل الأبيض</button>
+                </div>
+                <div class="settings-row">
+                    <span>لغة الموقع (Language)</span>
+                    <select style="background:#333; color:white; border:none; padding:5px; border-radius:5px;">
+                        <option>العربية</option>
+                        <option>English</option>
+                    </select>
+                </div>
+                <a href="https://wa.me/201040077271" style="text-decoration:none; color:white;">
+                    <div class="settings-row">
+                        <span>خدمة العملاء (واتساب)</span>
+                        <i class="fab fa-whatsapp" style="color:#25d366; font-size:24px;"></i>
+                    </div>
+                </a>
+                <div class="settings-row">
+                    <span>رقمي: 01040077271</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="navTo('home', this)">
+            <i class="fas fa-volleyball-ball"></i>
+            <span>المباريات</span>
+        </div>
+        <div class="nav-item" onclick="navTo('movies', this)">
+            <i class="fas fa-film"></i>
+            <span>الأفلام</span>
+        </div>
+        <div class="nav-item" onclick="navTo('more', this)">
+            <i class="fas fa-ellipsis-h"></i>
+            <span>المزيد</span>
         </div>
     </div>
 
     <script>
-        // وظيفة تبديل الوضع الداكن/الفاتح
+        function navTo(page, element) {
+            // إخفاء كل الصفحات
+            document.querySelectorAll('.main-content').forEach(p => p.classList.add('hidden'));
+            // إظهار الصفحة المطلوبة
+            document.getElementById(page + '-page').classList.remove('hidden');
+            
+            // تحديث شكل الأيقونات
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            element.classList.add('active');
+
+            // تغيير العنوان
+            const titles = {'home': 'هجمة ولقطة', 'movies': 'زاك سينما', 'more': 'الإعدادات'};
+            document.getElementById('page-title').innerText = titles[page];
+        }
+
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const btn = document.getElementById('theme-btn');
-            if (document.body.classList.contains('light-mode')) {
-                btn.innerText = "تفعيل الداكن";
-            } else {
-                btn.innerText = "تفعيل الأبيض";
-            }
+            btn.innerText = document.body.classList.contains('light-mode') ? "تفعيل الداكن" : "تفعيل الأبيض";
         }
 
-        // وظيفة تبديل الماتشات
-        function showMatches(day) {
-            const container = document.getElementById('match-list');
-            container.innerHTML = `
-                <div class="match-card" style="justify-content: center;">
-                    <p>عرض مباريات ${day}...</p>
-                </div>`;
-            
-            // تحديث شكل التبويبات
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        function filterMatches(day) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
         }
     </script>
