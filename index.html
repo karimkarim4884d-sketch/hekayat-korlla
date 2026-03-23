@@ -78,9 +78,9 @@
             <div id="playerHTML"></div>
         </div>
         <div class="server-switcher">
-            <button class="srv-btn active" onclick="switchServer(1)">سيرفر 1 (رئيسي)</button>
-            <button class="srv-btn" onclick="switchServer(2)">سيرفر 2 (احتياطي)</button>
-            <button class="srv-btn" onclick="switchServer(3)">سيرفر 3 (عالمي)</button>
+            <button class="srv-btn active" onclick="switchServer(1, event)">سيرفر 1 (رئيسي)</button>
+            <button class="srv-btn" onclick="switchServer(2, event)">سيرفر 2 (احتياطي)</button>
+            <button class="srv-btn" onclick="switchServer(3, event)">سيرفر 3 (عالمي)</button>
         </div>
         <p style="color:var(--text-gray); font-size: 0.7rem; margin-top: 10px;">إذا توقف السيرفر، جرب سيرفر آخر</p>
     </div>
@@ -104,193 +104,71 @@
     <div class="date-display" id="dateLabel">جاري التحميل...</div>
 
     <div id="matches-section" class="section-container active">
+        <div class="league-header">الدوري التجريبي</div>
+        <div class="match-row" onclick="openPlayer('bein1')">
+            <div class="team-box">ريال مدريد</div>
+            <div class="status-box"><span class="score">0 - 0</span></div>
+            <div class="team-box">برشلونة</div>
+        </div>
         <div id="matches-list"></div>
     </div>
 
-    <div id="movies-section" class="section-container">
-        <h3 style="padding:10px; color:var(--accent-cyan);">🇪🇬 أفلام عربية حديثة</h3>
-        <div id="arabic-movies-list" class="settings-grid" style="margin-bottom:20px;"></div>
-        
-        <h3 style="padding:10px; color:var(--accent-cyan);">🌐 أفلام عالمية</h3>
-        <div id="movies-list" class="settings-grid">
-            <p style="text-align:center; grid-column: 1/3;">جاري تحميل المحتوى...</p>
-        </div>
-    </div>
-
-    <div id="news-section" class="section-container">
-        <p style="text-align:center; padding:20px;">📰 جاري تحديث آخر الأخبار الرياضية...</p>
-    </div>
-
-    <div id="standings-section" class="section-container">
-        <div id="standings-list"></div>
-    </div>
-
-    <div id="more-section" class="section-container">
-        <h3 style="padding:10px; border-bottom: 1px solid #333;">الإعدادات والمزيد</h3>
-        <div class="settings-grid">
-            <div class="setting-card" onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i><br>الوضع الليلي</div>
-            <div class="setting-card" onclick="changeFont('large')"><i class="fa-solid fa-maximize"></i><br>خط كبير</div>
-            <div class="setting-card" onclick="changeFont('small')"><i class="fa-solid fa-minimize"></i><br>خط صغير</div>
-            <div class="setting-card" onclick="alert('اللغة العربية مفعلة افتراضياً')"><i class="fa-solid fa-language"></i><br>اللغة</div>
-        </div>
-        <div class="match-row" style="margin-top:20px" onclick="window.location.href='https://wa.me/201040077271'">
-            <span>دعم فني واتساب</span><i class="fa-brands fa-whatsapp" style="color:#25d366; font-size:1.5rem"></i>
-        </div>
-    </div>
-
-    <nav class="bottom-nav">
-        <div class="nav-item active" data-tab="matches-section" onclick="switchTab('matches-section', this)"><i class="fa-solid fa-futbol"></i><span>المباريات</span></div>
-        <div class="nav-item" data-tab="movies-section" onclick="switchTab('movies-section', this)"><i class="fa-solid fa-film"></i><span>الأفلام</span></div>
-        <div class="nav-item" data-tab="news-section" onclick="switchTab('news-section', this)"><i class="fa-regular fa-newspaper"></i><span>الأخبار</span></div>
-        <div class="nav-item" data-tab="standings-section" onclick="switchTab('standings-section', this)"><i class="fa-solid fa-chart-simple"></i><span>الترتيب</span></div>
-        <div class="nav-item" data-tab="more-section" onclick="switchTab('more-section', this)"><i class="fa-solid fa-ellipsis"></i><span>المزيد</span></div>
-    </nav>
-
-<script>
-    const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-    const MOVIE_API_KEY = '932eefacf243fb7b9698ea142f2e0481';
-    const IMPORTANT_LEAGUES = [2, 39, 140, 233, 307, 135, 78, 61]; 
-    let allMatches = { yesterday: [], today: [], tomorrow: [] };
-    let currentMovieId = '';
-    let currentType = '';
-
-    const translationMap = {
-        "Real Madrid": "ريال مدريد", "Barcelona": "برشلونة", "Liverpool": "ليفربول",
-        "Manchester City": "مانشستر سيتي", "Al Ahly": "الأهلي", "Zamalek": "الزمالك",
-        "Premier League": "الدوري الإنجليزي", "La Liga": "الدوري الإسباني",
-        "Champions League": "دوري أبطال أوروبا", "Egyptian Premier League": "الدوري المصري",
-        "Saudi Pro League": "الدوري السعودي", "Bayern Munich": "بايرن ميونخ"
-    };
-
-    function translate(name) { return translationMap[name] || name; }
-
-    function switchTab(id, el) {
-        document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        el.classList.add('active');
-        document.getElementById('timeTabs').style.display = (id === 'matches-section') ? 'flex' : 'none';
-        sessionStorage.setItem('currentTab', id);
-        if(id === 'movies-section') loadMovies();
-    }
-
-    async function loadData() {
-        const savedTab = sessionStorage.getItem('currentTab') || 'matches-section';
-        const targetNav = document.querySelector(`[data-tab="${savedTab}"]`);
-        if(targetNav) switchTab(savedTab, targetNav);
-        // ... (كود المباريات يظل كما هو لضمان الاستقرار)
-        try {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${todayStr}`, {
-                headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
-            });
-            const data = await res.json();
-            const now = new Date();
-            data.response.forEach(m => {
-                if (!IMPORTANT_LEAGUES.includes(m.league.id)) return;
-                const matchDate = new Date(m.fixture.date);
-                const diffHours = (now - matchDate) / (1000 * 60 * 60);
-                if (diffHours > 12) allMatches.yesterday.push(m);
-                else allMatches.today.push(m);
-            });
-            const tomorrowStr = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
-            const resTom = await fetch(`https://v3.football.api-sports.io/fixtures?date=${tomorrowStr}`, {
-                headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
-            });
-            const dataTom = await resTom.json();
-            allMatches.tomorrow = dataTom.response.filter(m => IMPORTANT_LEAGUES.includes(m.league.id));
-            filterByTime('today', document.querySelector('.time-tab.active'));
-        } catch(e) { console.log("Network Error"); }
-    }
-
-    // نظام المشغل الجديد كلياً
-    function playMovie(id, type) {
-        currentMovieId = id;
-        currentType = type === 'tv' ? 'tv' : 'movie';
-        document.getElementById('videoOverlay').style.display = 'flex';
-        switchServer(1);
-    }
-
-    function switchServer(num) {
-        const player = document.getElementById('playerHTML');
-        document.querySelectorAll('.srv-btn').forEach((b, i) => b.classList.toggle('active', i === num-1));
-        
-        let url = '';
-        if(num === 1) url = `https://vidsrc.to/embed/${currentType}/${currentMovieId}`;
-        if(num === 2) url = `https://autoembed.to/embed/tmdb/${currentType}?id=${currentMovieId}`;
-        if(num === 3) url = `https://vidsrc.me/embed/${currentType}?tmdb=${currentMovieId}`;
-
-        player.innerHTML = `<iframe src="${url}" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>`;
-    }
-
-    function closePlayer() {
-        document.getElementById('videoOverlay').style.display = 'none';
-        document.getElementById('playerHTML').innerHTML = '';
-    }
-
-    async function loadMovies() {
-        try {
-            const res = await fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${MOVIE_API_KEY}&language=ar`);
-            const data = await res.json();
-            const list = document.getElementById('movies-list');
-            list.innerHTML = '';
-            data.results.forEach(item => {
-                const title = item.title || item.name;
-                const type = item.media_type || 'movie';
-                list.innerHTML += `<div class="setting-card" style="padding:5px;" onclick="playMovie('${item.id}', '${type}')"><img src="https://image.tmdb.org/t/p/w500${item.poster_path}" style="width:100%; border-radius:8px;"><div style="font-size:0.8rem; margin-top:5px; height:35px; overflow:hidden;">${title}</div><div style="color:var(--accent-cyan); font-size:0.7rem;">⭐ ${item.vote_average.toFixed(1)}</div></div>`;
-            });
-
-            // جلب أفلام عربية حديثة من مصر والسعودية
-            const resAr = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${MOVIE_API_KEY}&with_original_language=ar&region=EG&sort_by=release_date.desc&language=ar`);
-            const dataAr = await resAr.json();
-            const arList = document.getElementById('arabic-movies-list');
-            arList.innerHTML = '';
-            dataAr.results.slice(0, 6).forEach(item => {
-                arList.innerHTML += `<div class="setting-card" style="padding:5px;" onclick="playMovie('${item.id}', 'movie')"><img src="https://image.tmdb.org/t/p/w500${item.poster_path}" style="width:100%; border-radius:8px;"><div style="font-size:0.8rem; margin-top:5px; height:35px; overflow:hidden;">${item.title}</div><div style="color:var(--accent-cyan); font-size:0.7rem;">⭐ ${item.vote_average.toFixed(1)}</div></div>`;
-            });
-        } catch(e) { console.log("Movie API Error"); }
-    }
-
-    function getStatusLabel(status, time) {
-        if (['1H', '2H', 'HT', 'ET', 'P'].includes(status)) return '<span class="live-tag">● مباشر</span>';
-        if (['FT', 'AET', 'PEN'].includes(status)) return '<span class="finished-tag">منتهي</span>';
-        return `<span class="match-time">${new Date(time).toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})}</span>`;
-    }
-
-    function renderMatches(matches) {
-        const list = document.getElementById('matches-list');
-        list.innerHTML = matches.length ? '' : '<p style="text-align:center; padding:50px; color:var(--text-gray);">لا توجد مباريات هامة مسجلة</p>';
-        const grouped = matches.reduce((acc, m) => {
-            const lName = translate(m.league.name);
-            acc[lName] = acc[lName] || [];
-            acc[lName].push(m);
-            return acc;
-        }, {});
-        for (let league in grouped) {
-            list.innerHTML += `<div class="league-header">🏆 ${league}</div>`;
-            grouped[league].forEach(m => {
-                list.innerHTML += `<div class="match-row"><div class="team-box left"><span>${translate(m.teams.home.name)}</span><img src="${m.teams.home.logo}"></div><div class="status-box"><div class="score">${m.goals.home ?? ''} - ${m.goals.away ?? ''}</div>${getStatusLabel(m.fixture.status.short, m.fixture.date)}</div><div class="team-box"><img src="${m.teams.away.logo}"><span>${translate(m.teams.away.name)}</span></div></div>`;
-            });
+    <script>
+        // دالة فتح المشغل
+        function openPlayer(matchId) {
+            document.getElementById('videoOverlay').style.display = 'flex';
+            // تشغيل سيرفر 1 تلقائياً عند الفتح
+            switchServer(1);
         }
-    }
 
-    function filterByTime(period, el) {
-        document.querySelectorAll('.time-tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        const labels = { yesterday: 'الأمس', today: 'اليوم', tomorrow: 'الغد' };
-        document.getElementById('dateLabel').innerText = `مباريات ${labels[period]}`;
-        renderMatches(allMatches[period] || []);
-    }
+        // دالة إغلاق المشغل
+        function closePlayer() {
+            document.getElementById('videoOverlay').style.display = 'none';
+            document.getElementById('playerHTML').innerHTML = ''; // إيقاف الفيديو تماماً
+        }
 
-    function toggleDarkMode() { document.body.classList.toggle('light-mode'); }
-    function changeFont(size) {
-        document.body.classList.remove('large-font', 'small-font');
-        if(size === 'large') document.body.classList.add('large-font');
-        if(size === 'small') document.body.classList.add('small-font');
-    }
-    function openCalendar() { document.getElementById('datePicker').showPicker(); }
-    window.onload = loadData;
-</script>
+        // دالة التبديل بين السيرفرات
+        function switchServer(serverNum, event) {
+            // تحديث الألوان في الزراير
+            const buttons = document.querySelectorAll('.srv-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if(event) event.target.classList.add('active');
+
+            let videoUrl = "";
+            
+            // روابط سيرفرات البث (تقدر تغيرها براحتك)
+            if (serverNum === 1) {
+                videoUrl = "https://www.youtube.com/embed/live_stream?channel=UC4i8502Sqc_m5B-2Ww5nADg"; // مثال لايف
+            } else if (serverNum === 2) {
+                videoUrl = "https://www.dailymotion.com/embed/video/x8m3b22"; 
+            } else {
+                videoUrl = "https://vidsrc.me/embed/movie/tt0111161"; // سيرفر أفلام تجريبي
+            }
+
+            // حقن المشغل في الكود
+            document.getElementById('playerHTML').innerHTML = `
+                <iframe 
+                    src="${videoUrl}" 
+                    allowfullscreen="true" 
+                    webkitallowfullscreen="true" 
+                    mozallowfullscreen="true" 
+                    scrolling="no" 
+                    frameborder="0"
+                    allow="autoplay; encrypted-media">
+                </iframe>
+            `;
+        }
+
+        // دوال وهمية لمنع الأخطاء في الكود الأصلي
+        function filterByTime(t, el) { 
+            document.querySelectorAll('.time-tab').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+        function openCalendar() { document.getElementById('datePicker').click(); }
+        function handleDateChange(v) { document.getElementById('dateLabel').innerText = v; }
+        
+        // تعيين تاريخ اليوم كبداية
+        document.getElementById('dateLabel').innerText = new Date().toLocaleDateString('ar-EG');
+    </script>
 </body>
-                                                                                                                              </html>
-    
+</html>
