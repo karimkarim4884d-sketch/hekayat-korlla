@@ -59,21 +59,30 @@
         .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
         .setting-card { background: var(--card-bg); padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid #333; }
         
-        .video-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
-        .video-container { width: 95%; max-width: 800px; position: relative; }
-        .close-video { position: absolute; top: -45px; right: 10px; color: white; font-size: 2.5rem; cursor: pointer; z-index: 2001; }
-        .video-container iframe { width: 100%; height: 250px; border-radius: 10px; border: 1px solid var(--accent-cyan); background: #000; }
-        .server-btn { margin-top: 15px; background: var(--accent-cyan); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        /* المشغل الجديد */
+        .video-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+        .video-container { width: 95%; max-width: 800px; position: relative; background: #000; border-radius: 15px; overflow: hidden; }
+        .close-video { position: absolute; top: -50px; left: 10px; color: white; font-size: 2.5rem; cursor: pointer; z-index: 2001; }
+        .video-container iframe { width: 100%; height: 300px; border: none; }
+        .server-switcher { display: flex; gap: 10px; margin-top: 15px; width: 95%; max-width: 800px; overflow-x: auto; padding: 5px; }
+        .srv-btn { flex: 1; background: #2a3441; color: white; border: 1px solid var(--accent-cyan); padding: 10px; border-radius: 8px; font-size: 0.8rem; white-space: nowrap; cursor: pointer; }
+        .srv-btn.active { background: var(--accent-cyan); color: #000; }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body id="mainBody">
 
     <div id="videoOverlay" class="video-overlay">
+        <span class="close-video" onclick="closePlayer()">&times;</span>
         <div class="video-container">
-            <span class="close-video" onclick="closePlayer()">&times;</span>
             <div id="playerHTML"></div>
         </div>
+        <div class="server-switcher">
+            <button class="srv-btn active" onclick="switchServer(1)">سيرفر 1 (رئيسي)</button>
+            <button class="srv-btn" onclick="switchServer(2)">سيرفر 2 (احتياطي)</button>
+            <button class="srv-btn" onclick="switchServer(3)">سيرفر 3 (عالمي)</button>
+        </div>
+        <p style="color:var(--text-gray); font-size: 0.7rem; margin-top: 10px;">إذا توقف السيرفر، جرب سيرفر آخر</p>
     </div>
 
     <div class="top-bar">
@@ -99,7 +108,7 @@
     </div>
 
     <div id="movies-section" class="section-container">
-        <h3 style="padding:10px; color:var(--accent-cyan);">🇪🇬 أفلام عربية</h3>
+        <h3 style="padding:10px; color:var(--accent-cyan);">🇪🇬 أفلام عربية حديثة</h3>
         <div id="arabic-movies-list" class="settings-grid" style="margin-bottom:20px;"></div>
         
         <h3 style="padding:10px; color:var(--accent-cyan);">🌐 أفلام عالمية</h3>
@@ -142,6 +151,8 @@
     const MOVIE_API_KEY = '932eefacf243fb7b9698ea142f2e0481';
     const IMPORTANT_LEAGUES = [2, 39, 140, 233, 307, 135, 78, 61]; 
     let allMatches = { yesterday: [], today: [], tomorrow: [] };
+    let currentMovieId = '';
+    let currentType = '';
 
     const translationMap = {
         "Real Madrid": "ريال مدريد", "Barcelona": "برشلونة", "Liverpool": "ليفربول",
@@ -167,7 +178,7 @@
         const savedTab = sessionStorage.getItem('currentTab') || 'matches-section';
         const targetNav = document.querySelector(`[data-tab="${savedTab}"]`);
         if(targetNav) switchTab(savedTab, targetNav);
-
+        // ... (كود المباريات يظل كما هو لضمان الاستقرار)
         try {
             const todayStr = new Date().toISOString().split('T')[0];
             const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${todayStr}`, {
@@ -192,18 +203,24 @@
         } catch(e) { console.log("Network Error"); }
     }
 
+    // نظام المشغل الجديد كلياً
     function playMovie(id, type) {
-        const overlay = document.getElementById('videoOverlay');
-        const player = document.getElementById('playerHTML');
-        
-        const primary = type === 'movie' ? `https://vidsrc.me/embed/movie?tmdb=${id}` : `https://vidsrc.me/embed/tv?tmdb=${id}`;
-        const backup = type === 'movie' ? `https://vidsrc.pro/embed/movie/${id}` : `https://vidsrc.pro/embed/tv/${id}`;
+        currentMovieId = id;
+        currentType = type === 'tv' ? 'tv' : 'movie';
+        document.getElementById('videoOverlay').style.display = 'flex';
+        switchServer(1);
+    }
 
-        player.innerHTML = `
-            <iframe id="mainPlayer" src="${primary}" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
-            <button class="server-btn" onclick="document.getElementById('mainPlayer').src='${backup}'">سيرفر احتياطي (في حال العطل)</button>
-        `;
-        overlay.style.display = 'flex';
+    function switchServer(num) {
+        const player = document.getElementById('playerHTML');
+        document.querySelectorAll('.srv-btn').forEach((b, i) => b.classList.toggle('active', i === num-1));
+        
+        let url = '';
+        if(num === 1) url = `https://vidsrc.to/embed/${currentType}/${currentMovieId}`;
+        if(num === 2) url = `https://autoembed.to/embed/tmdb/${currentType}?id=${currentMovieId}`;
+        if(num === 3) url = `https://vidsrc.me/embed/${currentType}?tmdb=${currentMovieId}`;
+
+        player.innerHTML = `<iframe src="${url}" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>`;
     }
 
     function closePlayer() {
@@ -223,11 +240,12 @@
                 list.innerHTML += `<div class="setting-card" style="padding:5px;" onclick="playMovie('${item.id}', '${type}')"><img src="https://image.tmdb.org/t/p/w500${item.poster_path}" style="width:100%; border-radius:8px;"><div style="font-size:0.8rem; margin-top:5px; height:35px; overflow:hidden;">${title}</div><div style="color:var(--accent-cyan); font-size:0.7rem;">⭐ ${item.vote_average.toFixed(1)}</div></div>`;
             });
 
-            const resAr = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${MOVIE_API_KEY}&with_original_language=ar&language=ar`);
+            // جلب أفلام عربية حديثة من مصر والسعودية
+            const resAr = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${MOVIE_API_KEY}&with_original_language=ar&region=EG&sort_by=release_date.desc&language=ar`);
             const dataAr = await resAr.json();
             const arList = document.getElementById('arabic-movies-list');
             arList.innerHTML = '';
-            dataAr.results.slice(0, 4).forEach(item => {
+            dataAr.results.slice(0, 6).forEach(item => {
                 arList.innerHTML += `<div class="setting-card" style="padding:5px;" onclick="playMovie('${item.id}', 'movie')"><img src="https://image.tmdb.org/t/p/w500${item.poster_path}" style="width:100%; border-radius:8px;"><div style="font-size:0.8rem; margin-top:5px; height:35px; overflow:hidden;">${item.title}</div><div style="color:var(--accent-cyan); font-size:0.7rem;">⭐ ${item.vote_average.toFixed(1)}</div></div>`;
             });
         } catch(e) { console.log("Movie API Error"); }
@@ -274,4 +292,5 @@
     window.onload = loadData;
 </script>
 </body>
-</html>
+                                                                                                                              </html>
+    
