@@ -59,16 +59,27 @@
         .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
         .setting-card { background: var(--card-bg); padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid #333; }
         
-        /* ستايل إضافي لبوسترات الأفلام */
-        .movie-card img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
+        /* ستايل إضافي لمشغل الفيديو */
+        .video-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+        .video-container { width: 95%; max-width: 800px; position: relative; }
+        .close-video { position: absolute; top: -45px; right: 10px; color: white; font-size: 2.5rem; cursor: pointer; z-index: 2001; }
+        .video-container iframe { width: 100%; height: 250px; border-radius: 10px; border: 1px solid var(--accent-cyan); }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body id="mainBody">
 
+    <div id="videoOverlay" class="video-overlay">
+        <div class="video-container">
+            <span class="close-video" onclick="closePlayer()">&times;</span>
+            <div id="playerHTML"></div>
+        </div>
+    </div>
+
     <div class="top-bar">
         <div class="top-icons">
-            <button class="icon-btn" onclick="alert('القائمة قريباً')"><i class="fa-solid fa-bars"></i></button> <button class="icon-btn" onclick="openCalendar()"><i class="fa-regular fa-calendar-days"></i></button>
+            <button class="icon-btn" onclick="alert('القائمة قريباً')"><i class="fa-solid fa-bars"></i></button>
+            <button class="icon-btn" onclick="openCalendar()"><i class="fa-regular fa-calendar-days"></i></button>
             <button class="icon-btn" onclick="location.reload()"><i class="fa-solid fa-rotate"></i></button>
             <input type="date" id="datePicker" style="display:none" onchange="handleDateChange(this.value)">
         </div>
@@ -108,7 +119,7 @@
             <div class="setting-card" onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i><br>الوضع الليلي</div>
             <div class="setting-card" onclick="changeFont('large')"><i class="fa-solid fa-maximize"></i><br>خط كبير</div>
             <div class="setting-card" onclick="changeFont('small')"><i class="fa-solid fa-minimize"></i><br>خط صغير</div>
-            <div class="setting-card" onclick="alert('اللغة العربية مفعلة افتراضياً')"><i class="fa-solid fa-language"></i><br>اللغة</div>
+            <div class="setting-card" onclick="alert('اللغة العربية مفعلة افتراضياً')"><i class="fa-solid fa-language"></i><br>الغة</div>
         </div>
         <div class="match-row" style="margin-top:20px" onclick="window.location.href='https://wa.me/201040077271'">
             <span>دعم فني واتساب</span><i class="fa-brands fa-whatsapp" style="color:#25d366; font-size:1.5rem"></i>
@@ -125,7 +136,7 @@
 
 <script>
     const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-    const MOVIE_API_KEY = '932eefacf243fb7b9698ea142f2e0481'; // مفتاحك الجديد
+    const MOVIE_API_KEY = '932eefacf243fb7b9698ea142f2e0481';
     const IMPORTANT_LEAGUES = [2, 39, 140, 233, 307, 135, 78, 61]; 
     let allMatches = { yesterday: [], today: [], tomorrow: [] };
 
@@ -144,11 +155,10 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         el.classList.add('active');
-        // إخفاء تبويبات الوقت لو مش في قسم المباريات
         document.getElementById('timeTabs').style.display = (id === 'matches-section') ? 'flex' : 'none';
         sessionStorage.setItem('currentTab', id);
         
-        if(id === 'movies-section') loadMovies(); // جلب الأفلام عند فتح القسم
+        if(id === 'movies-section') loadMovies();
     }
 
     async function loadData() {
@@ -162,7 +172,6 @@
                 headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
             });
             const data = await res.json();
-            
             const now = new Date();
             data.response.forEach(m => {
                 if (!IMPORTANT_LEAGUES.includes(m.league.id)) return;
@@ -171,19 +180,30 @@
                 if (diffHours > 12) allMatches.yesterday.push(m);
                 else allMatches.today.push(m);
             });
-
             const tomorrowStr = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
             const resTom = await fetch(`https://v3.football.api-sports.io/fixtures?date=${tomorrowStr}`, {
                 headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
             });
             const dataTom = await resTom.json();
             allMatches.tomorrow = dataTom.response.filter(m => IMPORTANT_LEAGUES.includes(m.league.id));
-
             filterByTime('today', document.querySelector('.time-tab.active'));
         } catch(e) { console.log("Network Error"); }
     }
 
-    // دالة جلب الأفلام والمسلسلات
+    // دوال مشغل الفيديو المدمجة
+    function playMovie(id, type) {
+        const overlay = document.getElementById('videoOverlay');
+        const player = document.getElementById('playerHTML');
+        const embedUrl = type === 'movie' ? `https://vidsrc.me/embed/movie?tmdb=${id}` : `https://vidsrc.me/embed/tv?tmdb=${id}`;
+        player.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+        overlay.style.display = 'flex';
+    }
+
+    function closePlayer() {
+        document.getElementById('videoOverlay').style.display = 'none';
+        document.getElementById('playerHTML').innerHTML = '';
+    }
+
     async function loadMovies() {
         try {
             const res = await fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${MOVIE_API_KEY}&language=ar`);
@@ -192,8 +212,9 @@
             list.innerHTML = '';
             data.results.forEach(item => {
                 const title = item.title || item.name;
+                const type = item.media_type || 'movie';
                 list.innerHTML += `
-                    <div class="setting-card" style="padding:5px;">
+                    <div class="setting-card" style="padding:5px;" onclick="playMovie('${item.id}', '${type}')">
                         <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" style="width:100%; border-radius:8px;">
                         <div style="font-size:0.8rem; margin-top:5px; height:35px; overflow:hidden;">${title}</div>
                         <div style="color:var(--accent-cyan); font-size:0.7rem;">⭐ ${item.vote_average.toFixed(1)}</div>
@@ -252,5 +273,4 @@
     window.onload = loadData;
 </script>
 </body>
-    </html>
-    
+</html>
