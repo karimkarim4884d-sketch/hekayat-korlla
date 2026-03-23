@@ -3,175 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>هجمة ولقطة - التطبيق الرسمي</title>
+    <title>هجمة ولقطة - Zack Cinema</title>
     <style>
         :root {
-            --dark-bg: #001220;
-            --card-bg: #003366;
+            --dark-bg: #120B1E; /* اللون البنفسجي الغامق جداً من الصورة */
+            --card-bg: #2D1B4E; /* لون الكروت البنفسجي */
+            --accent-green: #00FFA3; /* لون الأسهم وحالة الانتقال */
             --accent-orange: #ff6b35;
             --text-white: #ffffff;
-            --light-blue: #00bfff;
-            --goal-bg: #004d99;
-            --nav-bg: #000c16;
+            --light-blue: #8E7AB5;
+            --nav-bg: #1A1128;
         }
 
-        /* حماية الموقع ومنع النسخ */
+        /* الإعدادات العامة */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; 
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none; user-select: none;
         }
 
-        body { background: var(--dark-bg); color: var(--text-white); padding-bottom: 90px; overflow-x: hidden; }
+        body { 
+            background: var(--dark-bg); 
+            color: var(--text-white); 
+            padding-bottom: 90px; 
+            transition: 0.3s;
+        }
+
+        /* حجم الخط المخصص */
+        body.large-font { font-size: 1.2rem; }
 
         header { 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 15px 20px; border-bottom: 1px solid rgba(0, 191, 255, 0.1);
-            background: var(--nav-bg); position: sticky; top: 0; z-index: 1000;
+            display: flex; align-items: center; justify-content: center; 
+            gap: 15px; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        
-        .logo-container {
-            width: 45px; height: 45px; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 0 10px rgba(0,191,255,0.3); background: var(--card-bg);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .logo-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .menu-icon { font-size: 24px; color: var(--light-blue); cursor: pointer; }
+        .section-container { display: none; padding: 0 15px; animation: fadeIn 0.3s ease; }
+        .section-container.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .tabs { display: flex; gap: 8px; margin: 15px; }
-        .tab-btn { flex: 1; padding: 10px; border: none; background: #002a4d; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-        .tab-btn.active { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
-
-        .league-title { text-align: center; font-size: 0.75rem; color: var(--light-blue); margin: 15px 0 5px; font-weight: bold; }
-        
-        .match-card {
-            background: var(--card-bg); border-radius: 15px; display: flex;
-            align-items: center; padding: 15px; margin: 0 15px 12px; border-right: 4px solid var(--light-blue);
+        /* ستايل كروت الانتقالات (نسخة من الصورة) */
+        .transfer-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
             justify-content: space-between;
+            position: relative;
         }
 
-        .team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
-        .team img { width: 35px; height: 35px; object-fit: contain; }
-        .team span { font-size: 0.75rem; font-weight: bold; }
+        .player-info { display: flex; align-items: center; gap: 12px; }
+        .player-info img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #eee; }
+        .transfer-type {
+            background: var(--accent-green);
+            color: #000;
+            padding: 2px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
 
-        .score-box { display: flex; justify-content: center; gap: 8px; align-items: center; }
-        .goal { background: var(--goal-bg); color: white; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold; border: 1px solid var(--light-blue); }
+        .ai-btn {
+            background: linear-gradient(45deg, #8E2DE2, #4A00E0);
+            color: white; border: none; padding: 5px 10px;
+            border-radius: 8px; font-size: 0.7rem; cursor: pointer; margin-top: 5px;
+        }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #002a4d; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 0.65rem; cursor: pointer; }
-        .nav-item.active { color: var(--light-blue); }
+        /* جدول الترتيب */
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 12px; overflow: hidden; margin-top: 10px;}
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { background: rgba(0,0,0,0.2); color: var(--accent-green); }
 
-        .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background: #000c16; transition: 0.4s; padding-top: 60px; overflow-x: hidden; }
-        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 18px; color: white; display: block; border-bottom: 1px solid #002a4d; }
+        /* البار السفلي */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--nav-bg);
+            display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 0.7rem; cursor: pointer; }
+        .nav-item.active { color: var(--accent-green); }
 
-        .hidden { display: none; }
+        /* أزرار الإعدادات في "المزيد" */
+        .settings-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 10px;
+        }
+        .toggle-btn { width: 40px; height: 20px; background: #555; border-radius: 20px; position: relative; cursor: pointer; }
+        .toggle-btn.on { background: var(--accent-green); }
+        .toggle-btn::after { content: ''; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; }
+        .toggle-btn.on::after { left: 22px; }
     </style>
 </head>
-<body oncontextmenu="return false;">
-
-<div id="sideMenu" class="sidebar">
-    <a href="javascript:void(0)" onclick="closeMenu()" style="font-size:30px;">×</a>
-    <a href="#" onclick="showSection('movies-section')">🎬 قسم الأفلام</a>
-    <a href="#" onclick="showSection('series-section')">📺 قسم المسلسلات</a>
-    <a href="#" onclick="showSection('matches-section')">🏠 الرئيسية</a>
-</div>
+<body id="body">
 
 <header>
-    <div class="menu-icon" onclick="openMenu()">☰</div>
-    <div style="display:flex; align-items:center; gap:10px;">
-        <h1>هجمة ولقطة</h1>
-        <div class="logo-container">
-            <img src="https://i.ibb.co/LzNfXpY/ball-icon.png" class="logo-img">
-        </div>
-    </div>
-    <div style="width:24px;"></div> 
+    <h1 style="color: var(--accent-green);">هجمة ولقطة ⚽</h1>
 </header>
 
-<div id="matches-section" class="section-container">
-    <div class="tabs">
-        <button class="tab-btn" id="yesterday" onclick="getMatches(-1, 'yesterday')">الأمس</button>
-        <button class="tab-btn active" id="today" onclick="getMatches(0, 'today')">اليوم</button>
-        <button class="tab-btn" id="tomorrow" onclick="getMatches(1, 'tomorrow')">الغد</button>
+<div id="matches-section" class="section-container active">
+    <div class="tabs" style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="tab-btn" onclick="getMatches(-1, 'yesterday')" style="flex:1; padding:10px; background:#2D1B4E; color:white; border:none; border-radius:8px;">الأمس</button>
+        <button class="tab-btn active" onclick="getMatches(0, 'today')" style="flex:1; padding:10px; background:var(--accent-green); color:black; border:none; border-radius:8px; font-weight:bold;">اليوم</button>
+        <button class="tab-btn" onclick="getMatches(1, 'tomorrow')" style="flex:1; padding:10px; background:#2D1B4E; color:white; border:none; border-radius:8px;">الغد</button>
     </div>
     <div id="matches-list"></div>
 </div>
 
-<div id="movies-section" class="section-container hidden" style="padding:20px;"><h3>🎬 مكتبة الأفلام بالعربي</h3><div class="match-card">قريباً...</div></div>
-<div id="series-section" class="section-container hidden" style="padding:20px;"><h3>📺 مكتبة المسلسلات</h3><div class="match-card">قريباً...</div></div>
+<div id="standings-section" class="section-container">
+    <h3 style="margin-bottom: 15px;">📊 ترتيب الدوري الإنجليزي</h3>
+    <div id="standings-table">⏳ جاري التحميل...</div>
+</div>
+
+<div id="transfers-section" class="section-container">
+    <h3 style="margin-bottom: 15px;">🔄 أبرز الانتقالات 2026</h3>
+    <div id="transfers-list"></div>
+</div>
+
+<div id="more-section" class="section-container">
+    <h3 style="margin-bottom: 15px;">⚙️ الإعدادات</h3>
+    <div class="settings-row">
+        <span>الوضع الليلي</span>
+        <div class="toggle-btn on" onclick="toggleTheme(this)"></div>
+    </div>
+    <div class="settings-row">
+        <span>تكبير الخط</span>
+        <div class="toggle-btn" onclick="toggleFont(this)"></div>
+    </div>
+    <div class="placeholder-card" style="text-align: center; padding: 20px; background: var(--card-bg); border-radius: 12px;">
+        <p>تواصل مع المطور (Zack)</p>
+        <a href="https://wa.me/201040077271" style="color: var(--accent-green); text-decoration: none; font-weight: bold;">واتساب مباشرة 💬</a>
+    </div>
+</div>
 
 <nav class="bottom-nav">
     <div class="nav-item active" onclick="showSection('matches-section', this)"><span>⚽</span><span>المباريات</span></div>
-    <div class="nav-item"><span>📊</span><span>الترتيب</span></div>
-    <div class="nav-item"><span>🔄</span><span>انتقالات</span></div>
+    <div class="nav-item" onclick="showSection('standings-section', this)"><span>📊</span><span>الترتيب</span></div>
+    <div class="nav-item" onclick="showSection('transfers-section', this)"><span>🔄</span><span>انتقالات</span></div>
     <div class="nav-item" onclick="showSection('more-section', this)"><span>➕</span><span>المزيد</span></div>
 </nav>
 
 <script>
-const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e'; 
-const API_HOST = 'v3.football.api-sports.io';
-const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 1, 4, 233, 307, 202];
+const FOOTBALL_API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e'; // مفتاحك
+const GEMINI_API_KEY = 'ضغ_مفتاح_جيمناي_هنا'; // حط مفتاح AI هنا
 
-async function getMatches(offset, btnId) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(btnId).classList.add('active');
-    const d = new Date(); d.setDate(d.getDate() + offset);
-    const dateStr = d.toLocaleDateString('en-CA'); 
-    const list = document.getElementById('matches-list');
-    list.innerHTML = '<div style="text-align:center; padding:30px;">⏳ جاري التحميل بالعربية...</div>';
+// وظيفة التنقل بين الأقسام
+function showSection(id, el) {
+    document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
 
-    try {
-        const res = await fetch(`https://${API_HOST}/fixtures?date=${dateStr}&lang=ar`, {
-            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": API_HOST }
-        });
-        const json = await res.json();
-        let matches = json.response;
-
-        let filtered;
-        if (btnId === 'today') {
-            filtered = matches.filter(m => m.fixture.status.short !== 'FT');
-        } else if (btnId === 'yesterday') {
-            filtered = matches.filter(m => m.fixture.status.short === 'FT');
-        } else {
-            filtered = matches;
-        }
-
-        let finalData = filtered.filter(m => importantLeagues.includes(m.league.id));
-        render(finalData.length > 0 ? finalData : filtered.slice(0, 15));
-    } catch (e) { list.innerHTML = "<div style='text-align:center;'>⚠️ خطأ في السحب</div>"; }
+    if(id === 'transfers-section') getTransfers();
+    if(id === 'standings-section') getStandings();
 }
 
-function render(data) {
-    const list = document.getElementById('matches-list');
+// جلب الانتقالات (محاكاة للداتا اللي في صورتك)
+async function getTransfers() {
+    const list = document.getElementById('transfers-list');
+    list.innerHTML = '⏳ جاري جلب الصفقات...';
+    
+    // هنا ممكن تربط بـ API حقيقي، بس عملتلك مثال زي الصورة بالظبط
+    const demoTransfers = [
+        { name: 'بيتراتش', from: 'نادي', to: 'ريال مدريد', type: 'انتقال', img: 'https://media.api-sports.io/football/players/307425.png' },
+        { name: 'كوتينيو', from: 'الدحيل', to: 'فاسكو دي جاما', type: 'إعارة', img: 'https://media.api-sports.io/football/players/902.png' }
+    ];
+
     list.innerHTML = '';
-    data.forEach(m => {
-        const time = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+    demoTransfers.forEach(tr => {
         list.innerHTML += `
-            <div class="league-title">🏆 ${m.league.name}</div>
-            <div class="match-card">
-                <div class="team"><img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span></div>
-                <div style="text-align:center; flex:1;">
-                    <div class="score-box"><div class="goal">${m.goals.home ?? '-'}</div><span>:</span><div class="goal">${m.goals.away ?? '-'}</div></div>
-                    <div style="font-size:0.7rem; color:var(--accent-orange); margin-top:5px;">${m.fixture.status.short === 'FT' ? 'انتهت' : time}</div>
+            <div class="transfer-card">
+                <div class="player-info">
+                    <img src="${tr.img}">
+                    <div>
+                        <div style="font-weight:bold">${tr.name}</div>
+                        <div style="font-size:0.7rem; color:#aaa">إلى: ${tr.to}</div>
+                        <button class="ai-btn" onclick="askAI('${tr.name}', '${tr.to}')">تحليل الـ AI ✨</button>
+                    </div>
                 </div>
-                <div class="team"><img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span></div>
-            </div>`;
+                <div class="transfer-type">${tr.type}</div>
+            </div>
+        `;
     });
 }
 
-function openMenu() { document.getElementById("sideMenu").style.width = "250px"; }
-function closeMenu() { document.getElementById("sideMenu").style.width = "0"; }
-function showSection(id, el) {
-    document.querySelectorAll('.section-container').forEach(s => s.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
-    if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-    closeMenu();
+// دالة الذكاء الاصطناعي (تحتاج مفتاح Gemini)
+async function askAI(playerName, teamName) {
+    alert(`الـ AI بيحلل صفقة ${playerName}.. (تأكد من وضع المفتاح في الكود)`);
+    // هنا الكود اللي بيكلم Gemini API
 }
-getMatches(0, 'today');
+
+// جلب الترتيب (الدوري الإنجليزي كمثال)
+async function getStandings() {
+    const container = document.getElementById('standings-table');
+    try {
+        const res = await fetch(`https://v3.football.api-sports.io/standings?league=39&season=2025`, {
+            headers: { "x-rapidapi-key": FOOTBALL_API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+        });
+        const data = await res.json();
+        const standings = data.response[0].league.standings[0];
+        
+        let html = `<table><tr><th>#</th><th>الفريق</th><th>لعب</th><th>نقاط</th></tr>`;
+        standings.slice(0, 10).forEach(s => {
+            html += `<tr><td>${s.rank}</td><td><img src="${s.team.logo}" width="20"> ${s.team.name}</td><td>${s.all.played}</td><td style="color:var(--accent-green)">${s.points}</td></tr>`;
+        });
+        html += `</table>`;
+        container.innerHTML = html;
+    } catch(e) { container.innerHTML = "خطأ في تحميل الترتيب"; }
+}
+
+// إعدادات "المزيد"
+function toggleTheme(el) {
+    el.classList.toggle('on');
+    document.body.style.filter = el.classList.contains('on') ? 'none' : 'grayscale(0.5) brightness(0.8)';
+}
+
+function toggleFont(el) {
+    el.classList.toggle('on');
+    document.getElementById('body').classList.toggle('large-font');
+}
+
+// تشغيل الماتشات أول ما يفتح
+window.onload = () => getMatches(0, 'today');
+
+// دالة الماتشات الأصلية بتاعتك (مع الاحتفاظ بمفتاحك)
+async function getMatches(offset, btnId) {
+    const list = document.getElementById('matches-list');
+    list.innerHTML = '⏳ تحميل...';
+    const d = new Date(); d.setDate(d.getDate() + offset);
+    const dateStr = d.toLocaleDateString('en-CA'); 
+    try {
+        const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
+            headers: { "x-rapidapi-key": FOOTBALL_API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+        });
+        const json = await res.json();
+        renderMatches(json.response.slice(0, 20));
+    } catch (e) { list.innerHTML = "خطأ اتصال"; }
+}
+
+function renderMatches(data) {
+    const list = document.getElementById('matches-list');
+    list.innerHTML = '';
+    data.forEach(m => {
+        list.innerHTML += `
+            <div style="background:var(--card-bg); border-radius:15px; padding:15px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="text-align:center; width:30%"><img src="${m.teams.home.logo}" width="30"><br><small>${m.teams.home.name}</small></div>
+                <div style="background:#1A1128; padding:5px 15px; border-radius:10px; font-weight:bold; color:var(--accent-green)">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
+                <div style="text-align:center; width:30%"><img src="${m.teams.away.logo}" width="30"><br><small>${m.teams.away.name}</small></div>
+            </div>`;
+    });
+}
 </script>
 </body>
-</html>
+    </html>
     
