@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هجمة ولقطة - التطبيق الكامل</title>
+    <title>هجمة ولقطة - Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0b1120; /* لون غامق احترافي زي الصورة */
+            --bg-color: #0b1120;
             --card-bg: #151f32;
             --text-color: #ffffff;
             --accent-color: #00d1ff;
@@ -15,37 +15,38 @@
         }
 
         .light-mode {
-            --bg-color: #f8fafc;
+            --bg-color: #f0f4f8;
             --card-bg: #ffffff;
             --text-color: #0f172a;
-            --accent-color: #3b82f6;
-            --nav-bg: #e2e8f0;
+            --accent-color: #2563eb;
+            --nav-bg: #cbd5e1;
+        }
+
+        /* منع النسخ */
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: sans-serif;
-            margin: 0;
-            padding-bottom: 70px;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding-bottom: 70px;
             transition: 0.3s;
         }
 
-        /* الهيدر العلوي */
+        /* الهيدر */
         .top-bar {
-            background: var(--nav-bg);
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            background: var(--nav-bg); padding: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
         }
 
         .menu-btn { font-size: 24px; cursor: pointer; color: var(--accent-color); }
 
-        /* القائمة الجانبية (الثلاث شروط) */
+        /* القائمة الجانبية */
         .sidebar {
             height: 100%; width: 0; position: fixed; z-index: 3000;
             top: 0; right: 0; background-color: #050a14;
@@ -57,20 +58,26 @@
             color: white; display: block; border-bottom: 1px solid #1e293b;
         }
 
-        /* شريط التبويبات العلوي (أمس، اليوم، غداً) */
-        .date-tabs {
-            display: flex; justify-content: space-around;
-            background: var(--card-bg); padding: 10px 0;
-        }
-
-        .date-btn {
-            background: none; border: none; color: #888;
-            font-weight: bold; cursor: pointer; padding-bottom: 5px;
-        }
-
+        /* شريط التبويبات والتاريخ */
+        .date-section { background: var(--card-bg); padding: 10px; }
+        .date-tabs { display: flex; justify-content: space-around; margin-bottom: 10px; }
+        .date-btn { background: none; border: none; color: #888; cursor: pointer; padding: 5px 10px; }
         .date-btn.active { color: var(--accent-color); border-bottom: 2px solid var(--accent-color); }
 
-        /* الأقسام السفلية (Bottom Nav) */
+        input[type="date"] {
+            background: #1e293b; color: white; border: 1px solid var(--accent-color);
+            padding: 5px; border-radius: 5px; width: 100%; box-sizing: border-box;
+        }
+
+        /* الأقسام */
+        .content-section { padding: 15px; }
+        .hidden { display: none; }
+        .match-card {
+            background: var(--card-bg); border-radius: 10px; padding: 15px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* الشريط السفلي */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%;
             background: var(--nav-bg); display: flex;
@@ -78,91 +85,75 @@
             border-top: 1px solid #1e293b; z-index: 2000;
         }
 
-        .nav-link {
-            text-decoration: none; color: #64748b;
-            text-align: center; font-size: 11px; cursor: pointer;
-        }
-
-        .nav-link i { font-size: 20px; display: block; margin-bottom: 4px; }
+        .nav-link { text-decoration: none; color: #64748b; text-align: center; font-size: 11px; cursor: pointer; }
         .nav-link.active { color: var(--accent-color); }
+        .nav-link i { font-size: 20px; display: block; margin-bottom: 4px; }
 
-        /* المحتوى */
-        .content-section { padding: 15px; }
-        .hidden { display: none; }
-        .card { background: var(--card-bg); border-radius: 10px; padding: 20px; margin-bottom: 10px; text-align: center; }
-
-        /* زرار الأبيض والأسود */
-        .theme-toggle {
-            background: var(--accent-color); color: #000;
-            border: none; padding: 10px 20px; border-radius: 20px;
-            font-weight: bold; cursor: pointer;
-        }
+        .btn-show { background: var(--accent-color); border: none; padding: 5px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; }
     </style>
 </head>
-<body>
-
-    <div id="sideMenu" class="sidebar">
+<body oncontextmenu="return false;"> <div id="sideMenu" class="sidebar">
         <a href="javascript:void(0)" style="font-size:30px;" onclick="closeMenu()">×</a>
         <a href="#" onclick="switchPage('movies')"><i class="fas fa-film"></i> قسم الأفلام</a>
-        <a href="#"><i class="fas fa-tv"></i> قسم المسلسلات</a>
-        <a href="#" onclick="switchPage('home')"><i class="fas fa-home"></i> العودة للرئيسية</a>
+        <a href="#" onclick="switchPage('series')"><i class="fas fa-tv"></i> قسم المسلسلات</a>
+        <a href="#" onclick="switchPage('home')"><i class="fas fa-home"></i> الرئيسية</a>
     </div>
 
     <div class="top-bar">
         <div class="menu-btn" onclick="openMenu()">☰</div>
-        <div id="main-title" style="font-weight: bold;">هجمة ولقطة</div>
+        <div style="font-weight: bold;">هجمة ولقطة</div>
         <i class="fas fa-search" style="font-size: 20px;"></i>
     </div>
 
     <div id="home-page" class="content-section">
-        <div class="date-tabs">
-            <button class="date-btn" onclick="changeDate('yesterday')">ماتشات أمس</button>
-            <button class="date-btn active" onclick="changeDate('today')">ماتشات اليوم</button>
-            <button class="date-btn" onclick="changeDate('tomorrow')">ماتشات غداً</button>
+        <div class="date-section">
+            <div class="date-tabs">
+                <button class="date-btn" onclick="loadMatches('yesterday')">ماتشات أمس</button>
+                <button class="date-btn active" onclick="loadMatches('today')">ماتشات اليوم</button>
+                <button class="date-btn" onclick="loadMatches('tomorrow')">ماتشات غداً</button>
+            </div>
+            <input type="date" id="matchDate" value="2026-03-23" min="2006-01-01" max="2026-12-31">
         </div>
-        <div class="card" style="margin-top:20px;">عرض المباريات والنتائج هنا...</div>
+
+        <div id="match-list" style="margin-top: 15px;">
+            <div class="match-card">
+                <span>ريال مدريد</span>
+                <span style="color: var(--accent-color)">10:00 م</span>
+                <span>برشلونة</span>
+            </div>
+        </div>
     </div>
 
-    <div id="movies-page" class="content-section hidden">
-        <h3>🎬 مكتبة زاك للسينما</h3>
-        <div class="card">فيلم الناصر صلاح الدين</div>
-        <div class="card">فيلم الإرهاب والكباب</div>
-    </div>
+    <div id="movies-page" class="content-section hidden"><h3>🎬 مكتبة الأفلام</h3><div class="match-card">فيلم جديد 1</div></div>
+    <div id="series-page" class="content-section hidden"><h3>📺 قسم المسلسلات</h3><div class="match-card">مسلسل جديد 1</div></div>
 
     <div id="more-page" class="content-section hidden">
-        <h3>المزيد</h3>
-        <div class="card" style="text-align: right;">
-            <p>📱 واتساب: <a href="https://wa.me/201040077271" style="color:var(--accent-color);">01040077271</a></p>
-            <p>🌐 اللغة: العربية / English</p>
-            <hr>
-            <div style="display:flex; justify-content: space-between; align-items: center;">
+        <h3>الإعدادات والمزيد</h3>
+        <div class="match-card" style="flex-direction: column; align-items: flex-start;">
+            <p>اللغة: 
+                <select style="background: #333; color: white; border: none;">
+                    <option>العربية</option>
+                    <option>English</option>
+                    <option>Français</option>
+                </select>
+            </p>
+            <p>رقم التواصل: <span id="myNum" class="hidden">01040077271</span> 
+                <button class="btn-show" onclick="document.getElementById('myNum').classList.toggle('hidden')">إظهار الرقم</button>
+            </p>
+            <p>واتساب: <a href="https://wa.me/201040077271" style="color:var(--accent-color);">مراسلتي</a></p>
+            <div style="display:flex; justify-content: space-between; width: 100%;">
                 <span>الوضع الليلي</span>
-                <button class="theme-toggle" onclick="toggleTheme()" id="t-btn">تفعيل الأبيض</button>
+                <button class="btn-show" onclick="toggleTheme()">تغيير الوضع</button>
             </div>
         </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-link active" onclick="switchPage('home', this)">
-            <i class="fas fa-volleyball-ball"></i>
-            <span>المباريات</span>
-        </div>
-        <div class="nav-link" onclick="switchPage('rank')">
-            <i class="fas fa-list-ol"></i>
-            <span>الترتيب</span>
-        </div>
-        <div class="nav-link" onclick="switchPage('transfers')">
-            <i class="fas fa-exchange-alt"></i>
-            <span>الانتقالات</span>
-        </div>
-        <div class="nav-link" onclick="switchPage('news')">
-            <i class="fas fa-newspaper"></i>
-            <span>الأخبار</span>
-        </div>
-        <div class="nav-link" onclick="switchPage('more', this)">
-            <i class="fas fa-ellipsis-h"></i>
-            <span>المزيد</span>
-        </div>
+        <div class="nav-link active" onclick="switchPage('home', this)"><i class="fas fa-volleyball-ball"></i><span>المباريات</span></div>
+        <div class="nav-link" onclick="switchPage('rank')"><i class="fas fa-list-ol"></i><span>الترتيب</span></div>
+        <div class="nav-link" onclick="switchPage('transfers')"><i class="fas fa-exchange-alt"></i><span>الانتقالات</span></div>
+        <div class="nav-link" onclick="switchPage('news')"><i class="fas fa-newspaper"></i><span>الأخبار</span></div>
+        <div class="nav-link" onclick="switchPage('more', this)"><i class="fas fa-ellipsis-h"></i><span>المزيد</span></div>
     </div>
 
     <script>
@@ -170,17 +161,10 @@
         function closeMenu() { document.getElementById("sideMenu").style.width = "0"; }
 
         function switchPage(pageId, element) {
-            // إخفاء كل الصفحات
-            document.getElementById('home-page').classList.add('hidden');
-            document.getElementById('movies-page').classList.add('hidden');
-            document.getElementById('more-page').classList.add('hidden');
-
-            // إظهار الصفحة المطلوبة
-            if(pageId === 'home') document.getElementById('home-page').classList.remove('hidden');
-            if(pageId === 'movies') document.getElementById('movies-page').classList.remove('hidden');
-            if(pageId === 'more') document.getElementById('more-page').classList.remove('hidden');
-
-            // تحديث الشريط السفلي
+            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+            const target = document.getElementById(pageId + '-page');
+            if(target) target.classList.remove('hidden');
+            
             if(element) {
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 element.classList.add('active');
@@ -190,15 +174,20 @@
 
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
-            const btn = document.getElementById('t-btn');
-            btn.innerText = document.body.classList.contains('light-mode') ? "تفعيل الداكن" : "تفعيل الأبيض";
         }
 
-        function changeDate(day) {
+        function loadMatches(day) {
+            const list = document.getElementById('match-list');
+            list.innerHTML = `<div class="match-card" style="justify-content:center;">تحميل ماتشات ${day}...</div>`;
             document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
         }
+
+        // حماية إضافية من الـ F12
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false;
+        }
     </script>
 </body>
-                </html>
-                
+                    </html>
+                    
