@@ -2,189 +2,167 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>هجمة ولقطة - التطبيق الكامل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هجمة ولقطة - الماتشات</title>
     <style>
         :root {
-            --bg-dark: #0f172a; --bg-card: #1e293b; --accent: #00bfff;
-            --text-main: #ffffff; --text-dim: #94a3b8; --live-red: #ef4444;
-            --vs-gold: #fbbf24;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --accent-color: #00ff88;
         }
-        /* منع النسخ والتحديد تماماً */
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif;
-            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+
+        .light-mode {
+            --bg-color: #ffffff;
+            --card-bg: #f0f0f0;
+            --text-color: #121212;
+            --accent-color: #007bff;
         }
-        body { background: var(--bg-dark); color: var(--text-main); padding-bottom: 80px; }
 
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-dark); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .top-icons { display: flex; gap: 15px; align-items: center; }
-        .icon-btn { font-size: 1.2rem; cursor: pointer; }
-        .current-date { font-size: 0.85rem; color: var(--accent); font-weight: bold; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            transition: 0.3s;
+        }
 
-        .page-content { display: none; padding: 15px; min-height: 80vh; }
-        .page-content.active { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* نظام التبويبات */
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background: var(--card-bg);
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
 
-        /* تبويبات التواريخ */
-        .date-tabs { display: flex; background: var(--bg-card); border-radius: 12px; margin-bottom: 15px; overflow: hidden; }
-        .date-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: var(--text-dim); font-size: 0.8rem; border-left: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .date-tab.active { background: var(--accent); color: white; }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
 
-        /* كروت المباريات */
-        .league-header { background: rgba(0, 191, 255, 0.1); padding: 8px 12px; border-radius: 8px; margin: 15px 0 10px; font-size: 0.85rem; color: var(--accent); border-right: 4px solid var(--accent); display: flex; align-items: center; gap: 10px; }
-        .league-header img { width: 20px; height: 20px; }
-        .match-card { background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .team-box { flex: 1; text-align: center; }
-        .team-box img { width: 32px; height: 32px; object-fit: contain; }
-        .team-box p { font-size: 0.75rem; margin-top: 5px; }
-        .status-box { flex: 1; text-align: center; }
-        .score-val { font-size: 1.2rem; font-weight: bold; }
-        .vs-text { color: var(--vs-gold); font-weight: bold; }
-        .live-tag { color: var(--live-red); font-size: 0.65rem; font-weight: bold; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
+        .tab-btn.active {
+            border-bottom: 3px solid var(--accent-color);
+            color: var(--accent-color);
+        }
 
-        /* تصميم قسم المزيد المفقود */
-        .login-box { background: var(--bg-card); padding: 25px; border-radius: 15px; text-align: center; border: 1px solid rgba(0,191,255,0.2); margin-top: 10px; }
-        .entry-btn { background: var(--accent); border: none; color: white; padding: 10px 30px; border-radius: 8px; font-weight: bold; margin-top: 15px; width: 100%; }
-        .setting-item { background: var(--bg-card); display: flex; justify-content: space-between; padding: 15px; margin-top: 10px; border-radius: 12px; font-size: 0.9rem; }
+        /* حاوية الماتشات */
+        .matches-container {
+            padding: 15px;
+            min-height: 200px;
+        }
 
-        /* القائمة السفلية */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--bg-card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); }
-        .nav-item { text-align: center; color: var(--text-dim); font-size: 0.7rem; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--accent); font-weight: bold; }
-        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 3px; }
+        .match-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* قسم المزيد */
+        .more-section {
+            padding: 20px;
+            background: var(--card-bg);
+            margin-top: 30px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .more-section h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .btn-toggle {
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <div class="top-bar">
-        <div class="top-icons"><i class="fas fa-search icon-btn"></i><span class="current-date">2026/03/23</span></div>
-        <img src="https://i.ibb.co/5T0S1S3/image-1.png" style="height: 40px;" alt="Logo">
+    <div class="tabs">
+        <button class="tab-btn" onclick="showMatches('أمس')">ماتشات أمس</button>
+        <button class="tab-btn active" onclick="showMatches('اليوم')">ماتشات اليوم</button>
+        <button class="tab-btn" onclick="showMatches('غداً')">ماتشات غداً</button>
     </div>
 
-    <div id="matches-page" class="page-content active">
-        <div class="date-tabs">
-            <div class="date-tab" onclick="fetchMatches('yesterday', this)">مباريات الأمس</div>
-            <div class="date-tab active" onclick="fetchMatches('today', this)">مباريات اليوم</div>
-            <div class="date-tab" onclick="fetchMatches('tomorrow', this)">مباريات الغد</div>
-        </div>
-        <div id="matches-container"></div>
-    </div>
-
-    <div id="standings-page" class="page-content">
-        <h3 style="margin-bottom:15px">ترتيب الدوريات الكبرى</h3>
-        <div class="setting-item"><span>الدوري الإنجليزي</span><i class="fas fa-chevron-left"></i></div>
-        <div class="setting-item"><span>الدوري الإسباني</span><i class="fas fa-chevron-left"></i></div>
-        <p style="text-align:center; padding:20px; color:var(--text-dim)">جاري تحديث الجداول...</p>
-    </div>
-
-    <div id="transfers-page" class="page-content">
-        <h3 style="margin-bottom:15px">سوق الانتقالات</h3>
-        <div class="match-card"><p style="width:100%; text-align:center">لا توجد صفقات رسمية اليوم</p></div>
-    </div>
-
-    <div id="news-page" class="page-content">
-        <h3 style="margin-bottom:15px">آخر الأخبار</h3>
-        <div class="match-card" style="flex-direction:column; align-items:flex-start">
-            <span style="color:var(--accent); font-size:0.7rem">عاجل</span>
-            <p style="font-size:0.9rem; margin-top:5px">ريال مدريد ينهي تدريباته استعداداً لمباراة الليلة</p>
+    <div class="matches-container" id="match-list">
+        <div class="match-card">
+            <span>الفريق الأول</span>
+            <span style="color: var(--accent-color); font-weight: bold;">18:00</span>
+            <span>الفريق الثاني</span>
         </div>
     </div>
 
-    <div id="more-page" class="page-content">
-        <div class="login-box">
-            <i class="fas fa-user-circle" style="font-size: 3rem; color: var(--accent)"></i>
-            <h3 style="margin-top:10px">سجل دخولك</h3>
-            <p style="font-size:0.8rem; color:var(--text-dim)">تابع فريقك المفضل واحصل على تنبيهات</p>
-            <button class="entry-btn">دخول / تسجيل</button>
+    <div class="more-section">
+        <h3>المزيد</h3>
+        
+        <a href="https://wa.me/201040077271" target="_blank" class="menu-item">
+            <span>💬 خدمة العملاء (واتساب)</span>
+        </a>
+
+        <div class="menu-item">
+            <span>📱 رقمي: 01040077271</span>
         </div>
-        <div class="setting-item"><span>إعدادات التطبيق</span><i class="fas fa-cog"></i></div>
-        <div class="setting-item"><span>تغيير المظهر</span><i class="fas fa-moon"></i></div>
-        <div class="setting-item" style="background:#22c55e; color:white; justify-content:center">
-            <i class="fab fa-whatsapp" style="margin-left:10px"></i> تواصل معنا
+
+        <div class="menu-item" style="justify-content: space-between;">
+            <span>الوضع الداكن / الأبيض</span>
+            <button class="btn-toggle" id="theme-btn" onclick="toggleTheme()">تفعيل الأبيض</button>
         </div>
     </div>
-
-    <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('matches', this)"><i class="fas fa-volleyball-ball"></i>المباريات</div>
-        <div class="nav-item" onclick="switchTab('standings', this)"><i class="fas fa-list-ol"></i>الترتيب</div>
-        <div class="nav-item" onclick="switchTab('transfers', this)"><i class="fas fa-exchange-alt"></i>الانتقالات</div>
-        <div class="nav-item" onclick="switchTab('news', this)"><i class="fas fa-newspaper"></i>الأخبار</div>
-        <div class="nav-item" onclick="switchTab('more', this)"><i class="fas fa-ellipsis-h"></i>المزيد</div>
-    </nav>
 
     <script>
-        // حماية المحتوى من النسخ
-        document.onkeydown = (e) => { if (e.ctrlKey && [67, 86, 85, 83].includes(e.keyCode)) return false; if (e.keyCode === 123) return false; };
-
-        const API_KEYS = ["bf7d42ac856fecc0e1e6ad24debe9c5e", "df31d97917bce1190ac701b9db9f74b6"];
-        const IMPORTANT_IDS = [39, 140, 78, 135, 61, 2, 233, 307];
-
-        function switchTab(pageId, el) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(pageId + '-page').classList.add('active');
-            el.classList.add('active');
-        }
-
-        async function fetchMatches(type, el) {
-            if(el) {
-                document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
-                el.classList.add('active');
-            }
-            const container = document.getElementById('matches-container');
-            container.innerHTML = '<p style="text-align:center; padding:30px; color:var(--text-dim)">جاري جلب المباريات الهامة...</p>';
-
-            let date = new Date();
-            if(type === 'yesterday') date.setDate(date.getDate() - 1);
-            if(type === 'tomorrow') date.setDate(date.getDate() + 1);
-            const dateStr = date.toISOString().split('T')[0];
-
-            for (let key of API_KEYS) {
-                try {
-                    const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
-                        headers: {'x-rapidapi-host': 'v3.football.api-sports.io', 'x-rapidapi-key': key}
-                    });
-                    const data = await res.json();
-                    if(data.response && data.response.length > 0) {
-                        const important = data.response.filter(m => IMPORTANT_IDS.includes(m.league.id));
-                        renderMatches(important.length > 0 ? important : data.response.slice(0, 10));
-                        return;
-                    }
-                } catch(e) { console.log("Key failed"); }
-            }
-            container.innerHTML = '<p style="text-align:center; padding:20px;">انتهت حدود الـ API لليوم.</p>';
-        }
-
-        function renderMatches(matches) {
-            const container = document.getElementById('matches-container');
-            container.innerHTML = '';
-            const grouped = matches.reduce((acc, m) => {
-                const id = m.league.name;
-                if (!acc[id]) acc[id] = {info: m.league, games: []};
-                acc[id].games.push(m);
-                return acc;
-            }, {});
-
-            for (let name in grouped) {
-                let html = `<div class="league-header"><img src="${grouped[name].info.logo}"><span>${name}</span></div>`;
-                grouped[name].games.forEach(m => {
-                    let status = m.fixture.status.short;
-                    let score = (status === 'NS') ? '<span class="vs-text">SV</span>' : `<span class="score-val">${m.goals.home} - ${m.goals.away}</span>`;
-                    let live = ['1H','2H','HT'].includes(status) ? `<div class="live-tag">● مباشر ${m.fixture.status.elapsed}'</div>` : '';
-                    html += `<div class="match-card">
-                        <div class="team-box"><img src="${m.teams.home.logo}"><p>${m.teams.home.name}</p></div>
-                        <div class="status-box">${score}${live}</div>
-                        <div class="team-box"><img src="${m.teams.away.logo}"><p>${m.teams.away.name}</p></div>
-                    </div>`;
-                });
-                container.innerHTML += html;
+        // وظيفة تبديل الوضع الداكن/الفاتح
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const btn = document.getElementById('theme-btn');
+            if (document.body.classList.contains('light-mode')) {
+                btn.innerText = "تفعيل الداكن";
+            } else {
+                btn.innerText = "تفعيل الأبيض";
             }
         }
-        window.onload = () => fetchMatches('today');
+
+        // وظيفة تبديل الماتشات
+        function showMatches(day) {
+            const container = document.getElementById('match-list');
+            container.innerHTML = `
+                <div class="match-card" style="justify-content: center;">
+                    <p>عرض مباريات ${day}...</p>
+                </div>`;
+            
+            // تحديث شكل التبويبات
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
     </script>
 </body>
-                </html>
-                
+</html>
