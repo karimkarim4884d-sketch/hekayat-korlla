@@ -3,113 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Zack Cinema Pro</title>
+    <title>Zack Cinema Premium</title>
     <style>
-        :root { --bg: #0b1118; --acc: #00f2ff; --card: #1a222d; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
-        body { background: var(--bg); color: white; padding-bottom: 70px; }
-        
-        /* تصميم الواجهة */
-        .top { padding: 15px; background: var(--bg); position: sticky; top: 0; z-index: 100; }
-        .search { background: var(--card); padding: 12px; border-radius: 25px; border: 1px solid #333; }
-        .search input { background:none; border:none; color:white; width:100%; outline:none; }
-
+        :root { --main: #0b1118; --accent: #00f2ff; --card: #1a222d; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--main); color: white; padding-bottom: 80px; overflow-x: hidden; }
+        .header { padding: 15px; position: sticky; top: 0; background: var(--main); z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .search-bar { background: var(--card); padding: 12px; border-radius: 30px; border: 1px solid #333; display: flex; }
+        .search-bar input { background: none; border: none; color: white; width: 100%; outline: none; padding-right: 10px; font-size: 16px; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
-        .card { background: var(--card); border-radius: 10px; overflow: hidden; cursor: pointer; text-align: center; }
-        .card img { width: 100%; height: 140px; object-fit: cover; }
-        .card p { font-size: 0.7rem; padding: 5px; white-space: nowrap; overflow: hidden; }
+        .movie-card { background: var(--card); border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid #222; }
+        .movie-card img { width: 100%; height: 160px; object-fit: cover; }
+        .movie-card .info { font-size: 0.75rem; padding: 8px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* مشغل Zack الجديد */
-        .player-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; }
-        .p-head { padding: 15px; display: flex; justify-content: space-between; background: #0b1118; border-bottom: 1px solid #222; }
-        .p-video { flex: 1; display: flex; align-items: center; justify-content: center; }
-        iframe { width: 100%; height: 300px; border: none; }
-
-        .nav { position: fixed; bottom: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #222; }
-        .nav-item { color: #a0aab2; cursor: pointer; font-size: 0.8rem; }
-        .nav-item.active { color: var(--acc); }
+        /* مشغل الفيديو المطور */
+        .player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; }
+        .player-nav { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111; }
+        .video-box { flex: 1; display: flex; align-items: center; background: #000; position: relative; }
+        
+        /* زرار تغيير السيرفر السحري */
+        .controls { background: #111; padding: 15px; text-align: center; }
+        .refresh-btn { background: var(--accent); color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 90%; }
+        
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #222; }
+        .nav-btn { color: #888; cursor: pointer; text-align: center; }
+        .nav-btn.active { color: var(--accent); font-weight: bold; }
     </style>
 </head>
-<body onload="load('tv')">
+<body onload="loadContent('tv')">
 
-    <div id="pv" class="player-view">
-        <div class="p-head">
-            <span onclick="closeP()" style="cursor:pointer">✕ إغلاق</span>
-            <span style="color:var(--acc)">Zack Cinema</span>
+    <div id="player" class="player-modal">
+        <div class="player-nav">
+            <span onclick="closePlayer()" style="cursor:pointer; font-size: 24px;">✕</span>
+            <span id="playerTitle" style="color:var(--accent);">Zack Player</span>
+            <div style="width:24px"></div>
         </div>
-        <div class="p-video" id="vBox"></div>
-        <div style="padding: 20px;">
-            <button onclick="refreshP()" style="width:100%; padding:12px; background:var(--acc); border:none; border-radius:8px; font-weight:bold;">تغيير السيرفر لو معلق</button>
+        <div class="video-box" id="videoContainer"></div>
+        <div class="controls">
+            <button class="refresh-btn" onclick="refreshSource()">سيرفر آخر (حل الشاشة السوداء والإعلانات)</button>
+            <p id="srvName" style="font-size: 12px; color: #666; margin-top: 10px;">سيرفر رقم: 1</p>
         </div>
     </div>
 
-    <div class="top">
-        <div class="search"><input type="text" placeholder="ابحث هنا يا Zack..." onkeyup="search(this.value)"></div>
+    <div class="header">
+        <div class="search-bar">
+            <input id="searchInput" type="text" placeholder="ابحث هنا يا Zack..." onkeyup="search(this.value)">
+        </div>
     </div>
 
-    <div class="grid" id="mainG"></div>
+    <div class="grid" id="mainGrid"></div>
 
-    <div class="nav">
-        <div class="nav-item active" id="b-tv" onclick="load('tv')">مسلسلات</div>
-        <div class="nav-item" id="b-movie" onclick="load('movie')">أفلام</div>
+    <div class="nav-bottom">
+        <div class="nav-btn active" id="tvBtn" onclick="loadContent('tv')">📺 مسلسلات</div>
+        <div class="nav-btn" id="movieBtn" onclick="loadContent('movie')">🎬 أفلام</div>
     </div>
 
     <script>
-        const KEY = '932eefacf243fb7b9698ea142f2e0481';
-        let cId, cType, srvNum = 1;
+        const API_KEY = '932eefacf243fb7b9698ea142f2e0481';
+        let currentId = '', currentType = '', srvIndex = 0;
 
-        async function load(t) {
-            cType = t;
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('b-'+t).classList.add('active');
-            const res = await fetch(`https://api.themoviedb.org/3/discover/${t}?api_key=${KEY}&language=ar&sort_by=popularity.desc&with_original_language=ar`);
+        async function loadContent(type) {
+            currentType = type;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(type + 'Btn').classList.add('active');
+            const res = await fetch(`https://api.themoviedb.org/3/discover/${type}?api_key=${API_KEY}&language=ar&sort_by=popularity.desc`);
             const data = await res.json();
             render(data.results);
         }
 
         function render(items) {
-            const g = document.getElementById('mainG'); g.innerHTML = '';
-            items.forEach(i => {
-                if(!i.poster_path) return;
-                g.innerHTML += `<div class="card" onclick="openP('${i.id}')"><img src="https://image.tmdb.org/t/p/w500${i.poster_path}"><p>${i.name || i.title}</p></div>`;
+            const grid = document.getElementById('mainGrid');
+            grid.innerHTML = '';
+            items.forEach(item => {
+                if(!item.poster_path) return;
+                grid.innerHTML += `
+                    <div class="movie-card" onclick="openPlayer('${item.id}', '${item.name || item.title}')">
+                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
+                        <div class="info">${item.name || item.title}</div>
+                    </div>`;
             });
         }
 
-        function openP(id) {
-            cId = id; srvNum = 1;
-            document.getElementById('pv').style.display = 'flex';
-            setVideo();
-            // حماية لمنع خروج الإعلانات
-            window.onbeforeunload = () => "خليك في موقعك؟";
+        function openPlayer(id, title) {
+            currentId = id;
+            srvIndex = 0;
+            document.getElementById('playerTitle').innerText = title;
+            document.getElementById('player').style.display = 'flex';
+            refreshSource();
         }
 
-        function setVideo() {
-            let url = "";
-            if(srvNum === 1) url = `https://embed.su/embed/${cType}/${cId}`;
-            else url = `https://vidsrc.me/embed/${cType === 'tv' ? 'tv' : 'movie'}?tmdb=${cId}`;
+        function refreshSource() {
+            // قائمة بـ 5 سيرفرات مختلفة (عالمية وعربية)
+            const sources = [
+                `https://vidsrc.to/embed/${currentType}/${currentId}`,
+                `https://vidsrc.me/embed/${currentType}/${currentId}`,
+                `https://vidsrc.pm/embed/${currentType}/${currentId}`,
+                `https://vidsrc.xyz/embed/${currentType}/${currentId}`,
+                `https://embed.smashystream.com/playere.php?tmdb=${currentId}`
+            ];
             
-            // الحل: ضفنا Sandbox بس سمحنا بالحاجات اللي تشغله وتمنع الإعلانات تخرج بره
-            document.getElementById('vBox').innerHTML = `
-                <iframe src="${url}" allowfullscreen 
-                sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation-by-user-activation">
+            let srvNum = (srvIndex % sources.length);
+            let src = sources[srvNum];
+            document.getElementById('srvName').innerText = "سيرفر رقم: " + (srvNum + 1);
+            
+            // خاصية sandbox تمنع الإعلانات المنبثقة تماماً
+            document.getElementById('videoContainer').innerHTML = `
+                <iframe src="${src}" 
+                        allowfullscreen 
+                        sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin"
+                        referrerpolicy="origin"
+                        style="width:100%; height:100%; border:none;">
                 </iframe>`;
+            srvIndex++;
         }
 
-        function refreshP() {
-            srvNum = srvNum === 1 ? 2 : 1;
-            setVideo();
-        }
-
-        function closeP() {
-            document.getElementById('pv').style.display = 'none';
-            document.getElementById('vBox').innerHTML = '';
-            window.onbeforeunload = null;
+        function closePlayer() {
+            document.getElementById('player').style.display = 'none';
+            document.getElementById('videoContainer').innerHTML = '';
         }
 
         async function search(q) {
             if(q.length < 3) return;
-            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${KEY}&language=ar&query=${q}`);
-            const data = await res.json(); render(data.results);
+            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=ar&query=${q}`);
+            const data = await res.json();
+            render(data.results);
         }
     </script>
 </body>
