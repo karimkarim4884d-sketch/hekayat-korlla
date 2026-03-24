@@ -12,14 +12,12 @@
             --text-gray: #a0aab2;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark-bg); color: white; padding-bottom: 80px; transition: 0.3s; }
+        body { background: var(--dark-bg); color: white; padding-bottom: 80px; }
 
-        /* البحث */
         .top-bar { padding: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
         .search-box { background: var(--card-bg); display: flex; align-items: center; padding: 10px 15px; border-radius: 25px; border: 1px solid #333; }
         .search-box input { background: none; border: none; color: white; width: 100%; outline: none; margin-right: 10px; }
 
-        /* الأقسام */
         .section-container { display: none; padding: 10px; }
         .section-container.active { display: block; }
         .movies-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -27,23 +25,18 @@
         .movie-card img { width: 100%; height: 150px; object-fit: cover; }
         .movie-title { padding: 5px; font-size: 0.7rem; text-align: center; }
 
-        /* المشغل المتطور */
+        /* المشغل */
         .video-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; }
         .player-header { padding: 15px; background: #0b1118; display: flex; justify-content: space-between; align-items: center; }
         .video-container { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; }
-        iframe { width: 100%; height: 280px; border: none; }
+        iframe { width: 100%; height: 300px; border: none; }
         
-        /* أزرار المشغل */
-        .player-controls { display: flex; gap: 10px; padding: 15px; background: #0b1118; border-top: 1px solid #1e2732; }
-        .control-btn { flex: 1; background: #1a222d; color: white; border: 1px solid var(--accent-cyan); padding: 10px; border-radius: 8px; font-size: 0.7rem; text-align: center; cursor: pointer; }
+        .player-controls { padding: 15px; background: #0b1118; }
+        .control-btn { width: 100%; background: #1a222d; color: white; border: 1px solid var(--accent-cyan); padding: 12px; border-radius: 8px; font-size: 0.8rem; text-align: center; cursor: pointer; }
 
-        /* القائمة السفلية */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #1e2732; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 0.7rem; cursor: pointer; }
         .nav-item.active { color: var(--accent-cyan); }
-
-        /* الإعدادات */
-        .settings-item { background: var(--card-bg); margin: 10px 0; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -54,13 +47,9 @@
             <span onclick="closePlayer()" style="cursor:pointer"><i class="fa-solid fa-arrow-right"></i> رجوع</span>
             <span style="color:var(--accent-cyan)">Zack Player - سيرفر 3</span>
         </div>
-        <div class="video-container" id="playerHTML">
-            </div>
+        <div class="video-container" id="playerHTML"></div>
         <div class="player-controls">
             <div class="control-btn" onclick="refreshVideo()"><i class="fa-solid fa-rotate"></i> تحديث الفيديو</div>
-        </div>
-        <div style="padding: 10px; text-align: center; font-size: 0.7rem; color: var(--text-gray);">
-            إذا حاول إعلان فتح صفحة جديدة، اضغط "البقاء" في الرسالة التي ستظهر.
         </div>
     </div>
 
@@ -81,17 +70,9 @@
         <div class="movies-grid" id="movies-grid"></div>
     </div>
 
-    <div id="settings-section" class="section-container">
-        <h3>إعدادات Zack Cinema</h3>
-        <div class="settings-item"><span>إصدار التطبيق</span><span>1.1.0 - Zack Cinema Pro</span></div>
-        <div class="settings-item"><span>حالة السيرفر</span><span style="color:var(--accent-cyan)">متصل</span></div>
-        <div class="settings-item" onclick="location.reload()"><span>تحديث المحتوى</span><i class="fa-solid fa-rotate"></i></div>
-    </div>
-
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="switchSection('series', this)"><i class="fa-solid fa-tv"></i><span>مسلسلات</span></div>
         <div class="nav-item" onclick="switchSection('movies', this)"><i class="fa-solid fa-film"></i><span>أفلام</span></div>
-        <div class="nav-item" onclick="switchSection('settings', this)"><i class="fa-solid fa-gear"></i><span>إعدادات</span></div>
     </nav>
 
     <script>
@@ -103,7 +84,7 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(sec + '-section').classList.add('active');
             if(el) el.classList.add('active');
-            if(sec !== 'settings') fetchTMDB(sec === 'series' ? 'tv' : 'movie');
+            fetchTMDB(sec === 'series' ? 'tv' : 'movie');
         }
 
         async function fetchTMDB(type) {
@@ -126,38 +107,23 @@
         function openPlayer(id) {
             currentId = id;
             document.getElementById('videoOverlay').style.display = 'flex';
-            loadVideo(id);
-
-            // دي "تكة" إضافية: لو حاول يفتح صفحة جديدة، بنقول للمتصفح يرفض الخروج
-            window.onbeforeunload = function() {
-                return "هل تريد مغادرة Zack Cinema؟"; 
-            };
-        }
-
-        function loadVideo(id) {
-            const src = `https://www.2embed.cc/embed/${id}`;
-            // إضافة خاصية sandbox بشكل مرن عشان الفيديو يشتغل ونقلل الإعلانات
-            // شلنا allow-top-navigation وعملنا allow-popups-to-escape-sandbox
+            
+            // شلنا الـ sandbox خالص عشان يشتغل
             document.getElementById('playerHTML').innerHTML = `
-                <iframe src="${src}" 
-                        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups-to-escape-sandbox" 
-                        allowfullscreen="true">
-                </iframe>
+                <iframe id="zack-frame" src="https://www.2embed.cc/embed/${id}" allowfullscreen="true"></iframe>
             `;
+
+            // منع الموقع من الخروج للإعلانات
+            window.onbeforeunload = function() { return "خليك في Zack Cinema؟"; };
         }
 
         function refreshVideo() {
-            if(currentId) {
-                // بنمسح المشغل ونحمله تاني
-                document.getElementById('playerHTML').innerHTML = '<div style="color:white; text-align:center;">جاري إعادة التحميل...</div>';
-                setTimeout(() => loadVideo(currentId), 500); 
-            }
+            if(currentId) openPlayer(currentId);
         }
 
         function closePlayer() {
             document.getElementById('videoOverlay').style.display = 'none';
             document.getElementById('playerHTML').innerHTML = '';
-            // بنلغي منع الخروج لما المشغل يقفل
             window.onbeforeunload = null;
         }
 
@@ -178,5 +144,4 @@
         }
     </script>
 </body>
-    </html>
-    
+</html>
