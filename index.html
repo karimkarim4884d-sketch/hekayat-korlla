@@ -3,127 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هجمة ولقطة - Pro</title>
+    <title>هجمة ولقطة - الذكي</title>
     <style>
         :root { --bg: #0d1117; --card: #161b22; --accent: #00d2ff; }
         body { background: var(--bg); color: white; margin: 0; font-family: sans-serif; padding-bottom: 80px; }
-        header { padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #30363d; }
-        
-        /* تصميم التبويبات */
-        .tabs { display: flex; overflow-x: auto; background: #161b22; padding: 10px; gap: 10px; }
-        .tab { padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; white-space: nowrap; background: #21262d; color: #8b949e; }
+        header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; position: sticky; top: 0; background: var(--bg); z-index: 1000; }
+        .date-picker { background: #21262d; color: white; border: 1px solid var(--accent); border-radius: 5px; padding: 5px; font-size: 0.8rem; }
+        .search-container { padding: 10px; }
+        .search-box { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #21262d; color: white; text-align: right; outline: none; }
+        .tabs { display: flex; justify-content: space-around; background: #161b22; padding: 10px; }
+        .tab { padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; color: #8b949e; }
         .tab.active { background: var(--accent); color: black; font-weight: bold; }
-
-        .card { background: var(--card); margin: 12px; padding: 15px; border-radius: 12px; display: flex; align-items: center; border-right: 4px solid var(--accent); }
-        .team { flex: 1; text-align: center; font-size: 0.85rem; }
-        .team img { width: 35px; height: 35px; display: block; margin: 0 auto 5px; }
+        .match-card { background: var(--card); margin: 12px; padding: 15px; border-radius: 15px; display: flex; align-items: center; border-right: 4px solid var(--accent); }
+        .team { flex: 1.2; text-align: center; font-size: 0.85rem; font-weight: bold; }
+        .team img { width: 38px; height: 38px; display: block; margin: 0 auto 5px; }
         .info { flex: 1; text-align: center; }
         .score { font-size: 1.3rem; font-weight: bold; color: var(--accent); }
-        
-        .btn-live { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; margin-top: 8px; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity:1} 50% {opacity:0.5} 100% {opacity:1} }
-
-        /* شاشة البث */
-        #live-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; flex-direction: column; }
-        .player-container { width: 100%; flex: 1; position: relative; background: #000; }
-        .close-bar { background: #333; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; }
-        
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #30363d; }
-        .nav-item { color: #8b949e; font-size: 0.7rem; text-align: center; cursor: pointer; }
+        .status { font-size: 0.7rem; margin-top: 5px; }
+        .live-tag { color: #ff4d4d; font-weight: bold; animation: blink 1s infinite; }
+        @keyframes blink { 0% {opacity:1} 50% {opacity:0.4} 100% {opacity:1} }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #30363d; }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: bold; color: var(--accent);">هجمة ولقطة</div>
-    <div id="search-icon">🔍</div>
+    <div style="font-weight: bold; color: var(--accent); font-size: 1.1rem;">هجمة ولقطة</div>
+    <input type="date" id="calendar" class="date-picker" onchange="loadByCalendar()">
 </header>
 
+<div class="search-container">
+    <input type="text" id="searchBox" class="search-box" placeholder="ابحث عن مباراة..." onkeyup="searchMatches()">
+</div>
+
 <div class="tabs">
-    <div class="tab" onclick="loadByDate(-1, this)">الأمس</div>
-    <div class="tab active" onclick="loadByDate(0, this)">اليوم</div>
-    <div class="tab" onclick="loadByDate(1, this)">الغد</div>
-    <div class="tab" style="color:red" onclick="showLiveOnly()">🔴 مباشر</div>
+    <div class="tab" id="tab-yesterday" onclick="fetchData(-1, 'tab-yesterday')">الأمس</div>
+    <div class="tab active" id="tab-today" onclick="fetchData(0, 'tab-today')">اليوم</div>
+    <div class="tab" id="tab-tomorrow" onclick="fetchData(1, 'tab-tomorrow')">الغد</div>
 </div>
 
 <div id="matches-list"></div>
 
-<div id="live-modal">
-    <div class="close-bar" onclick="closeLive()">❌ إغلاق البث</div>
-    <div class="player-container">
-        <iframe id="main-player" src="" width="100%" height="100%" frameborder="0" allowfullscreen scrolling="no"></iframe>
-    </div>
-    <div style="padding: 10px; background: #111; font-size: 0.8rem; text-align: center; color: #aaa;">
-        إذا ظهرت شاشة سوداء، انتظر ثواني للتحميل أو تأكد من جودة الإنترنت.
-    </div>
-</div>
-
 <nav class="bottom-nav">
-    <div class="nav-item">⚽<br>المباريات</div>
-    <div class="nav-item" onclick="showLiveOnly()">📺<br>البث</div>
-    <div class="nav-item" onclick="window.location.href='https://wa.me/201040077271'">💬<br>المزيد</div>
+    <div onclick="fetchData(0, 'tab-today')" style="cursor:pointer">⚽ المباريات</div>
+    <a href="https://wa.me/201040077271" style="text-decoration:none; color:inherit">💬 المزيد</a>
 </nav>
 
 <script>
-const key = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
+const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
+const IMPORTANT_LEAGUES = [39, 140, 78, 135, 61, 2, 3, 307, 233, 4, 848];
 let allMatches = [];
+let currentMode = 0; // 0 = اليوم
 
-async function loadByDate(offset, el) {
-    if(el) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-    }
-    const d = new Date(); d.setDate(d.getDate() + offset);
-    const dateStr = d.toISOString().split('T')[0];
+async function fetchData(offset, tabId) {
+    currentMode = offset;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
     
-    document.getElementById('matches-list').innerHTML = '<p style="text-align:center">جاري جلب البيانات...</p>';
+    const date = new Date();
+    date.setDate(date.getDate() + offset);
+    const dateStr = date.toISOString().split('T')[0];
+    document.getElementById('calendar').value = dateStr;
+    
+    await getMatches(dateStr);
+}
+
+async function loadByCalendar() {
+    const selectedDate = document.getElementById('calendar').value;
+    await getMatches(selectedDate);
+}
+
+async function getMatches(dateStr) {
+    const list = document.getElementById('matches-list');
+    list.innerHTML = '<p style="text-align:center; padding:20px;">⏳ جاري التحديث...</p>';
     
     try {
-        const r = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
-            headers: { "x-rapidapi-key": key, "x-rapidapi-host": "v3.football.api-sports.io" }
+        const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
+            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
         });
-        const json = await r.json();
-        allMatches = json.response;
+        const data = await res.json();
+        
+        let matches = data.response.filter(m => IMPORTANT_LEAGUES.includes(m.league.id));
+        if(matches.length === 0) matches = data.response.slice(0, 15);
+
+        // --- المنطق الذكي اللي طلبته ---
+        if (currentMode === 0) { 
+            // لو إحنا في "اليوم": اعرض المباشر (LIVE) والمنتظر (NS) بس
+            allMatches = matches.filter(m => m.fixture.status.short !== "FT");
+        } else if (currentMode === -1) {
+            // لو إحنا في "الأمس": اعرض اللي خلص بس (FT)
+            allMatches = matches.filter(m => m.fixture.status.short === "FT");
+        } else {
+            allMatches = matches;
+        }
+
         render(allMatches);
-    } catch(e) { document.getElementById('matches-list').innerHTML = 'خطأ في التحميل'; }
+    } catch (e) { list.innerHTML = "❌ خطأ في الاتصال"; }
 }
 
 function render(matches) {
     const list = document.getElementById('matches-list');
+    if(matches.length === 0) {
+        list.innerHTML = `<p style="text-align:center; padding:20px;">لا توجد مباريات في هذا القسم حالياً</p>`;
+        return;
+    }
+    
     list.innerHTML = matches.map(m => {
-        const isLive = ["1H","2H","HT"].includes(m.fixture.status.short);
+        const isLive = ["1H", "2H", "HT", "ET", "P"].includes(m.fixture.status.short);
+        const time = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+        
         return `
-        <div class="card">
-            <div class="team"><img src="${m.teams.home.logo}">${m.teams.home.name}</div>
+        <div class="match-card">
+            <div class="team"><img src="${m.teams.home.logo}"> ${m.teams.home.name}</div>
             <div class="info">
                 <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
-                <div style="font-size:0.7rem">${m.fixture.status.long}</div>
-                ${isLive ? `<button class="btn-live" onclick="openLive()">🔴 شاهد الآن</button>` : ''}
+                <div class="status ${isLive ? 'live-tag' : ''}">
+                    ${isLive ? '🔴 مباشر' : (m.fixture.status.short === "FT" ? 'انتهت' : time)}
+                </div>
             </div>
-            <div class="team"><img src="${m.teams.away.logo}">${m.teams.away.name}</div>
+            <div class="team"><img src="${m.teams.away.logo}"> ${m.teams.away.name}</div>
         </div>`;
     }).join('');
 }
 
-function showLiveOnly() {
-    const live = allMatches.filter(m => ["1H","2H","HT"].includes(m.fixture.status.short));
-    render(live.length > 0 ? live : []);
-    if(live.length === 0) document.getElementById('matches-list').innerHTML = '<p style="text-align:center">لا توجد مباريات مباشرة الآن</p>';
+function searchMatches() {
+    const query = document.getElementById('searchBox').value.toLowerCase();
+    const filtered = allMatches.filter(m => 
+        m.teams.home.name.toLowerCase().includes(query) || 
+        m.teams.away.name.toLowerCase().includes(query)
+    );
+    render(filtered);
 }
 
-function openLive() {
-    document.getElementById('live-modal').style.display = 'flex';
-    // ملاحظة: الروابط المجانية بتتوقف بسرعة. يفضل استخدام اشتراك IPTV أو سيرفر خاص.
-    document.getElementById('main-player').src = "https://vidsrc.me/embed/movie?imdb=tt0111161"; // مثال لمشغل، غيره برابط البث المباشر
-}
-
-function closeLive() {
-    document.getElementById('live-modal').style.display = 'none';
-    document.getElementById('main-player').src = "";
-}
-
-loadByDate(0);
+fetchData(0, 'tab-today');
 </script>
 </body>
-    </html>
-    
+</html>
