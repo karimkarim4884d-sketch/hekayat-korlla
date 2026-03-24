@@ -3,151 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>اسمع الآن - Zack Cinema</title>
+    <title>اسمع الآن</title>
     <style>
-        :root { --bg: #0b1118; --card: #1a222d; --text: #ffffff; --accent: #00f2ff; --font-size: 14px; }
-        .light-mode { --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21; --accent: #007bff; }
+        :root { --bg: #f5f5f5; --main: #b31312; --text: #333; --card-bg: #ffffff; }
+        .dark-mode { --bg: #121212; --text: #ffffff; --card-bg: #1e1e1e; }
         
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); color: var(--text); font-size: var(--font-size); padding-bottom: 20px; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--text); transition: 0.3s; }
 
-        /* شريط الشروط والواتساب */
-        .top-info { background: var(--accent); color: #000; padding: 10px; text-align: center; font-weight: bold; font-size: 0.8rem; }
-        .top-info a { color: #000; text-decoration: none; display: block; margin: 2px 0; }
+        /* الهيدر العلوي مع الثلاث شرط */
+        .header { background: var(--main); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .menu-icon { font-size: 24px; cursor: pointer; }
+        .site-title { font-size: 20px; font-weight: bold; }
 
-        .header { padding: 15px; position: sticky; top: 0; background: var(--bg); z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .site-name { text-align: center; font-size: 1.5rem; font-weight: bold; color: var(--accent); margin-bottom: 10px; }
-        
-        .tools { display: flex; justify-content: space-around; margin-bottom: 10px; }
-        .btn-tool { background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
+        /* القائمة الجانبية (الشروط الثلاثة) */
+        .sidebar { position: fixed; top: 0; right: -250px; width: 250px; height: 100%; background: var(--card-bg); z-index: 2000; transition: 0.4s; box-shadow: -2px 0 10px rgba(0,0,0,0.5); padding: 20px; }
+        .sidebar.active { right: 0; }
+        .sidebar a { display: block; padding: 15px; color: var(--text); text-decoration: none; border-bottom: 1px solid #444; font-weight: bold; }
 
-        /* الأقسام - سكرول بالعرض */
-        .section-title { padding: 10px 15px; font-weight: bold; color: var(--accent); border-right: 4px solid var(--accent); margin: 10px 0; }
-        .row { display: flex; overflow-x: auto; padding: 0 10px; gap: 10px; scrollbar-width: none; }
-        .row::-webkit-scrollbar { display: none; }
-        
-        .movie-card { min-width: 110px; background: var(--card); border-radius: 8px; overflow: hidden; position: relative; border: 1px solid #333; }
-        .movie-card img { width: 100%; height: 150px; object-fit: cover; }
-        .movie-card .name { padding: 5px; font-size: 0.7rem; text-align: center; height: 35px; overflow: hidden; }
+        /* الأقسام (نفس شكل الأسطورة) */
+        .container { padding: 15px; }
+        .section-btn { background: var(--card-bg); border: 2px solid var(--main); border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .section-btn:active { transform: scale(0.97); }
+        .section-btn .text { font-size: 18px; font-weight: bold; color: var(--main); }
+        .section-btn .icon { width: 40px; height: 40px; background: var(--main); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; text-align: center; line-height: 1; padding: 5px; }
+
+        /* صفحة الأفلام (تفتح عند الضغط) */
+        #contentPage { display: none; position: fixed; top: 60px; left: 0; width: 100%; height: calc(100% - 60px); background: var(--bg); z-index: 1500; overflow-y: auto; padding: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .movie-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+        .movie-card img { width: 100%; height: 140px; object-fit: cover; }
+        .movie-card p { font-size: 11px; padding: 5px; text-align: center; height: 35px; overflow: hidden; }
 
         /* المشغل */
         .player { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; flex-direction:column; }
-        .player-nav { padding: 15px; display:flex; justify-content:space-between; background:#111; }
         iframe { width:100%; height:300px; border:none; }
-        .refresh-btn { background: var(--accent); color:#000; border:none; padding:15px; font-weight:bold; width:100%; cursor:pointer; }
     </style>
 </head>
 <body>
 
-    <div class="top-info">
-        <div>✓ حصرياً: أقوى الأفلام والمسلسلات 2026</div>
-        <div>✓ تحديث يومي لجميع الأقسام</div>
-        <a href="https://wa.me/201040077271">📱 للتواصل واتساب: 01040077271</a>
+    <div id="sidebar" class="sidebar">
+        <div onclick="toggleSidebar()" style="text-align: left; font-size: 20px; cursor: pointer;">✕</div>
+        <a href="https://wa.me/201040077271">واتساب: 01040077271</a>
+        <a href="#" onclick="toggleTheme()">تغيير الوضع (أبيض/أسود)</a>
+        <a href="#" onclick="location.reload()">الرئيسية</a>
     </div>
 
     <div class="header">
-        <div class="site-name">اسمع الآن</div>
-        <div class="tools">
-            <button class="btn-tool" onclick="toggleTheme()">🌓 أبيض/أسود</button>
-            <button class="btn-tool" onclick="changeFont(1)">A+</button>
-            <button class="btn-tool" onclick="changeFont(-1)">A-</button>
+        <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+        <div class="site-title">اسمع الآن</div>
+        <div onclick="toggleTheme()" style="cursor:pointer">🌓</div>
+    </div>
+
+    <div class="container" id="mainMenu">
+        <div class="section-btn" onclick="showMovies('ar','movie','أفلام عربية')">
+            <span class="text">الأفلام العربية</span>
+            <span class="icon">أفلام عربية</span>
         </div>
-        <div style="background:var(--card); padding:10px; border-radius:20px;">
-            <input id="search" type="text" placeholder="ابحث عن أي حاجة يا Zack..." onkeyup="search(this.value)" style="background:none; border:none; color:var(--text); width:100%; outline:none;">
+        <div class="section-btn" onclick="showMovies('en','movie','الأفلام الأجنبية')">
+            <span class="text">الأفلام الأجنبية</span>
+            <span class="icon">Premium</span>
+        </div>
+        <div class="section-btn" onclick="showMovies('ar','tv','المسلسلات العربية')">
+            <span class="text">المسلسلات العربية</span>
+            <span class="icon">مسلسلات</span>
+        </div>
+        <div class="section-btn" onclick="showMovies('tr','tv','المسلسلات التركية')">
+            <span class="text">المسلسلات التركية</span>
+            <span class="icon">TR</span>
+        </div>
+        <div class="section-btn" onclick="showMovies('16','genre','كرتون وانمي')">
+            <span class="text">كرتون وانمي</span>
+            <span class="icon">Kids</span>
+        </div>
+        <div class="section-btn" onclick="showMovies('35','genre','مسرحيات')">
+            <span class="text">مسرحيات</span>
+            <span class="icon">مسرح</span>
         </div>
     </div>
 
-    <div id="content">
-        </div>
+    <div id="contentPage">
+        <h3 id="catTitle" style="margin-bottom:15px; color:var(--main)"></h3>
+        <div class="grid" id="movieGrid"></div>
+        <button onclick="hideMovies()" style="width:100%; padding:15px; margin-top:20px; background:var(--main); color:white; border:none; border-radius:8px;">عودة للأقسام</button>
+    </div>
 
     <div id="player" class="player">
-        <div class="player-nav">
-            <span onclick="closePlayer()" style="color:#fff; font-size:25px;">✕</span>
-            <span id="pTitle" style="color:var(--accent)">اسمع الآن</span>
-        </div>
+        <div style="padding:15px; color:white;" onclick="closePlayer()">✕ إغلاق</div>
         <div id="vBox" style="flex:1; display:flex; align-items:center;"></div>
-        <button class="refresh-btn" onclick="refreshSrv()">تغيير السيرفر (مانع الإعلانات)</button>
     </div>
 
     <script>
         const API = '932eefacf243fb7b9698ea142f2e0481';
-        let curId = '', curType = '', srv = 0;
+        
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        function toggleTheme() { document.body.classList.toggle('dark-mode'); }
 
-        const sections = [
-            { title: "🎬 أفلام أكشن", type: "movie", genre: "28" },
-            { title: "🇪🇬 أفلام مصرية وعربية", type: "movie", lang: "ar" },
-            { title: "🇺🇸 أفلام إنجليزية", type: "movie", lang: "en" },
-            { title: "🇹🇷 أفلام تركية", type: "movie", lang: "tr" },
-            { title: "📺 مسلسلات عربية", type: "tv", lang: "ar" },
-            { title: "📺 مسلسلات تركية", type: "tv", lang: "tr" },
-            { title: "📺 مسلسلات إنجليزية", type: "tv", lang: "en" },
-            { title: "🐹 كرتون وأنيمي", type: "movie", genre: "16" },
-            { title: "🎭 مسرح مصر والكوميديا", type: "movie", genre: "35" }
-        ];
+        async function showMovies(val, type, title) {
+            document.getElementById('catTitle').innerText = title;
+            document.getElementById('contentPage').style.display = 'block';
+            let url = `https://api.themoviedb.org/3/discover/${type === 'genre' ? 'movie' : type}?api_key=${API}&language=ar&sort_by=popularity.desc`;
+            
+            if(type === 'genre') url += `&with_genres=${val}`;
+            else url += `&with_original_language=${val}`;
 
-        async function init() {
-            const main = document.getElementById('content');
-            for (let s of sections) {
-                let url = `https://api.themoviedb.org/3/discover/${s.type}?api_key=${API}&language=ar&sort_by=popularity.desc&with_genres=${s.genre || ''}&with_original_language=${s.lang || ''}`;
-                const res = await fetch(url);
-                const data = await res.json();
-                
-                let html = `<div class="section-title">${s.title}</div><div class="row">`;
-                data.results.forEach(m => {
-                    if(!m.poster_path) return;
-                    html += `
-                        <div class="movie-card" onclick="openP('${m.id}','${s.type}','${m.title || m.name}')">
-                            <img src="https://image.tmdb.org/t/p/w200${m.poster_path}">
-                            <div class="name">${m.title || m.name}</div>
-                        </div>`;
-                });
-                html += `</div>`;
-                main.innerHTML += html;
-            }
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            let html = '';
+            data.results.forEach(m => {
+                html += `
+                <div class="movie-card" onclick="play('${m.id}','${type==='tv'?'tv':'movie'}')">
+                    <img src="https://image.tmdb.org/t/p/w200${m.poster_path}">
+                    <p>${m.title || m.name}</p>
+                </div>`;
+            });
+            document.getElementById('movieGrid').innerHTML = html;
         }
 
-        function openP(id, type, title) {
-            curId = id; curType = type; srv = 0;
-            document.getElementById('pTitle').innerText = title;
+        function hideMovies() { document.getElementById('contentPage').style.display = 'none'; }
+
+        function play(id, type) {
             document.getElementById('player').style.display = 'flex';
-            refreshSrv();
-        }
-
-        function refreshSrv() {
-            const srvs = [
-                `https://vidsrc.to/embed/${curType}/${curId}`,
-                `https://vidsrc.me/embed/${curType}/${curId}`,
-                `https://embed.smashystream.com/playere.php?tmdb=${curId}`
-            ];
-            document.getElementById('vBox').innerHTML = `
-                <iframe src="${srvs[srv % 3]}" allowfullscreen 
-                sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin" 
-                referrerpolicy="origin"></iframe>`;
-            srv++;
+            document.getElementById('vBox').innerHTML = `<iframe src="https://vidsrc.to/embed/${type}/${id}" allowfullscreen sandbox="allow-forms allow-scripts allow-same-origin"></iframe>`;
         }
 
         function closePlayer() { document.getElementById('player').style.display='none'; document.getElementById('vBox').innerHTML=''; }
-        
-        function toggleTheme() { document.body.classList.toggle('light-mode'); }
-        
-        function changeFont(v) {
-            let s = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size'));
-            document.documentElement.style.setProperty('--font-size', (s + v) + 'px');
-        }
-
-        async function search(q) {
-            if(q.length < 3) return;
-            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API}&language=ar&query=${q}`);
-            const data = await res.json();
-            let html = `<div class="section-title">نتائج البحث عن: ${q}</div><div class="row" style="flex-wrap:wrap">`;
-            data.results.forEach(m => {
-                if(!m.poster_path) return;
-                html += `<div class="movie-card" onclick="openP('${m.id}','${m.media_type}','${m.title || m.name}')"><img src="https://image.tmdb.org/t/p/w200${m.poster_path}"><div class="name">${m.title || m.name}</div></div>`;
-            });
-            document.getElementById('content').innerHTML = html + `</div>`;
-        }
-
-        init();
     </script>
 </body>
-</html>
+                                                                                                                                                                               </html>
+                                                                                                                                                                               
