@@ -5,86 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>هجمة ولقطة</title>
     <style>
-        :root { --dark-bg: #001220; --card-bg: #003366; --accent: #ff6b35; --blue: #00bfff; }
-        body { background: var(--dark-bg); color: white; margin: 0; font-family: sans-serif; padding-bottom: 70px; }
-        header { text-align: center; padding: 20px; color: var(--accent); border-bottom: 1px solid #002a4d; }
-        .match-card { background: var(--card-bg); margin: 10px; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border-right: 4px solid var(--blue); }
-        .team { flex: 1; text-align: center; font-size: 0.9rem; }
-        .team img { width: 40px; height: 40px; display: block; margin: 0 auto 5px; }
-        .score { font-size: 1.5rem; font-weight: bold; background: #004d99; padding: 5px 15px; border-radius: 8px; }
-        .live-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity:1} 50% {opacity:0.5} 100% {opacity:1} }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000c16; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #002a4d; }
-        .nav-item { color: #888; text-decoration: none; font-size: 0.8rem; }
-        .nav-item.active { color: var(--blue); }
-        #livePlayer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 9999; }
+        :root { --bg: #001220; --card: #003366; --accent: #ff6b35; }
+        body { background: var(--bg); color: white; margin: 0; font-family: sans-serif; text-align: center; }
+        header { padding: 20px; border-bottom: 1px solid #002a4d; color: var(--accent); }
+        .match-card { background: var(--card); margin: 10px; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .team img { width: 35px; height: 35px; display: block; margin: 0 auto; }
+        .score { font-size: 1.2rem; font-weight: bold; background: #004d99; padding: 5px 10px; border-radius: 5px; }
+        .live-label { color: red; font-size: 0.7rem; animation: blink 1s infinite; }
+        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.5;} 100% {opacity: 1;} }
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000c16; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #002a4d; }
     </style>
 </head>
 <body>
+    <header><h1>هجمة ولقطة</h1></header>
+    <div id="list"><p>⏳ جاري تحميل المباريات المباشرة...</p></div>
+    <nav class="nav"><div>⚽ المباريات</div><div>📊 الترتيب</div><div>⭐ مفضلتي</div></nav>
 
-<header><h1>هجمة ولقطة</h1></header>
-
-<div id="matches-list">
-    <p style="text-align:center; padding: 20px;">⏳ جاري جلب المباريات المباشرة...</p>
-</div>
-
-<div id="livePlayer">
-    <div style="padding: 15px; color: white; background: #ff6b35; text-align: center; cursor: pointer;" onclick="closeLive()">❌ إغلاق البث</div>
-    <iframe id="videoFrame" src="" width="100%" height="300" frameborder="0" allowfullscreen></iframe>
-</div>
-
-<nav class="bottom-nav">
-    <div class="nav-item active">⚽ المباريات</div>
-    <div class="nav-item">📊 الترتيب</div>
-    <div class="nav-item">⭐ مفضلتي</div>
-</nav>
-
-<script>
-    const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e'; // مفتاحك الشغال
-
-    async function loadMatches() {
-        try {
-            const res = await fetch('https://v3.football.api-sports.io/fixtures?live=all', {
-                headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
-            });
-            const data = await res.json();
-            render(data.response);
-        } catch (e) {
-            document.getElementById('matches-list').innerHTML = '<p style="text-align:center">⚠️ فشل التحميل، تأكد من الـ API Key</p>';
-        }
-    }
-
-    function render(matches) {
-        const list = document.getElementById('matches-list');
-        if (matches.length === 0) {
-            list.innerHTML = '<p style="text-align:center; padding:20px;">لا توجد مباريات جارية حالياً</p>';
-            return;
-        }
-        list.innerHTML = '';
-        matches.forEach(m => {
-            list.innerHTML += `
-                <div class="match-card">
-                    <div class="team"><img src="${m.teams.home.logo}"><span>${m.teams.home.name}</span></div>
-                    <div style="text-align:center">
-                        <div class="score">${m.goals.home} - ${m.goals.away}</div>
-                        <button class="live-btn" onclick="openLive()">🔴 شاهد الآن</button>
+    <script>
+        const key = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
+        async function fetchMatches() {
+            try {
+                const r = await fetch('https://v3.football.api-sports.io/fixtures?live=all', {
+                    headers: { "x-rapidapi-key": key, "x-rapidapi-host": "v3.football.api-sports.io" }
+                });
+                const d = await r.json();
+                const list = document.getElementById('list');
+                if (d.response.length === 0) {
+                    list.innerHTML = '<p>لا توجد مباريات جارية حالياً</p>';
+                    return;
+                }
+                list.innerHTML = d.response.map(m => `
+                    <div class="match-card">
+                        <div class="team"><img src="${m.teams.home.logo}"> ${m.teams.home.name}</div>
+                        <div>
+                            <div class="score">${m.goals.home} - ${m.goals.away}</div>
+                            <div class="live-label">🔴 مباشر</div>
+                        </div>
+                        <div class="team"><img src="${m.teams.away.logo}"> ${m.teams.away.name}</div>
                     </div>
-                    <div class="team"><img src="${m.teams.away.logo}"><span>${m.teams.away.name}</span></div>
-                </div>`;
-        });
-    }
-
-    function openLive() {
-        document.getElementById('livePlayer').style.display = 'block';
-        document.getElementById('videoFrame').src = "https://clappr.io/demo/index.html?src=https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
-    }
-
-    function closeLive() {
-        document.getElementById('livePlayer').style.display = 'none';
-        document.getElementById('videoFrame').src = "";
-    }
-
-    loadMatches();
-</script>
+                `).join('');
+            } catch (e) { document.getElementById('list').innerHTML = '⚠️ خطأ في الاتصال بالبيانات'; }
+        }
+        fetchMatches();
+    </script>
 </body>
 </html>
