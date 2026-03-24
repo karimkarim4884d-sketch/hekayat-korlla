@@ -12,72 +12,87 @@
             --text-gray: #a0aab2;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark-bg); color: white; padding-bottom: 80px; overflow-x: hidden; }
+        body { background: var(--dark-bg); color: white; padding-bottom: 80px; transition: 0.3s; }
 
         /* البحث */
         .top-bar { padding: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
         .search-box { background: var(--card-bg); display: flex; align-items: center; padding: 10px 15px; border-radius: 25px; border: 1px solid #333; }
-        .search-box input { background: none; border: none; color: white; width: 100%; outline: none; font-size: 0.9rem; margin-right: 10px; }
-        .search-box i { color: var(--text-gray); }
+        .search-box input { background: none; border: none; color: white; width: 100%; outline: none; margin-right: 10px; }
 
-        /* شبكة المحتوى */
-        .section-title { padding: 15px; font-size: 1.1rem; color: var(--accent-cyan); font-weight: bold; }
-        .movies-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
-        .movie-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
-        .movie-card img { width: 100%; height: 160px; object-fit: cover; background: #222; }
-        .movie-title { padding: 8px 5px; font-size: 0.75rem; text-align: center; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .badge { position: absolute; top: 5px; right: 5px; background: var(--accent-cyan); color: #000; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        /* الأقسام */
+        .section-container { display: none; padding: 10px; }
+        .section-container.active { display: block; }
+        .movies-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .movie-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; position: relative; }
+        .movie-card img { width: 100%; height: 150px; object-fit: cover; }
+        .movie-title { padding: 5px; font-size: 0.7rem; text-align: center; }
 
-        /* المشغل المتطور */
+        /* المشغل والـ Sandbox لمنع الإعلانات */
         .video-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; }
-        .player-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #0b1118; }
-        .close-btn { color: white; font-size: 1.1rem; cursor: pointer; }
-        .video-container { width: 100%; flex: 1; display: flex; align-items: center; justify-content: center; }
-        iframe { width: 100%; height: 300px; border: none; }
-        
-        /* أزرار السيرفرات */
-        .server-bar { display: flex; gap: 10px; padding: 15px; overflow-x: auto; background: #0b1118; border-top: 1px solid #1e2732; }
-        .srv-btn { flex: 1; background: #1a222d; color: white; border: 1px solid var(--accent-cyan); padding: 8px; border-radius: 5px; font-size: 0.7rem; white-space: nowrap; cursor: pointer; }
+        .player-header { padding: 15px; background: #0b1118; display: flex; justify-content: space-between; }
+        .video-container { flex: 1; display: flex; align-items: center; justify-content: center; }
+        iframe { width: 100%; height: 280px; border: none; }
+
+        /* السيرفرات */
+        .server-bar { display: flex; gap: 8px; padding: 10px; background: #0b1118; overflow-x: auto; }
+        .srv-btn { flex: 1; background: #1a222d; color: white; border: 1px solid var(--accent-cyan); padding: 10px; border-radius: 8px; font-size: 0.7rem; white-space: nowrap; }
         .srv-btn.active { background: var(--accent-cyan); color: #000; }
 
         /* القائمة السفلية */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #1e2732; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 0.7rem; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #1e2732; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 0.7rem; }
         .nav-item.active { color: var(--accent-cyan); }
+
+        /* الإعدادات */
+        .settings-item { background: var(--card-bg); margin: 10px 0; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body onload="fetchContent('tv')">
+<body onload="switchSection('series')">
 
     <div id="videoOverlay" class="video-overlay">
         <div class="player-header">
-            <span class="close-btn" onclick="closePlayer()"><i class="fa-solid fa-arrow-right"></i> رجوع</span>
-            <span style="font-size: 0.8rem; color: var(--accent-cyan);">Zack Player</span>
+            <span onclick="closePlayer()"><i class="fa-solid fa-arrow-right"></i> رجوع</span>
+            <span>Zack Player</span>
         </div>
-        <div class="video-container">
-            <div id="playerHTML" style="width:100%"></div>
-        </div>
-        <div class="server-bar" id="serverBar">
-            </div>
+        <div class="video-container" id="playerHTML"></div>
+        <div class="server-bar" id="serverBar"></div>
     </div>
 
     <div class="top-bar">
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="ابحث عن مسلسل أو فيلم..." onkeyup="searchZack(this.value)">
+            <input type="text" placeholder="ابحث في Zack Cinema..." onkeyup="searchZack(this.value)">
         </div>
     </div>
 
-    <div class="section-title" id="sec-title">أحدث المسلسلات العربية</div>
-    <div class="movies-grid" id="main-grid"></div>
+    <div id="series-section" class="section-container">
+        <h3 style="margin-bottom: 10px; color: var(--accent-cyan);">أحدث المسلسلات</h3>
+        <div class="movies-grid" id="series-grid"></div>
+    </div>
+
+    <div id="movies-section" class="section-container">
+        <h3 style="margin-bottom: 10px; color: var(--accent-cyan);">أحدث الأفلام</h3>
+        <div class="movies-grid" id="movies-grid"></div>
+    </div>
+
+    <div id="settings-section" class="section-container">
+        <h3>إعدادات Zack Cinema</h3>
+        <div class="settings-item">
+            <span>الوضع الليلي</span>
+            <input type="checkbox" checked disabled>
+        </div>
+        <div class="settings-item" onclick="alert('سيتم توفير تغيير الألوان قريباً')">
+            <span>لون الواجهة (Cyan)</span>
+            <div style="width: 20px; height: 20px; background: var(--accent-cyan); border-radius: 50%;"></div>
+        </div>
+        <p style="text-align: center; color: var(--text-gray); margin-top: 20px;">إصدار 1.0.0 - Zack</p>
+    </div>
 
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="fetchContent('tv', this)">
-            <i class="fa-solid fa-tv"></i><span>المسلسلات</span>
-        </div>
-        <div class="nav-item" onclick="fetchContent('movie', this)">
-            <i class="fa-solid fa-clapperboard"></i><span>الأفلام</span>
-        </div>
+        <div class="nav-item active" onclick="switchSection('series', this)"><i class="fa-solid fa-tv"></i><span>مسلسلات</span></div>
+        <div class="nav-item" onclick="switchSection('movies', this)"><i class="fa-solid fa-film"></i><span>أفلام</span></div>
+        <div class="nav-item" onclick="switchSection('settings', this)"><i class="fa-solid fa-gear"></i><span>إعدادات</span></div>
     </nav>
 
     <script>
@@ -85,54 +100,49 @@
         let currentId = '';
         let currentType = '';
 
-        async function fetchContent(type, el) {
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-            const grid = document.getElementById('main-grid');
-            document.getElementById('sec-title').innerText = type === 'tv' ? 'أحدث المسلسلات العربية' : 'أحدث الأفلام العربية';
+        function switchSection(sec, el) {
+            document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(sec + '-section').classList.add('active');
+            if(el) el.classList.add('active');
+            if(sec !== 'settings') fetchTMDB(sec === 'series' ? 'tv' : 'movie');
+        }
+
+        async function fetchTMDB(type) {
+            const gridId = type === 'tv' ? 'series-grid' : 'movies-grid';
             const url = `https://api.themoviedb.org/3/discover/${type}?api_key=${MY_KEY}&language=ar&sort_by=popularity.desc&with_original_language=ar`;
             const res = await fetch(url);
             const data = await res.json();
-            renderItems(data.results, type);
-        }
-
-        function renderItems(items, type) {
-            const grid = document.getElementById('main-grid');
+            const grid = document.getElementById(gridId);
             grid.innerHTML = '';
-            items.forEach(item => {
-                if(!item.poster_path) return;
+            data.results.forEach(item => {
                 grid.innerHTML += `
-                    <div class="movie-card" onclick="playZack('${item.id}', '${item.media_type || type}')">
-                        <span class="badge">HD</span>
+                    <div class="movie-card" onclick="openPlayer('${item.id}', '${type}')">
                         <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
                         <div class="movie-title">${item.name || item.title}</div>
                     </div>`;
             });
         }
 
-        function playZack(id, type) {
+        function openPlayer(id, type) {
             currentId = id;
-            currentType = type === 'movie' ? 'movie' : 'tv';
+            currentType = type;
             document.getElementById('videoOverlay').style.display = 'flex';
-            switchServer(1); // ابدأ بسيرفر 1 تلقائياً
+            loadServer(1);
         }
 
-        function switchServer(num) {
+        function loadServer(n) {
             const bar = document.getElementById('serverBar');
             bar.innerHTML = `
-                <button class="srv-btn ${num==1?'active':''}" onclick="switchServer(1)">سيرفر 1 (vidsrc.to)</button>
-                <button class="srv-btn ${num==2?'active':''}" onclick="switchServer(2)">سيرفر 2 (vidsrc.me)</button>
-                <button class="srv-btn ${num==3?'active':''}" onclick="switchServer(3)">سيرفر 3 (2embed)</button>
+                <button class="srv-btn ${n==1?'active':''}" onclick="loadServer(1)">سيرفر 1</button>
+                <button class="srv-btn ${n==2?'active':''}" onclick="loadServer(2)">سيرفر 2</button>
             `;
-
-            let url = "";
-            if(num === 1) url = `https://vidsrc.to/embed/${currentType}/${currentId}`;
-            if(num === 2) url = `https://vidsrc.me/embed/${currentType}?tmdb=${currentId}`;
-            if(num === 3) url = `https://www.2embed.cc/embed/${currentId}`;
-
-            document.getElementById('playerHTML').innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+            let src = n === 1 ? `https://vidsrc.to/embed/${currentType}/${currentId}` : `https://vidsrc.me/embed/${currentType}?tmdb=${currentId}`;
+            
+            // إضافة sandbox لمنع الإعلانات
+            document.getElementById('playerHTML').innerHTML = `
+                <iframe src="${src}" sandbox="allow-scripts allow-same-origin allow-forms" allowfullscreen></iframe>
+            `;
         }
 
         function closePlayer() {
@@ -144,7 +154,15 @@
             if(q.length < 3) return;
             const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${MY_KEY}&language=ar&query=${q}`);
             const data = await res.json();
-            renderItems(data.results);
+            const grid = document.querySelector('.section-container.active div');
+            grid.innerHTML = '';
+            data.results.forEach(item => {
+                grid.innerHTML += `
+                    <div class="movie-card" onclick="openPlayer('${item.id}', '${item.media_type}')">
+                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
+                        <div class="movie-title">${item.name || item.title}</div>
+                    </div>`;
+            });
         }
     </script>
 </body>
