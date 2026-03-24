@@ -12,7 +12,7 @@
             --text-gray: #a0aab2;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark-bg); color: white; padding-bottom: 80px; transition: 0.3s; }
+        body { background: var(--dark-bg); color: white; padding-bottom: 80px; }
 
         /* البحث */
         .top-bar { padding: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
@@ -23,24 +23,21 @@
         .section-container { display: none; padding: 10px; }
         .section-container.active { display: block; }
         .movies-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .movie-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; position: relative; }
+        .movie-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; position: relative; cursor: pointer; }
         .movie-card img { width: 100%; height: 150px; object-fit: cover; }
         .movie-title { padding: 5px; font-size: 0.7rem; text-align: center; }
 
-        /* المشغل والـ Sandbox لمنع الإعلانات */
+        /* المشغل المحمي ضد الإعلانات */
         .video-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; }
-        .player-header { padding: 15px; background: #0b1118; display: flex; justify-content: space-between; }
-        .video-container { flex: 1; display: flex; align-items: center; justify-content: center; }
-        iframe { width: 100%; height: 280px; border: none; }
-
-        /* السيرفرات */
-        .server-bar { display: flex; gap: 8px; padding: 10px; background: #0b1118; overflow-x: auto; }
-        .srv-btn { flex: 1; background: #1a222d; color: white; border: 1px solid var(--accent-cyan); padding: 10px; border-radius: 8px; font-size: 0.7rem; white-space: nowrap; }
-        .srv-btn.active { background: var(--accent-cyan); color: #000; }
+        .player-header { padding: 15px; background: #0b1118; display: flex; justify-content: space-between; align-items: center; }
+        .video-container { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; }
+        
+        /* أهم جزء: منع الموقع من الهروب أو فتح إعلانات */
+        iframe { width: 100%; height: 300px; border: none; }
 
         /* القائمة السفلية */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #1e2732; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 0.7rem; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 0.7rem; cursor: pointer; }
         .nav-item.active { color: var(--accent-cyan); }
 
         /* الإعدادات */
@@ -52,11 +49,14 @@
 
     <div id="videoOverlay" class="video-overlay">
         <div class="player-header">
-            <span onclick="closePlayer()"><i class="fa-solid fa-arrow-right"></i> رجوع</span>
-            <span>Zack Player</span>
+            <span onclick="closePlayer()" style="cursor:pointer"><i class="fa-solid fa-arrow-right"></i> رجوع</span>
+            <span style="color:var(--accent-cyan)">Zack Player - سيرفر 3</span>
         </div>
-        <div class="video-container" id="playerHTML"></div>
-        <div class="server-bar" id="serverBar"></div>
+        <div class="video-container" id="playerHTML">
+            </div>
+        <div style="padding: 10px; text-align: center; font-size: 0.7rem; color: var(--text-gray);">
+            إذا ظهر إعلان داخل المشغل، اضغط "رجوع" ثم افتحه مرة أخرى.
+        </div>
     </div>
 
     <div class="top-bar">
@@ -78,15 +78,9 @@
 
     <div id="settings-section" class="section-container">
         <h3>إعدادات Zack Cinema</h3>
-        <div class="settings-item">
-            <span>الوضع الليلي</span>
-            <input type="checkbox" checked disabled>
-        </div>
-        <div class="settings-item" onclick="alert('سيتم توفير تغيير الألوان قريباً')">
-            <span>لون الواجهة (Cyan)</span>
-            <div style="width: 20px; height: 20px; background: var(--accent-cyan); border-radius: 50%;"></div>
-        </div>
-        <p style="text-align: center; color: var(--text-gray); margin-top: 20px;">إصدار 1.0.0 - Zack</p>
+        <div class="settings-item"><span>إصدار التطبيق</span><span>1.0.5</span></div>
+        <div class="settings-item"><span>حالة السيرفر</span><span style="color:var(--accent-cyan)">متصل</span></div>
+        <div class="settings-item" onclick="location.reload()"><span>تحديث المحتوى</span><i class="fa-solid fa-rotate"></i></div>
     </div>
 
     <nav class="bottom-nav">
@@ -97,8 +91,6 @@
 
     <script>
         const MY_KEY = '932eefacf243fb7b9698ea142f2e0481';
-        let currentId = '';
-        let currentType = '';
 
         function switchSection(sec, el) {
             document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
@@ -116,6 +108,7 @@
             const grid = document.getElementById(gridId);
             grid.innerHTML = '';
             data.results.forEach(item => {
+                if(!item.poster_path) return;
                 grid.innerHTML += `
                     <div class="movie-card" onclick="openPlayer('${item.id}', '${type}')">
                         <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
@@ -125,23 +118,16 @@
         }
 
         function openPlayer(id, type) {
-            currentId = id;
-            currentType = type;
             document.getElementById('videoOverlay').style.display = 'flex';
-            loadServer(1);
-        }
-
-        function loadServer(n) {
-            const bar = document.getElementById('serverBar');
-            bar.innerHTML = `
-                <button class="srv-btn ${n==1?'active':''}" onclick="loadServer(1)">سيرفر 1</button>
-                <button class="srv-btn ${n==2?'active':''}" onclick="loadServer(2)">سيرفر 2</button>
-            `;
-            let src = n === 1 ? `https://vidsrc.to/embed/${currentType}/${currentId}` : `https://vidsrc.me/embed/${currentType}?tmdb=${currentId}`;
+            const src = `https://www.2embed.cc/embed/${id}`;
             
-            // إضافة sandbox لمنع الإعلانات
+            // إضافة خاصية sandbox بشكل صارم لمنع الخروج من الموقع
+            // شلنا allow-popups و allow-top-navigation عشان يفضل جوه موقعك
             document.getElementById('playerHTML').innerHTML = `
-                <iframe src="${src}" sandbox="allow-scripts allow-same-origin allow-forms" allowfullscreen></iframe>
+                <iframe src="${src}" 
+                        sandbox="allow-scripts allow-same-origin allow-forms" 
+                        allowfullscreen="true">
+                </iframe>
             `;
         }
 
@@ -154,10 +140,11 @@
             if(q.length < 3) return;
             const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${MY_KEY}&language=ar&query=${q}`);
             const data = await res.json();
-            const grid = document.querySelector('.section-container.active div');
-            grid.innerHTML = '';
+            const activeGrid = document.querySelector('.section-container.active .movies-grid');
+            activeGrid.innerHTML = '';
             data.results.forEach(item => {
-                grid.innerHTML += `
+                if(!item.poster_path) return;
+                activeGrid.innerHTML += `
                     <div class="movie-card" onclick="openPlayer('${item.id}', '${item.media_type}')">
                         <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
                         <div class="movie-title">${item.name || item.title}</div>
@@ -166,4 +153,5 @@
         }
     </script>
 </body>
-</html>
+            </html>
+    
