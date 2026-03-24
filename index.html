@@ -5,29 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>هجمة ولقطة</title>
     <style>
-        :root { --bg: #001220; --card: #003366; --accent: #ff6b35; --blue: #00bfff; }
-        body { background: var(--bg); color: white; margin: 0; font-family: sans-serif; padding-bottom: 80px; }
-        header { padding: 20px; border-bottom: 1px solid #002a4d; color: var(--accent); text-align: center; }
-        .match-card { background: var(--card); margin: 12px; padding: 15px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; border-right: 4px solid var(--blue); }
-        .team { flex: 1; text-align: center; font-size: 0.85rem; font-weight: bold; }
-        .team img { width: 40px; height: 40px; display: block; margin: 0 auto 5px; }
-        .info { flex: 1; text-align: center; }
-        .score { font-size: 1.4rem; font-weight: bold; background: #004d99; padding: 5px 12px; border-radius: 8px; display: inline-block; margin-bottom: 5px; }
-        .status { font-size: 0.7rem; color: #00bfff; font-weight: bold; }
-        .live { color: #ff4d4d; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity:1} 50% {opacity:0.5} 100% {opacity:1} }
+        body { background: #001220; color: white; font-family: sans-serif; text-align: center; margin: 0; padding-bottom: 60px; }
+        header { padding: 20px; color: #ff6b35; border-bottom: 1px solid #002a4d; }
+        .card { background: #003366; margin: 10px; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border-right: 4px solid #00bfff; }
+        .team img { width: 30px; height: 30px; display: block; margin: 0 auto 5px; }
+        .score { font-size: 1.2rem; font-weight: bold; background: #004d99; padding: 5px 10px; border-radius: 8px; }
+        .status { font-size: 0.7rem; color: #00bfff; }
         .nav { position: fixed; bottom: 0; width: 100%; background: #000c16; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #002a4d; }
     </style>
 </head>
 <body>
     <header><h1>هجمة ولقطة</h1></header>
-    <div id="list"><p style="padding:20px; text-align:center;">⏳ جاري جلب مباريات اليوم...</p></div>
+    <div id="list"><p>⏳ جاري جلب مباريات اليوم...</p></div>
     <nav class="nav"><div>⚽ المباريات</div><div>📊 الترتيب</div><div>⭐ مفضلتي</div></nav>
 
     <script>
         const key = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-        async function loadMatches() {
-            // هنجيب تاريخ اليوم بصيغة YYYY-MM-DD
+        async function load() {
             const today = new Date().toISOString().split('T')[0];
             try {
                 const r = await fetch(`https://v3.football.api-sports.io/fixtures?date=${today}`, {
@@ -35,28 +29,25 @@
                 });
                 const d = await r.json();
                 const list = document.getElementById('list');
-                
-                // فلترة لأهم الدوريات عشان الزحمة (إنجليزي، إسباني، أبطال أوروبا، إلخ)
-                const importantLeagues = [39, 140, 135, 78, 61, 2, 3, 1, 4];
-                let matches = d.response.filter(m => importantLeagues.includes(m.league.id));
-                
-                if (matches.length === 0) matches = d.response.slice(0, 20); // لو مفيش، هات أول 20 ماتش
-
-                list.innerHTML = matches.map(m => {
-                    const isLive = m.fixture.status.short !== 'NS' && m.fixture.status.short !== 'FT';
-                    return `
-                    <div class="match-card">
-                        <div class="team"><img src="${m.teams.home.logo}"> ${m.teams.home.name}</div>
-                        <div class="info">
-                            <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
-                            <div class="status ${isLive ? 'live' : ''}">${m.fixture.status.long}</div>
+                // عرض أول 15 ماتش في اليوم عشان تتأكد إن الموقع شغال
+                const matches = d.response.slice(0, 15);
+                if (matches.length === 0) {
+                    list.innerHTML = '<p>لا توجد مباريات مجدولة لليوم</p>';
+                } else {
+                    list.innerHTML = matches.map(m => `
+                        <div class="card">
+                            <div style="flex:1"><img src="${m.teams.home.logo}"> ${m.teams.home.name}</div>
+                            <div style="flex:1">
+                                <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
+                                <div class="status">${m.fixture.status.short}</div>
+                            </div>
+                            <div style="flex:1"><img src="${m.teams.away.logo}"> ${m.teams.away.name}</div>
                         </div>
-                        <div class="team"><img src="${m.teams.away.logo}"> ${m.teams.away.name}</div>
-                    </div>`;
-                }).join('');
+                    `).join('');
+                }
             } catch (e) { document.getElementById('list').innerHTML = '❌ خطأ في الاتصال'; }
         }
-        loadMatches();
+        load();
     </script>
 </body>
 </html>
