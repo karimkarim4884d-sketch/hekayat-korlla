@@ -1,86 +1,57 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | مليون سيرفر</title>
-    <style>
-        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 20px; }
-        .main-box { background: #111; border: 2px solid #ff0000; border-radius: 20px; padding: 30px; max-width: 500px; margin: auto; box-shadow: 0 0 20px #ff000055; }
-        h1 { color: #ff0000; text-shadow: 2px 2px #000; margin-bottom: 5px; }
-        .server-count { color: #ffcc00; font-weight: bold; font-size: 14px; margin-bottom: 20px; }
-        input { width: 90%; padding: 15px; border-radius: 10px; border: 1px solid #333; background: #222; color: #fff; font-size: 18px; margin-bottom: 15px; }
-        .btn-update { background: #ff0000; color: #fff; padding: 15px 30px; border-radius: 10px; border: none; font-weight: bold; width: 100%; font-size: 18px; cursor: pointer; }
-        
-        /* نظام التحديث والتحميل */
-        #update-zone { display: none; margin-top: 20px; }
-        .progress-bar { width: 100%; background: #222; height: 10px; border-radius: 5px; overflow: hidden; margin: 15px 0; }
-        .progress-fill { width: 0%; height: 100%; background: #ff0000; transition: 0.3s; }
-        .status-msg { font-family: monospace; color: #00ff00; font-size: 13px; }
+<style>
+    /* تنسيق شاشة البث المباشر */
+    .live-modal {
+        display: none; position: fixed; z-index: 3000; top: 0; left: 0; width: 100%; height: 100%;
+        background: #000; flex-direction: column;
+    }
+    .video-container { width: 100%; aspect-ratio: 16/9; background: #000; }
+    .close-live { padding: 15px; color: white; background: var(--accent-orange); text-align: center; cursor: pointer; font-weight: bold; }
+    .watch-btn {
+        background: #ff0000; color: white; padding: 4px 10px; border-radius: 4px;
+        font-size: 0.7rem; margin-top: 5px; cursor: pointer; animation: blink 1s infinite;
+    }
+    @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.5;} 100% {opacity: 1;} }
+</style>
 
-        /* المشغل */
-        #video-player-box { display: none; margin-top: 20px; border: 2px solid #ff0000; border-radius: 10px; overflow: hidden; }
-        iframe { width: 100%; height: 400px; border: none; }
-    </style>
-</head>
-<body>
-
-    <div class="main-box">
-        <h1>Zack Cinema 🎬</h1>
-        <div class="server-count">متصل الآن بـ 1,000,000+ سيرفر سحابي ⚡</div>
-        
-        <input type="text" id="movieInput" placeholder="اكتب اسم المسلسل أو الفيلم...">
-        <button class="btn-update" onclick="runMillionServers()">تحديث السيرفرات والتشغيل</button>
-
-        <div id="update-zone">
-            <div class="status-msg" id="msg">بدء الفحص...</div>
-            <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
-        </div>
-
-        <div id="video-player-box">
-            <iframe id="zackPlayer" src="" allowfullscreen></iframe>
-        </div>
+<div id="livePlayerModal" class="live-modal">
+    <div class="close-live" onclick="closeLive()">❌ إغلاق البث والعودة للنتائج</div>
+    <div class="video-container">
+        <iframe id="liveFrame" src="" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
     </div>
+    <div style="padding: 20px; text-align: center;">
+        <h3 id="liveMatchTitle">بث مباشر</h3>
+        <p style="color: #aaa; font-size: 0.8rem;">إذا انقطع البث قم بتحديث الصفحة</p>
+    </div>
+</div>
 
-    <script>
-        function runMillionServers() {
-            let name = document.getElementById('movieInput').value;
-            if(!name) { alert("اكتب الاسم يا Zack!"); return; }
+<script>
+// --- وظيفة تشغيل البث المباشر ---
+function watchLive(home, away) {
+    const modal = document.getElementById('livePlayerModal');
+    const frame = document.getElementById('liveFrame');
+    document.getElementById('liveMatchTitle').innerText = `${home} vs ${away}`;
+    
+    // هنا بنحط رابط البث (تقدر تخليه متغير بناءً على الماتش)
+    // ده مثال لرابط مشغل بيسحب قنوات رياضية
+    const streamUrl = "https://clappr.io/demo/index.html?src=https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"; 
+    
+    frame.src = streamUrl;
+    modal.style.display = 'flex';
+}
 
-            document.getElementById('video-player-box').style.display = "none";
-            document.getElementById('update-zone').style.display = "block";
-            
-            let fill = document.getElementById('fill');
-            let msg = document.getElementById('msg');
-            let progress = 0;
-            
-            let steps = [
-                "جارٍ الاتصال بمليون سيرفر...",
-                "تحديث روابط 4K...",
-                "تجاوز حجب السيرفرات...",
-                "تم اختيار أسرع سيرفر بنجاح!"
-            ];
+function closeLive() {
+    const modal = document.getElementById('livePlayerModal');
+    const frame = document.getElementById('liveFrame');
+    frame.src = ""; // عشان يوقف الصوت لما تقفل
+    modal.style.display = 'none';
+}
 
-            let interval = setInterval(() => {
-                progress += 5;
-                fill.style.width = progress + "%";
-                
-                if(progress < 30) msg.innerText = steps[0];
-                else if(progress < 60) msg.innerText = steps[1];
-                else if(progress < 90) msg.innerText = steps[2];
-                else msg.innerText = steps[3];
-
-                if(progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        document.getElementById('update-zone').style.display = "none";
-                        document.getElementById('video-player-box').style.display = "block";
-                        // المشغل الذكي اللي بيجيب من كل السيرفرات
-                        document.getElementById('zackPlayer').src = "https://vidsrc.me/embed/movie?query=" + encodeURIComponent(name);
-                    }, 500);
-                }
-            }, 100); 
-        }
-    </script>
-</body>
-</html>
+// --- تعديل بسيط في دالة render عشان يظهر زر البث ---
+// دور على السطر اللي فيه vs-badge وزود تحته ده:
+/* <div class="center-info">
+    <div class="vs-badge">VS</div>
+    <div style="font-size:0.8rem">${matchTime}</div>
+    <div class="watch-btn" onclick="watchLive('${m.teams.home.name}', '${m.teams.away.name}')">🔴 شاهد الآن</div>
+</div>
+*/
+</script>
