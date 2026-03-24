@@ -5,115 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Zack Cinema Premium</title>
     <style>
-        :root { --dark-bg: #0b1118; --accent: #00f2ff; --card: #1a222d; }
+        :root { --dark: #0b1118; --accent: #00f2ff; --card: #1a222d; }
         * { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
-        body { background: var(--dark-bg); color: white; padding-bottom: 70px; }
+        body { background: var(--dark); color: white; padding-bottom: 70px; overflow-x: hidden; }
         
-        .top-bar { padding: 15px; position: sticky; top: 0; background: var(--dark-bg); z-index: 100; }
-        .search-box { background: var(--card); padding: 10px; border-radius: 20px; display: flex; border: 1px solid #333; }
-        .search-box input { background: none; border: none; color: white; width: 100%; outline: none; }
+        /* بار البحث */
+        .top-bar { padding: 15px; position: sticky; top: 0; background: var(--dark); z-index: 100; }
+        .search-box { background: var(--card); padding: 12px; border-radius: 25px; display: flex; border: 1px solid #333; }
+        .search-box input { background: none; border: none; color: white; width: 100%; outline: none; font-size: 0.9rem; }
 
+        /* شبكة العرض */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
-        .card { background: var(--card); border-radius: 8px; overflow: hidden; cursor: pointer; text-align: center; }
-        .card img { width: 100%; height: 140px; object-fit: cover; }
-        .card div { font-size: 0.7rem; padding: 5px; height: 35px; overflow: hidden; }
+        .card { background: var(--card); border-radius: 10px; overflow: hidden; cursor: pointer; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .card img { width: 100%; height: 150px; object-fit: cover; background: #222; }
+        .card .title { font-size: 0.7rem; padding: 8px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* المشغل */
+        /* المشغل الاحترافي */
         .player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; }
-        .header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        .iframe-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        .player-header { padding: 15 shadow; display: flex; justify-content: space-between; align-items: center; background: #0b1118; border-bottom: 1px solid #222; padding: 15px; }
+        .iframe-container { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; }
+        iframe { width: 100%; height: 300px; border: none; }
         
-        /* أهم تعديل للمشغل */
-        iframe { width: 100%; height: 100%; max-height: 300px; border: none; }
-        
-        .nav { position: fixed; bottom: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #222; }
-        .nav-item { color: #a0aab2; font-size: 0.8rem; cursor: pointer; }
+        .player-footer { padding: 15px; background: #0b1118; text-align: center; }
+        .refresh-btn { background: var(--accent); color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+
+        /* القائمة السفلية */
+        .nav { position: fixed; bottom: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #222; z-index: 100; }
+        .nav-item { color: #a0aab2; font-size: 0.8rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: var(--accent); }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body onload="load('tv')">
+<body onload="loadData('tv')">
 
-    <div id="player" class="player-overlay">
-        <div class="header">
-            <span onclick="closeP()" style="cursor:pointer">✕ إغلاق</span>
-            <span style="color:var(--accent)">Zack Premium Player</span>
+    <div id="videoOverlay" class="player-overlay">
+        <div class="player-header">
+            <span onclick="closePlayer()" style="cursor:pointer; font-size: 1.1rem;"><i class="fa-solid fa-xmark"></i> إغلاق</span>
+            <span style="color:var(--accent); font-weight: bold;">Zack Cinema</span>
         </div>
-        <div class="iframe-wrapper" id="frameBox"></div>
-        <div style="padding: 20px; text-align: center;">
-            <button onclick="refreshP()" style="background:var(--accent); color:#000; border:none; padding:10px 20px; border-radius:5px; font-weight:bold;">تحديث السيرفر</button>
+        <div class="iframe-container" id="videoBox"></div>
+        <div class="player-footer">
+            <button class="refresh-btn" onclick="refreshPlayer()"><i class="fa-solid fa-rotate"></i> تحديث السيرفر</button>
+            <p style="font-size: 0.6rem; color: #555; margin-top: 10px;">إذا ظهر إعلان، اضغط "بقاء" لمنع الخروج من الموقع</p>
         </div>
     </div>
 
     <div class="top-bar">
-        <div class="search-box"><input id="srch" type="text" placeholder="ابحث هنا يا Zack..." onkeyup="search(this.value)"></div>
+        <div class="search-box">
+            <input type="text" placeholder="ابحث عن مسلسل أو فيلم يا Zack..." onkeyup="searchZack(this.value)">
+        </div>
     </div>
 
-    <div class="grid" id="mainGrid"></div>
+    <div class="grid" id="contentGrid"></div>
 
     <div class="nav">
-        <div class="nav-item active" id="btn-tv" onclick="load('tv')">مسلسلات</div>
-        <div class="nav-item" id="btn-movie" onclick="load('movie')">أفلام</div>
+        <div class="nav-item active" id="tv-btn" onclick="loadData('tv')">
+            <i class="fa-solid fa-tv"></i><span>مسلسلات</span>
+        </div>
+        <div class="nav-item" id="movie-btn" onclick="loadData('movie')">
+            <i class="fa-solid fa-film"></i><span>أفلام</span>
+        </div>
     </div>
 
     <script>
-        const KEY = '932eefacf243fb7b9698ea142f2e0481';
-        let curId, curType;
+        const TMDB_KEY = '932eefacf243fb7b9698ea142f2e0481';
+        let currentId = '';
+        let currentType = '';
 
-        async function load(type) {
-            curType = type;
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('btn-'+type).classList.add('active');
-            const res = await fetch(`https://api.themoviedb.org/3/discover/${type}?api_key=${KEY}&language=ar&sort_by=popularity.desc&with_original_language=ar`);
+        async function loadData(type) {
+            currentType = type;
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(type + '-btn').classList.add('active');
+            
+            const url = `https://api.themoviedb.org/3/discover/${type}?api_key=${TMDB_KEY}&language=ar&sort_by=popularity.desc&with_original_language=ar`;
+            const res = await fetch(url);
             const data = await res.json();
-            render(data.results);
+            displayItems(data.results);
         }
 
-        function render(items) {
-            const g = document.getElementById('mainGrid');
-            g.innerHTML = '';
-            items.forEach(i => {
-                if(!i.poster_path) return;
-                g.innerHTML += `<div class="card" onclick="openP('${i.id}')">
-                    <img src="https://image.tmdb.org/t/p/w500${i.poster_path}">
-                    <div>${i.name || i.title}</div>
-                </div>`;
+        function displayItems(items) {
+            const grid = document.getElementById('contentGrid');
+            grid.innerHTML = '';
+            items.forEach(item => {
+                if(!item.poster_path) return;
+                grid.innerHTML += `
+                    <div class="card" onclick="openPlayer('${item.id}')">
+                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
+                        <div class="title">${item.name || item.title}</div>
+                    </div>`;
             });
         }
 
-        function openP(id) {
-            curId = id;
-            document.getElementById('player').style.display = 'flex';
-            refreshP();
+        function openPlayer(id) {
+            currentId = id;
+            document.getElementById('videoOverlay').style.display = 'flex';
+            refreshPlayer();
             
-            // قفل الأمان لمنع الخروج من الموقع
-            window.onbeforeunload = () => "هل تريد المغادرة؟";
+            // حماية تمنع الإعلانات من إغلاق موقعك
+            window.onbeforeunload = function() {
+                return "هل تريد مغادرة Zack Cinema؟"; 
+            };
         }
 
-        function refreshP() {
-            // استخدام سيرفر vidsrc.pro - أنضف سيرفر حالياً
-            const url = `https://vidsrc.pro/embed/${curType}/${curId}`;
-            
-            // تعديل الـ Sandbox ليكون مقبولاً من السيرفر ومحمياً في نفس الوقت
-            document.getElementById('frameBox').innerHTML = `
-                <iframe src="${url}" 
-                    allowfullscreen="true" 
-                    sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation">
-                </iframe>`;
+        function refreshPlayer() {
+            // استخدام سيرفر vidsrc.to بدون sandbox لضمان التشغيل
+            const videoUrl = `https://vidsrc.to/embed/${currentType}/${currentId}`;
+            document.getElementById('videoBox').innerHTML = `
+                <iframe src="${videoUrl}" allowfullscreen="true" onblur="window.focus()"></iframe>
+            `;
         }
 
-        function closeP() {
-            document.getElementById('player').style.display = 'none';
-            document.getElementById('frameBox').innerHTML = '';
+        function closePlayer() {
+            document.getElementById('videoOverlay').style.display = 'none';
+            document.getElementById('videoBox').innerHTML = '';
             window.onbeforeunload = null;
         }
 
-        async function search(q) {
-            if(q.length < 3) return;
-            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${KEY}&language=ar&query=${q}`);
+        async function searchZack(query) {
+            if(query.length < 3) return;
+            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&language=ar&query=${query}`);
             const data = await res.json();
-            render(data.results);
+            displayItems(data.results);
         }
     </script>
 </body>
-</html>
-
+    </html>
+    
