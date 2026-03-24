@@ -3,131 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Zack Cinema Premium</title>
+    <title>اسمع الآن - Zack Cinema</title>
     <style>
-        :root { --main: #0b1118; --accent: #00f2ff; --card: #1a222d; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--main); color: white; padding-bottom: 80px; overflow-x: hidden; }
-        .header { padding: 15px; position: sticky; top: 0; background: var(--main); z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .search-bar { background: var(--card); padding: 12px; border-radius: 30px; border: 1px solid #333; display: flex; }
-        .search-bar input { background: none; border: none; color: white; width: 100%; outline: none; padding-right: 10px; font-size: 16px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
-        .movie-card { background: var(--card); border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid #222; }
-        .movie-card img { width: 100%; height: 160px; object-fit: cover; }
-        .movie-card .info { font-size: 0.75rem; padding: 8px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        :root { --bg: #0b1118; --card: #1a222d; --text: #ffffff; --accent: #00f2ff; --font-size: 14px; }
+        .light-mode { --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21; --accent: #007bff; }
+        
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; transition: 0.3s; }
+        body { background: var(--bg); color: var(--text); font-size: var(--font-size); padding-bottom: 20px; }
 
-        /* مشغل الفيديو المطور */
-        .player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; }
-        .player-nav { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111; }
-        .video-box { flex: 1; display: flex; align-items: center; background: #000; position: relative; }
+        /* شريط الشروط والواتساب */
+        .top-info { background: var(--accent); color: #000; padding: 10px; text-align: center; font-weight: bold; font-size: 0.8rem; }
+        .top-info a { color: #000; text-decoration: none; display: block; margin: 2px 0; }
+
+        .header { padding: 15px; position: sticky; top: 0; background: var(--bg); z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .site-name { text-align: center; font-size: 1.5rem; font-weight: bold; color: var(--accent); margin-bottom: 10px; }
         
-        /* زرار تغيير السيرفر السحري */
-        .controls { background: #111; padding: 15px; text-align: center; }
-        .refresh-btn { background: var(--accent); color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 90%; }
+        .tools { display: flex; justify-content: space-around; margin-bottom: 10px; }
+        .btn-tool { background: var(--card); border: 1px solid var(--accent); color: var(--text); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
+
+        /* الأقسام - سكرول بالعرض */
+        .section-title { padding: 10px 15px; font-weight: bold; color: var(--accent); border-right: 4px solid var(--accent); margin: 10px 0; }
+        .row { display: flex; overflow-x: auto; padding: 0 10px; gap: 10px; scrollbar-width: none; }
+        .row::-webkit-scrollbar { display: none; }
         
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #0f171f; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #222; }
-        .nav-btn { color: #888; cursor: pointer; text-align: center; }
-        .nav-btn.active { color: var(--accent); font-weight: bold; }
+        .movie-card { min-width: 110px; background: var(--card); border-radius: 8px; overflow: hidden; position: relative; border: 1px solid #333; }
+        .movie-card img { width: 100%; height: 150px; object-fit: cover; }
+        .movie-card .name { padding: 5px; font-size: 0.7rem; text-align: center; height: 35px; overflow: hidden; }
+
+        /* المشغل */
+        .player { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; flex-direction:column; }
+        .player-nav { padding: 15px; display:flex; justify-content:space-between; background:#111; }
+        iframe { width:100%; height:300px; border:none; }
+        .refresh-btn { background: var(--accent); color:#000; border:none; padding:15px; font-weight:bold; width:100%; cursor:pointer; }
     </style>
 </head>
-<body onload="loadContent('tv')">
+<body>
 
-    <div id="player" class="player-modal">
-        <div class="player-nav">
-            <span onclick="closePlayer()" style="cursor:pointer; font-size: 24px;">✕</span>
-            <span id="playerTitle" style="color:var(--accent);">Zack Player</span>
-            <div style="width:24px"></div>
-        </div>
-        <div class="video-box" id="videoContainer"></div>
-        <div class="controls">
-            <button class="refresh-btn" onclick="refreshSource()">سيرفر آخر (حل الشاشة السوداء والإعلانات)</button>
-            <p id="srvName" style="font-size: 12px; color: #666; margin-top: 10px;">سيرفر رقم: 1</p>
-        </div>
+    <div class="top-info">
+        <div>✓ حصرياً: أقوى الأفلام والمسلسلات 2026</div>
+        <div>✓ تحديث يومي لجميع الأقسام</div>
+        <a href="https://wa.me/201040077271">📱 للتواصل واتساب: 01040077271</a>
     </div>
 
     <div class="header">
-        <div class="search-bar">
-            <input id="searchInput" type="text" placeholder="ابحث هنا يا Zack..." onkeyup="search(this.value)">
+        <div class="site-name">اسمع الآن</div>
+        <div class="tools">
+            <button class="btn-tool" onclick="toggleTheme()">🌓 أبيض/أسود</button>
+            <button class="btn-tool" onclick="changeFont(1)">A+</button>
+            <button class="btn-tool" onclick="changeFont(-1)">A-</button>
+        </div>
+        <div style="background:var(--card); padding:10px; border-radius:20px;">
+            <input id="search" type="text" placeholder="ابحث عن أي حاجة يا Zack..." onkeyup="search(this.value)" style="background:none; border:none; color:var(--text); width:100%; outline:none;">
         </div>
     </div>
 
-    <div class="grid" id="mainGrid"></div>
+    <div id="content">
+        </div>
 
-    <div class="nav-bottom">
-        <div class="nav-btn active" id="tvBtn" onclick="loadContent('tv')">📺 مسلسلات</div>
-        <div class="nav-btn" id="movieBtn" onclick="loadContent('movie')">🎬 أفلام</div>
+    <div id="player" class="player">
+        <div class="player-nav">
+            <span onclick="closePlayer()" style="color:#fff; font-size:25px;">✕</span>
+            <span id="pTitle" style="color:var(--accent)">اسمع الآن</span>
+        </div>
+        <div id="vBox" style="flex:1; display:flex; align-items:center;"></div>
+        <button class="refresh-btn" onclick="refreshSrv()">تغيير السيرفر (مانع الإعلانات)</button>
     </div>
 
     <script>
-        const API_KEY = '932eefacf243fb7b9698ea142f2e0481';
-        let currentId = '', currentType = '', srvIndex = 0;
+        const API = '932eefacf243fb7b9698ea142f2e0481';
+        let curId = '', curType = '', srv = 0;
 
-        async function loadContent(type) {
-            currentType = type;
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(type + 'Btn').classList.add('active');
-            const res = await fetch(`https://api.themoviedb.org/3/discover/${type}?api_key=${API_KEY}&language=ar&sort_by=popularity.desc`);
-            const data = await res.json();
-            render(data.results);
+        const sections = [
+            { title: "🎬 أفلام أكشن", type: "movie", genre: "28" },
+            { title: "🇪🇬 أفلام مصرية وعربية", type: "movie", lang: "ar" },
+            { title: "🇺🇸 أفلام إنجليزية", type: "movie", lang: "en" },
+            { title: "🇹🇷 أفلام تركية", type: "movie", lang: "tr" },
+            { title: "📺 مسلسلات عربية", type: "tv", lang: "ar" },
+            { title: "📺 مسلسلات تركية", type: "tv", lang: "tr" },
+            { title: "📺 مسلسلات إنجليزية", type: "tv", lang: "en" },
+            { title: "🐹 كرتون وأنيمي", type: "movie", genre: "16" },
+            { title: "🎭 مسرح مصر والكوميديا", type: "movie", genre: "35" }
+        ];
+
+        async function init() {
+            const main = document.getElementById('content');
+            for (let s of sections) {
+                let url = `https://api.themoviedb.org/3/discover/${s.type}?api_key=${API}&language=ar&sort_by=popularity.desc&with_genres=${s.genre || ''}&with_original_language=${s.lang || ''}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                let html = `<div class="section-title">${s.title}</div><div class="row">`;
+                data.results.forEach(m => {
+                    if(!m.poster_path) return;
+                    html += `
+                        <div class="movie-card" onclick="openP('${m.id}','${s.type}','${m.title || m.name}')">
+                            <img src="https://image.tmdb.org/t/p/w200${m.poster_path}">
+                            <div class="name">${m.title || m.name}</div>
+                        </div>`;
+                });
+                html += `</div>`;
+                main.innerHTML += html;
+            }
         }
 
-        function render(items) {
-            const grid = document.getElementById('mainGrid');
-            grid.innerHTML = '';
-            items.forEach(item => {
-                if(!item.poster_path) return;
-                grid.innerHTML += `
-                    <div class="movie-card" onclick="openPlayer('${item.id}', '${item.name || item.title}')">
-                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
-                        <div class="info">${item.name || item.title}</div>
-                    </div>`;
-            });
-        }
-
-        function openPlayer(id, title) {
-            currentId = id;
-            srvIndex = 0;
-            document.getElementById('playerTitle').innerText = title;
+        function openP(id, type, title) {
+            curId = id; curType = type; srv = 0;
+            document.getElementById('pTitle').innerText = title;
             document.getElementById('player').style.display = 'flex';
-            refreshSource();
+            refreshSrv();
         }
 
-        function refreshSource() {
-            // قائمة بـ 5 سيرفرات مختلفة (عالمية وعربية)
-            const sources = [
-                `https://vidsrc.to/embed/${currentType}/${currentId}`,
-                `https://vidsrc.me/embed/${currentType}/${currentId}`,
-                `https://vidsrc.pm/embed/${currentType}/${currentId}`,
-                `https://vidsrc.xyz/embed/${currentType}/${currentId}`,
-                `https://embed.smashystream.com/playere.php?tmdb=${currentId}`
+        function refreshSrv() {
+            const srvs = [
+                `https://vidsrc.to/embed/${curType}/${curId}`,
+                `https://vidsrc.me/embed/${curType}/${curId}`,
+                `https://embed.smashystream.com/playere.php?tmdb=${curId}`
             ];
-            
-            let srvNum = (srvIndex % sources.length);
-            let src = sources[srvNum];
-            document.getElementById('srvName').innerText = "سيرفر رقم: " + (srvNum + 1);
-            
-            // خاصية sandbox تمنع الإعلانات المنبثقة تماماً
-            document.getElementById('videoContainer').innerHTML = `
-                <iframe src="${src}" 
-                        allowfullscreen 
-                        sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin"
-                        referrerpolicy="origin"
-                        style="width:100%; height:100%; border:none;">
-                </iframe>`;
-            srvIndex++;
+            document.getElementById('vBox').innerHTML = `
+                <iframe src="${srvs[srv % 3]}" allowfullscreen 
+                sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin" 
+                referrerpolicy="origin"></iframe>`;
+            srv++;
         }
 
-        function closePlayer() {
-            document.getElementById('player').style.display = 'none';
-            document.getElementById('videoContainer').innerHTML = '';
+        function closePlayer() { document.getElementById('player').style.display='none'; document.getElementById('vBox').innerHTML=''; }
+        
+        function toggleTheme() { document.body.classList.toggle('light-mode'); }
+        
+        function changeFont(v) {
+            let s = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--font-size'));
+            document.documentElement.style.setProperty('--font-size', (s + v) + 'px');
         }
 
         async function search(q) {
             if(q.length < 3) return;
-            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=ar&query=${q}`);
+            const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API}&language=ar&query=${q}`);
             const data = await res.json();
-            render(data.results);
+            let html = `<div class="section-title">نتائج البحث عن: ${q}</div><div class="row" style="flex-wrap:wrap">`;
+            data.results.forEach(m => {
+                if(!m.poster_path) return;
+                html += `<div class="movie-card" onclick="openP('${m.id}','${m.media_type}','${m.title || m.name}')"><img src="https://image.tmdb.org/t/p/w200${m.poster_path}"><div class="name">${m.title || m.name}</div></div>`;
+            });
+            document.getElementById('content').innerHTML = html + `</div>`;
         }
+
+        init();
     </script>
 </body>
 </html>
