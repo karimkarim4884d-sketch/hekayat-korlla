@@ -16,36 +16,41 @@
         .site-title { font-size: 20px; font-weight: bold; }
         .menu-icon { font-size: 24px; cursor: pointer; }
 
-        /* القائمة الجانبية (3 شرط) */
+        /* شريط البحث */
+        .search-container { background: #900d0c; padding: 10px; display: flex; gap: 5px; }
+        .search-container input { flex: 1; padding: 10px; border-radius: 5px; border: none; outline: none; font-size: 16px; }
+        .search-container button { background: white; color: var(--main); border: none; padding: 0 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        /* القائمة الجانبية */
         .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--item-bg); z-index: 2000; transition: 0.4s; box-shadow: -2px 0 10px rgba(0,0,0,0.5); padding: 20px; }
         .sidebar.active { right: 0; }
         .sidebar a { display: block; padding: 15px; color: var(--text); text-decoration: none; border-bottom: 1px solid #444; font-weight: bold; }
 
-        /* تصميم الأزرار (نفس الصورة) */
+        /* تصميم الأزرار الكبيرة */
         .container { padding: 15px; max-width: 500px; margin: auto; }
         .section-item { 
             background: var(--item-bg); 
             border: 2px solid var(--main); 
-            border-radius: 10px; 
-            margin-bottom: 10px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 15px 20px; /* حجم كبير مريح */
+            padding: 22px 25px; /* تكبير الزرار */
             cursor: pointer; 
-            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .section-text { font-size: 20px; font-weight: bold; color: var(--main); }
+        .section-text { font-size: 22px; font-weight: bold; color: var(--main); }
         .section-icon { 
-            width: 45px; height: 45px; 
+            width: 50px; height: 50px; 
             background: var(--main); 
             border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            color: white; font-size: 10px; font-weight: bold; text-align: center;
+            color: white; font-size: 11px; font-weight: bold; text-align: center;
         }
 
         /* صفحة عرض المحتوى */
-        #contentPage { display: none; position: fixed; top: 55px; left: 0; width: 100%; height: calc(100% - 55px); background: var(--bg); z-index: 1500; overflow-y: auto; padding: 15px; }
+        #contentPage { display: none; position: fixed; top: 105px; left: 0; width: 100%; height: calc(100% - 105px); background: var(--bg); z-index: 1500; overflow-y: auto; padding: 15px; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .movie-card { background: var(--item-bg); border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
         .movie-card img { width: 100%; height: 140px; object-fit: cover; }
@@ -68,13 +73,18 @@
     <div class="header">
         <div class="menu-icon" onclick="openMenu()">☰</div>
         <div class="site-title">اسمع الآن</div>
-        <div style="font-size: 20px;">📅</div>
+        <div style="font-size: 20px;">🔍</div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="query" placeholder="ابحث عن فيلم أو مسلسل يا Zack...">
+        <button onclick="searchMovies()">بحث</button>
     </div>
 
     <div class="container" id="mainMenu">
         <div class="section-item" onclick="loadContent('ar','movie','الأفلام العربية')">
             <span class="section-text">الأفلام العربية</span>
-            <span class="section-icon">أفلام<br>عربي</span>
+            <span class="section-icon">عربي</span>
         </div>
         <div class="section-item" onclick="loadContent('en','movie','الأفلام الأجنبية')">
             <span class="section-text">الأفلام الأجنبية</span>
@@ -86,15 +96,7 @@
         </div>
         <div class="section-item" onclick="loadContent('ar','tv','المسلسلات العربية')">
             <span class="section-text">المسلسلات العربية</span>
-            <span class="section-icon">مسلسلات</span>
-        </div>
-        <div class="section-item" onclick="loadContent('tr','tv','المسلسلات التركية')">
-            <span class="section-text">المسلسلات التركية</span>
-            <span class="section-icon">TR TV</span>
-        </div>
-        <div class="section-item" onclick="loadContent('28','genre','أفلام الأكشن')">
-            <span class="section-text">أفلام الأكشن</span>
-            <span class="section-icon">Action</span>
+            <span class="section-icon">TV</span>
         </div>
         <div class="section-item" onclick="loadContent('16','genre','كرتون وأنيمي')">
             <span class="section-text">كرتون وأنيمي</span>
@@ -104,16 +106,14 @@
             <span class="section-text">مسرحيات</span>
             <span class="section-icon">مسرح</span>
         </div>
-        <div class="section-item" onclick="loadContent('10402','genre','أغاني وكليبات')">
-            <span class="section-text">أغاني وكليبات</span>
-            <span class="section-icon">Music</span>
-        </div>
     </div>
 
     <div id="contentPage">
-        <h3 id="catTitle" style="margin-bottom:15px; color:var(--main); border-right: 4px solid var(--main); padding-right: 10px;"></h3>
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <h3 id="catTitle" style="color:var(--main); border-right: 4px solid var(--main); padding-right: 10px;"></h3>
+            <button onclick="hideContent()" style="background:var(--main); color:white; border:none; padding:5px 15px; border-radius:5px;">إغلاق</button>
+        </div>
         <div class="grid" id="movieGrid"></div>
-        <button onclick="hideContent()" style="width:100%; padding:15px; margin-top:20px; background:var(--main); color:white; border:none; border-radius:8px; font-weight:bold;">الرجوع للأقسام</button>
     </div>
 
     <div id="player" class="player">
@@ -122,13 +122,11 @@
             <span>✕ إغلاق</span>
         </div>
         <div id="vBox" style="flex:1; display:flex; align-items:center;"></div>
-        <button onclick="changeSrv()" style="padding:20px; background:var(--main); color:white; border:none; font-weight:bold;">سيرفر إضافي (بدون إعلانات)</button>
     </div>
 
     <script>
         const API = '932eefacf243fb7b9698ea142f2e0481';
-        let actId = '', actType = '', srvNum = 0;
-
+        
         function openMenu() { document.getElementById('sidebar').classList.add('active'); }
         function closeMenu() { document.getElementById('sidebar').classList.remove('active'); }
         function toggleTheme() { document.body.classList.toggle('dark-mode'); }
@@ -138,35 +136,38 @@
             document.getElementById('contentPage').style.display = 'block';
             let url = `https://api.themoviedb.org/3/discover/${type === 'genre' ? 'movie' : type}?api_key=${API}&language=ar&sort_by=popularity.desc`;
             if(type === 'genre') url += `&with_genres=${val}`; else url += `&with_original_language=${val}`;
+            fetchAndRender(url);
+        }
 
+        async function searchMovies() {
+            let q = document.getElementById('query').value;
+            if(!q) return;
+            document.getElementById('catTitle').innerText = "نتائج البحث: " + q;
+            document.getElementById('contentPage').style.display = 'block';
+            let url = `https://api.themoviedb.org/3/search/multi?api_key=${API}&language=ar&query=${q}`;
+            fetchAndRender(url);
+        }
+
+        async function fetchAndRender(url) {
             const res = await fetch(url);
             const data = await res.json();
             let html = '';
             data.results.forEach(m => {
-                html += `<div class="movie-card" onclick="play('${m.id}','${type==='tv'?'tv':'movie'}')"><img src="https://image.tmdb.org/t/p/w200${m.poster_path}"><p>${m.title || m.name}</p></div>`;
+                if(!m.poster_path) return;
+                html += `<div class="movie-card" onclick="play('${m.id}','${m.media_type || 'movie'}')"><img src="https://image.tmdb.org/t/p/w200${m.poster_path}"><p>${m.title || m.name}</p></div>`;
             });
-            document.getElementById('movieGrid').innerHTML = html;
+            document.getElementById('movieGrid').innerHTML = html || "<p style='color:red; text-align:center; grid-column:span 3;'>مفيش نتائج يا Zack!</p>";
         }
 
         function hideContent() { document.getElementById('contentPage').style.display = 'none'; }
 
         function play(id, type) {
-            actId = id; actType = type; srvNum = 0;
             document.getElementById('player').style.display = 'flex';
-            changeSrv();
-        }
-
-        function changeSrv() {
-            const srvs = [
-                `https://vidsrc.to/embed/${actType}/${actId}`,
-                `https://embed.smashystream.com/playere.php?tmdb=${actId}`
-            ];
-            document.getElementById('vBox').innerHTML = `<iframe src="${srvs[srvNum % 2]}" allowfullscreen sandbox="allow-forms allow-scripts allow-same-origin"></iframe>`;
-            srvNum++;
+            document.getElementById('vBox').innerHTML = `<iframe src="https://vidsrc.to/embed/${type}/${id}" allowfullscreen sandbox="allow-forms allow-scripts allow-same-origin"></iframe>`;
         }
 
         function closePlayer() { document.getElementById('player').style.display='none'; document.getElementById('vBox').innerHTML=''; }
     </script>
 </body>
-            </html>
-            
+    </html>
+    
