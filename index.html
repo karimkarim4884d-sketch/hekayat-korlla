@@ -2,52 +2,216 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هجمة ولقطة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>هجمة ولقطة - 2026</title>
     <style>
-        body { background: #001220; color: white; font-family: sans-serif; text-align: center; margin: 0; padding-bottom: 60px; }
-        header { padding: 20px; color: #ff6b35; border-bottom: 1px solid #002a4d; }
-        .card { background: #003366; margin: 10px; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border-right: 4px solid #00bfff; }
-        .team img { width: 30px; height: 30px; display: block; margin: 0 auto 5px; }
-        .score { font-size: 1.2rem; font-weight: bold; background: #004d99; padding: 5px 10px; border-radius: 8px; }
-        .status { font-size: 0.7rem; color: #00bfff; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000c16; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #002a4d; }
+        :root {
+            --bg-dark: #0d1117;
+            --card-bg: #161b22;
+            --accent-blue: #00d2ff;
+            --text-main: #ffffff;
+            --text-dim: #8b949e;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            padding-bottom: 80px;
+        }
+
+        header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .search-bar {
+            margin: 10px;
+            background: #21262d;
+            border-radius: 10px;
+            display: flex;
+            padding: 10px;
+        }
+        .search-bar input {
+            background: none; border: none; color: white; flex: 1; outline: none;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background: #161b22;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--text-dim);
+        }
+        .tab.active {
+            background: var(--accent-blue);
+            color: black;
+            font-weight: bold;
+        }
+
+        .match-card {
+            background: var(--card-bg);
+            margin: 12px;
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .team { flex: 1; text-align: center; font-size: 0.9rem; }
+        .team img { width: 45px; height: 45px; margin-bottom: 8px; }
+
+        .center-info { flex: 1; text-align: center; }
+        .score { font-size: 1.5rem; font-weight: bold; color: var(--accent-blue); }
+        .vs { font-size: 0.9rem; color: var(--text-dim); }
+        .status { font-size: 0.7rem; margin-top: 5px; font-weight: bold; }
+        .status.live { color: #ff4d4d; animation: blink 1s infinite; }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: #0d1117;
+            display: flex; justify-content: space-around; padding: 12px 0;
+            border-top: 1px solid #30363d; z-index: 100;
+        }
+        .nav-item { color: var(--text-dim); font-size: 0.75rem; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--accent-blue); }
+
+        #live-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 1000; flex-direction: column;
+        }
+        
+        @keyframes blink { 0% {opacity:1} 50% {opacity:0.4} 100% {opacity:1} }
     </style>
 </head>
 <body>
-    <header><h1>هجمة ولقطة</h1></header>
-    <div id="list"><p>⏳ جاري جلب مباريات اليوم...</p></div>
-    <nav class="nav"><div>⚽ المباريات</div><div>📊 الترتيب</div><div>⭐ مفضلتي</div></nav>
 
-    <script>
-        const key = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-        async function load() {
-            const today = new Date().toISOString().split('T')[0];
-            try {
-                const r = await fetch(`https://v3.football.api-sports.io/fixtures?date=${today}`, {
-                    headers: { "x-rapidapi-key": key, "x-rapidapi-host": "v3.football.api-sports.io" }
-                });
-                const d = await r.json();
-                const list = document.getElementById('list');
-                // عرض أول 15 ماتش في اليوم عشان تتأكد إن الموقع شغال
-                const matches = d.response.slice(0, 15);
-                if (matches.length === 0) {
-                    list.innerHTML = '<p>لا توجد مباريات مجدولة لليوم</p>';
-                } else {
-                    list.innerHTML = matches.map(m => `
-                        <div class="card">
-                            <div style="flex:1"><img src="${m.teams.home.logo}"> ${m.teams.home.name}</div>
-                            <div style="flex:1">
-                                <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
-                                <div class="status">${m.fixture.status.short}</div>
-                            </div>
-                            <div style="flex:1"><img src="${m.teams.away.logo}"> ${m.teams.away.name}</div>
-                        </div>
-                    `).join('');
-                }
-            } catch (e) { document.getElementById('list').innerHTML = '❌ خطأ في الاتصال'; }
+<header>
+    <span style="font-size: 1.2rem; font-weight: bold; color: var(--accent-blue);">هجمة ولقطة</span>
+    <span>📅 2026</span>
+</header>
+
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="ابحث عن فريق أو مباراة..." onkeyup="searchMatch()">
+</div>
+
+<div class="tabs">
+    <div class="tab" onclick="fetchData(-1, this)">مباريات الأمس</div>
+    <div class="tab active" onclick="fetchData(0, this)">مباريات اليوم</div>
+    <div class="tab" onclick="fetchData(1, this)">مباريات الغد</div>
+    <div class="tab" style="color: red;" onclick="openLivePlayer()">🔴 مباشر</div>
+</div>
+
+<div id="matches-list"></div>
+
+<div id="more-section" style="display:none; padding: 20px; text-align: center;">
+    <h3>تواصل معنا</h3>
+    <a href="https://wa.me/201040077271" style="color: #25d366; text-decoration: none; font-size: 1.2rem;">💬 واتساب: 01040077271</a>
+</div>
+
+<nav class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('matches')">⚽<br>المباريات</div>
+    <div class="nav-item" onclick="showPage('live')">📺<br>البث</div>
+    <div class="nav-item" onclick="showPage('more')">➕<br>المزيد</div>
+</nav>
+
+<div id="live-modal">
+    <div style="padding: 15px; color: white; background: #333; text-align: center;" onclick="closeLive()">❌ إغلاق</div>
+    <iframe id="player" src="" width="100%" height="300" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<script>
+const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
+let currentData = [];
+
+async function fetchData(offset, el) {
+    if(el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+    }
+    
+    const date = new Date();
+    date.setDate(date.getDate() + offset);
+    const dateStr = date.toISOString().split('T')[0];
+    
+    const list = document.getElementById('matches-list');
+    list.innerHTML = '<p style="text-align:center">جاري التحميل...</p>';
+    
+    try {
+        const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
+            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
+        });
+        const data = await res.json();
+        currentData = data.response.slice(0, 25);
+        renderMatches(currentData);
+    } catch (e) { list.innerHTML = "خطأ في الاتصال"; }
+}
+
+function renderMatches(matches) {
+    const list = document.getElementById('matches-list');
+    list.innerHTML = matches.map(m => {
+        let statusText = m.fixture.status.short;
+        let scoreHtml = `<div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>`;
+        
+        if(statusText === 'NS') {
+            scoreHtml = `<div class="vs">VS</div><div style="font-size:0.8rem">${new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</div>`;
+            statusText = "لم تبدأ";
+        } else if (["1H", "2H", "HT"].includes(statusText)) {
+            statusText = `<span class="status live">مباشر الآن</span>`;
+        } else if (statusText === 'FT') {
+            statusText = "انتهت";
         }
-        load();
-    </script>
+
+        return `
+        <div class="match-card">
+            <div class="team"><img src="${m.teams.home.logo}"><br>${m.teams.home.name}</div>
+            <div class="center-info">
+                ${scoreHtml}
+                <div class="status">${statusText}</div>
+            </div>
+            <div class="team"><img src="${m.teams.away.logo}"><br>${m.teams.away.name}</div>
+        </div>`;
+    }).join('');
+}
+
+function showPage(p) {
+    document.getElementById('matches-list').style.display = p === 'matches' ? 'block' : 'none';
+    document.getElementById('more-section').style.display = p === 'more' ? 'block' : 'none';
+    if(p === 'live') openLivePlayer();
+}
+
+function openLivePlayer() {
+    document.getElementById('live-modal').style.display = 'flex';
+    document.getElementById('player').src = "https://clappr.io/demo/index.html?src=https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+}
+
+function closeLive() {
+    document.getElementById('live-modal').style.display = 'none';
+    document.getElementById('player').src = "";
+}
+
+function searchMatch() {
+    const val = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = currentData.filter(m => 
+        m.teams.home.name.toLowerCase().includes(val) || 
+        m.teams.away.name.toLowerCase().includes(val)
+    );
+    renderMatches(filtered);
+}
+
+fetchData(0); // ابدأ بمباريات اليوم
+</script>
 </body>
 </html>
