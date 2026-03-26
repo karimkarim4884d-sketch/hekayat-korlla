@@ -3,139 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هجمة ولقطة - الذكي</title>
+    <title>SMM Race UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #00d2ff; }
-        body { background: var(--bg); color: white; margin: 0; font-family: sans-serif; padding-bottom: 80px; }
-        header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; position: sticky; top: 0; background: var(--bg); z-index: 1000; }
-        .date-picker { background: #21262d; color: white; border: 1px solid var(--accent); border-radius: 5px; padding: 5px; font-size: 0.8rem; }
-        .search-container { padding: 10px; }
-        .search-box { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #21262d; color: white; text-align: right; outline: none; }
-        .tabs { display: flex; justify-content: space-around; background: #161b22; padding: 10px; }
-        .tab { padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; color: #8b949e; }
-        .tab.active { background: var(--accent); color: black; font-weight: bold; }
-        .match-card { background: var(--card); margin: 12px; padding: 15px; border-radius: 15px; display: flex; align-items: center; border-right: 4px solid var(--accent); }
-        .team { flex: 1.2; text-align: center; font-size: 0.85rem; font-weight: bold; }
-        .team img { width: 38px; height: 38px; display: block; margin: 0 auto 5px; }
-        .info { flex: 1; text-align: center; }
-        .score { font-size: 1.3rem; font-weight: bold; color: var(--accent); }
-        .status { font-size: 0.7rem; margin-top: 5px; }
-        .live-tag { color: #ff4d4d; font-weight: bold; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity:1} 50% {opacity:0.4} 100% {opacity:1} }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #30363d; }
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --primary-blue: #0052ff;
+            --border-color: #30363d;
+            --text-main: #ffffff;
+            --text-muted: #8b949e;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        /* حاوية الكارت الأساسي */
+        .order-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 500px;
+            margin: 50px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: var(--text-main);
+        }
+
+        .header-title i {
+            color: var(--primary-blue);
+        }
+
+        /* تنسيق الحقول */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 15px;
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        /* زر الطلب */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* زر واتساب العائم */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-decoration: none;
+            z-index: 100;
+        }
+
     </style>
 </head>
 <body>
 
-<header>
-    <div style="font-weight: bold; color: var(--accent); font-size: 1.1rem;">هجمة ولقطة</div>
-    <input type="date" id="calendar" class="date-picker" onchange="loadByCalendar()">
-</header>
+    <div class="order-card">
+        <div class="header-title">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>إنشاء طلب جديد (Create an order)</span>
+        </div>
 
-<div class="search-container">
-    <input type="text" id="searchBox" class="search-box" placeholder="ابحث عن مباراة..." onkeyup="searchMatches()">
-</div>
+        <div class="form-group">
+            <label>الفئة</label>
+            <select>
+                <option>عروض ريسي</option>
+                <option>خدمات تليجرام</option>
+                <option>خدمات إنستقرام</option>
+            </select>
+        </div>
 
-<div class="tabs">
-    <div class="tab" id="tab-yesterday" onclick="fetchData(-1, 'tab-yesterday')">الأمس</div>
-    <div class="tab active" id="tab-today" onclick="fetchData(0, 'tab-today')">اليوم</div>
-    <div class="tab" id="tab-tomorrow" onclick="fetchData(1, 'tab-tomorrow')">الغد</div>
-</div>
+        <div class="form-group">
+            <label>الخدمات</label>
+            <select>
+                <option>تفعيل واتساب ضمان 30 يوم - £ 35.0 لكل 1000</option>
+                <option>زيادة متابعين تيك توك - ضمان سنة</option>
+            </select>
+        </div>
 
-<div id="matches-list"></div>
+        <div class="form-group">
+            <label>Username / Link</label>
+            <input type="text" placeholder="أدخل الرابط أو اسم المستخدم هنا...">
+        </div>
 
-<nav class="bottom-nav">
-    <div onclick="fetchData(0, 'tab-today')" style="cursor:pointer">⚽ المباريات</div>
-    <a href="https://wa.me/201040077271" style="text-decoration:none; color:inherit">💬 المزيد</a>
-</nav>
+        <div class="form-group">
+            <label>الكمية</label>
+            <input type="number" placeholder="1000">
+        </div>
 
-<script>
-const API_KEY = 'bf7d42ac856fecc0e1e6ad24debe9c5e';
-const IMPORTANT_LEAGUES = [39, 140, 78, 135, 61, 2, 3, 307, 233, 4, 848];
-let allMatches = [];
-let currentMode = 0; // 0 = اليوم
+        <button class="submit-btn">تأكيد الطلب</button>
+    </div>
 
-async function fetchData(offset, tabId) {
-    currentMode = offset;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    
-    const date = new Date();
-    date.setDate(date.getDate() + offset);
-    const dateStr = date.toISOString().split('T')[0];
-    document.getElementById('calendar').value = dateStr;
-    
-    await getMatches(dateStr);
-}
+    <a href="https://wa.me/201040077271" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-async function loadByCalendar() {
-    const selectedDate = document.getElementById('calendar').value;
-    await getMatches(selectedDate);
-}
-
-async function getMatches(dateStr) {
-    const list = document.getElementById('matches-list');
-    list.innerHTML = '<p style="text-align:center; padding:20px;">⏳ جاري التحديث...</p>';
-    
-    try {
-        const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
-            headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": "v3.football.api-sports.io" }
-        });
-        const data = await res.json();
-        
-        let matches = data.response.filter(m => IMPORTANT_LEAGUES.includes(m.league.id));
-        if(matches.length === 0) matches = data.response.slice(0, 15);
-
-        // --- المنطق الذكي اللي طلبته ---
-        if (currentMode === 0) { 
-            // لو إحنا في "اليوم": اعرض المباشر (LIVE) والمنتظر (NS) بس
-            allMatches = matches.filter(m => m.fixture.status.short !== "FT");
-        } else if (currentMode === -1) {
-            // لو إحنا في "الأمس": اعرض اللي خلص بس (FT)
-            allMatches = matches.filter(m => m.fixture.status.short === "FT");
-        } else {
-            allMatches = matches;
-        }
-
-        render(allMatches);
-    } catch (e) { list.innerHTML = "❌ خطأ في الاتصال"; }
-}
-
-function render(matches) {
-    const list = document.getElementById('matches-list');
-    if(matches.length === 0) {
-        list.innerHTML = `<p style="text-align:center; padding:20px;">لا توجد مباريات في هذا القسم حالياً</p>`;
-        return;
-    }
-    
-    list.innerHTML = matches.map(m => {
-        const isLive = ["1H", "2H", "HT", "ET", "P"].includes(m.fixture.status.short);
-        const time = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-        
-        return `
-        <div class="match-card">
-            <div class="team"><img src="${m.teams.home.logo}"> ${m.teams.home.name}</div>
-            <div class="info">
-                <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
-                <div class="status ${isLive ? 'live-tag' : ''}">
-                    ${isLive ? '🔴 مباشر' : (m.fixture.status.short === "FT" ? 'انتهت' : time)}
-                </div>
-            </div>
-            <div class="team"><img src="${m.teams.away.logo}"> ${m.teams.away.name}</div>
-        </div>`;
-    }).join('');
-}
-
-function searchMatches() {
-    const query = document.getElementById('searchBox').value.toLowerCase();
-    const filtered = allMatches.filter(m => 
-        m.teams.home.name.toLowerCase().includes(query) || 
-        m.teams.away.name.toLowerCase().includes(query)
-    );
-    render(filtered);
-}
-
-fetchData(0, 'tab-today');
-</script>
 </body>
 </html>
