@@ -3,63 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMM RACE - كورة لايف</title>
+    <title>SMM RACE - كورة لايف وشات</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0b0e11; color: white; font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 70px; }
+        body { background-color: #0b0e11; color: white; font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 20px; }
         .nav { background: #161b22; padding: 15px; border-bottom: 2px solid #2ecc71; text-align: center; font-weight: bold; font-size: 20px; }
-        .match-card { background: #161b22; margin: 15px; padding: 15px; border-radius: 15px; border: 1px solid #30363d; }
-        .teams { display: flex; justify-content: space-between; align-items: center; text-align: center; }
-        .team img { width: 50px; height: 50px; margin-bottom: 8px; }
-        .score { font-size: 24px; font-weight: bold; color: #2ecc71; }
-        .video-box { background: #000; margin: 15px; border-radius: 15px; overflow: hidden; border: 2px solid #2ecc71; height: 200px; display: flex; align-items: center; justify-content: center; }
-        .footer { position: fixed; bottom: 0; width: 100%; background: #161b22; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #30363d; }
-        .f-item { color: #8b949e; text-decoration: none; font-size: 12px; text-align: center; }
-        .f-item.active { color: #2ecc71; }
+        
+        /* مشغل الفيديو */
+        .video-box { background: #000; margin: 10px; border-radius: 15px; overflow: hidden; border: 2px solid #2ecc71; height: 220px; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* منطقة الدردشة */
+        .chat-container { margin: 10px; background: #161b22; border-radius: 15px; border: 1px solid #30363d; overflow: hidden; height: 350px; }
+        .chat-header { background: #2ecc71; color: black; padding: 10px; text-align: center; font-weight: bold; }
+        
+        /* المباريات */
+        .match-card { background: #1c2128; margin: 10px; padding: 15px; border-radius: 12px; border: 1px solid #30363d; cursor: pointer; transition: 0.3s; }
+        .match-card:hover { border-color: #2ecc71; }
+        .teams { display: flex; justify-content: space-between; align-items: center; }
+        .team img { width: 40px; height: 40px; }
+        .score { font-size: 20px; font-weight: bold; color: #2ecc71; }
+
+        .footer-info { text-align: center; padding: 10px; color: #8b949e; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div class="nav">📺 SMM RACE - بث مباشر</div>
+<div class="nav"><i class="fas fa-play-circle"></i> SMM RACE - البث المباشر</div>
 
-<div class="video-box" id="player">
-    <p style="color: #8b949e;">اضغط على المباراة لتشغيل البث المباشر</p>
-</div>
-
-<div id="matches-list">
-    <div class="match-card" onclick="startStream('رابط_البث_هنا')">
-        <div class="teams">
-            <div class="team">
-                <img src="https://ssl.gstatic.com/onebox/media/sports/logos/96CcNNpw3LOsjST9CcY0_w_96x96.png">
-                <div>ريال مدريد</div>
-            </div>
-            <div class="score">VS</div>
-            <div class="team">
-                <img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4f3ErI9m649xxv29j6hw_96x96.png">
-                <div>برشلونة</div>
-            </div>
-        </div>
-        <div style="text-align:center; margin-top:10px; font-size:12px; color:#2ecc71;">● مباشر الآن</div>
+<div class="video-box" id="main-player">
+    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#555;">
+        اختر مباراة لبدء البث المباشر
     </div>
 </div>
 
-<div class="footer">
-    <a href="#" class="f-item active"><i class="fas fa-home"></i><br>الرئيسية</a>
-    <a href="#" class="f-item"><i class="fas fa-tv"></i><br>القنوات</a>
-    <a href="#" class="f-item"><i class="fas fa-trophy"></i><br>الدوريات</a>
+<div class="chat-container">
+    <div class="chat-header"><i class="fas fa-comments"></i> دردشة المشجعين</div>
+    <iframe src="https://www3.cbox.ws/box/?boxid=3506353&boxtag=v7m8re" width="100%" height="100%" allowtransparency="yes" allow="autoplay" frameborder="0" marginheight="0" marginwidth="0" scrolling="auto"></iframe>
+</div>
+
+<div id="matches">
+    <div class="match-card" onclick="playMatch('رابط_البث_هنا')">
+        <div class="teams">
+            <div class="team"><img src="https://ssl.gstatic.com/onebox/media/sports/logos/96CcNNpw3LOsjST9CcY0_w_96x96.png"><div>ريال مدريد</div></div>
+            <div class="score">VS</div>
+            <div class="team"><img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4f3ErI9m649xxv29j6hw_96x96.png"><div>برشلونة</div></div>
+        </div>
+        <div style="text-align:center; font-size:11px; color:#2ecc71; margin-top:5px;">بث سريع • سيرفر 1</div>
+    </div>
+</div>
+
+<div class="footer-info">
+    الموقع مدعوم بـ API: Bf7d42ac856fecc0e1e6ad24debe9c5e
 </div>
 
 <script>
-    const API_KEY = "Bf7d42ac856fecc0e1e6ad24debe9c5e";
-
-    function startStream(url) {
-        const player = document.getElementById('player');
-        player.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`;
+    function playMatch(url) {
+        const player = document.getElementById('main-player');
+        // هنا نضع الرابط في Iframe
+        player.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    // هنا مستقبلاً هنضيف كود سحب الماتشات بالمفتاح بتاعك
-    console.log("الـ API جاهز للاستخدام: " + API_KEY);
 </script>
 
 </body>
