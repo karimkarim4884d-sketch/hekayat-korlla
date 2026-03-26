@@ -1,165 +1,84 @@
+<?php
+// 1. إعدادات الربط مع المورد (تأكد من الرابط الصحيح لموقعك)
+$api_url = "https://smmcpan.com/api/v2"; 
+$api_key = "81f9272980030221e9269a099744e447";
+
+$message = "";
+
+// 2. معالجة الطلب عند الضغط على الزر
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['place_order'])) {
+    $post_data = [
+        'key' => $api_key,
+        'action' => 'add',
+        'service' => $_POST['service_id'],
+        'link' => $_POST['link'],
+        'quantity' => $_POST['quantity']
+    ];
+
+    $ch = curl_init($api_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
+    $response = json_decode(curl_exec($ch), true);
+    curl_close($ch);
+
+    if (isset($response['order'])) {
+        $message = "<div style='color: #25d366;'>✅ تم بنجاح! رقم الطلب: " . $response['order'] . "</div>";
+    } else {
+        $message = "<div style='color: #ff4d4d;'>❌ خطأ: " . ($response['error'] ?? 'حاول ثانية') . "</div>";
+    }
+}
+
+// 3. جلب قائمة الخدمات لعرضها
+$ch_services = curl_init($api_url);
+curl_setopt($ch_services, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch_services, CURLOPT_POST, true);
+curl_setopt($ch_services, CURLOPT_POSTFIELDS, http_build_query(['key' => $api_key, 'action' => 'services']));
+$services = json_decode(curl_exec($ch_services), true);
+curl_close($ch_services);
+?>
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMM Race UI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>SMM Race Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
-            --primary-blue: #0052ff;
-            --border-color: #30363d;
-            --text-main: #ffffff;
-            --text-muted: #8b949e;
-        }
-
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-        }
-
-        /* حاوية الكارت الأساسي */
-        .order-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 25px;
-            max-width: 500px;
-            margin: 50px auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.2rem;
-            margin-bottom: 25px;
-            color: var(--text-main);
-        }
-
-        .header-title i {
-            color: var(--primary-blue);
-        }
-
-        /* تنسيق الحقول */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        select, input {
-            width: 100%;
-            padding: 15px;
-            background-color: #0d1117;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: white;
-            font-family: 'Cairo', sans-serif;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        select:focus, input:focus {
-            border-color: var(--primary-blue);
-        }
-
-        /* زر الطلب */
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        .submit-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        /* زر واتساب العائم */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: #25d366;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            text-decoration: none;
-            z-index: 100;
-        }
-
+        body { background: #0d1117; color: white; font-family: 'Cairo', sans-serif; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: #161b22; padding: 30px; border-radius: 20px; border: 1px solid #30363d; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 10px; }
+        .btn { width: 100%; padding: 15px; background: #0052ff; border: none; color: white; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .whatsapp { position: fixed; bottom: 20px; right: 20px; background: #25d366; padding: 15px; border-radius: 50%; text-decoration: none; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="order-card">
-        <div class="header-title">
-            <i class="fas fa-tachometer-alt"></i>
-            <span>إنشاء طلب جديد (Create an order)</span>
-        </div>
+<div class="container">
+    <h2>🚀 SMM Race - اطلب الآن</h2>
+    <?php echo $message; ?>
+    
+    <form method="POST">
+        <label>اختر الخدمة</label>
+        <select name="service_id">
+            <?php foreach ($services as $s): ?>
+                <option value="<?php echo $s['service']; ?>">
+                    <?php echo $s['name']; ?> - (£<?php echo $s['rate']; ?>)
+                </option>
+            <?php endforeach; ?>
+        </select>
 
-        <div class="form-group">
-            <label>الفئة</label>
-            <select>
-                <option>عروض ريسي</option>
-                <option>خدمات تليجرام</option>
-                <option>خدمات إنستقرام</option>
-            </select>
-        </div>
+        <label>الرابط (Link)</label>
+        <input type="text" name="link" placeholder="أدخل الرابط هنا" required>
 
-        <div class="form-group">
-            <label>الخدمات</label>
-            <select>
-                <option>تفعيل واتساب ضمان 30 يوم - £ 35.0 لكل 1000</option>
-                <option>زيادة متابعين تيك توك - ضمان سنة</option>
-            </select>
-        </div>
+        <label>الكمية (Quantity)</label>
+        <input type="number" name="quantity" placeholder="1000" required>
 
-        <div class="form-group">
-            <label>Username / Link</label>
-            <input type="text" placeholder="أدخل الرابط أو اسم المستخدم هنا...">
-        </div>
+        <button type="submit" name="place_order" class="btn">تأكيد الطلب</button>
+    </form>
+</div>
 
-        <div class="form-group">
-            <label>الكمية</label>
-            <input type="number" placeholder="1000">
-        </div>
-
-        <button class="submit-btn">تأكيد الطلب</button>
-    </div>
-
-    <a href="https://wa.me/201040077271" class="whatsapp-float" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+<a href="https://wa.me/201040077271" class="whatsapp">WhatsApp</a>
 
 </body>
 </html>
