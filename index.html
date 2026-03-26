@@ -3,99 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كورة ستار - بث مباشر ومباريات اليوم</title>
+    <title>SMM RACE - كورة لايف</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-color: #1a1a1a; --accent-color: #2ecc71; --text-white: #ffffff; }
-        body { background-color: #0f0f0f; color: var(--text-white); font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 50px; }
-        
-        /* الهيدر */
-        .navbar { background: var(--main-color); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent-color); }
-        .logo { font-size: 24px; font-weight: bold; color: var(--accent-color); text-decoration: none; }
-        
-        /* شريط الدوريات */
-        .leagues-bar { display: flex; gap: 15px; overflow-x: auto; padding: 15px; background: #222; }
-        .league-item { background: #333; padding: 8px 15px; border-radius: 20px; white-space: nowrap; font-size: 13px; cursor: pointer; }
-        .league-item.active { background: var(--accent-color); }
-
-        /* حاوية المباريات */
-        .matches-container { padding: 15px; max-width: 600px; margin: 0 auto; }
-        .match-card { background: #1e1e1e; border-radius: 15px; margin-bottom: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #333; transition: 0.3s; cursor: pointer; }
-        .match-card:hover { border-color: var(--accent-color); transform: translateY(-3px); }
-        
-        .team { text-align: center; flex: 1; }
-        .team img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px; }
-        .team span { display: block; font-size: 14px; font-weight: bold; }
-
-        .match-info { text-align: center; flex: 1; }
-        .match-time { background: #333; padding: 5px 10px; border-radius: 5px; font-size: 12px; color: var(--accent-color); }
-        .match-status { font-size: 11px; margin-top: 5px; color: #888; }
-        .vs { font-size: 18px; font-weight: bold; margin: 10px 0; display: block; }
-
-        /* التذييل */
-        .footer-nav { position: fixed; bottom: 0; width: 100%; background: #1a1a1a; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; }
-        .f-item { color: #888; text-decoration: none; font-size: 12px; text-align: center; }
-        .f-item.active { color: var(--accent-color); }
-        .f-item i { font-size: 20px; display: block; }
+        body { background-color: #0b0e11; color: white; font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 70px; }
+        .nav { background: #161b22; padding: 15px; border-bottom: 2px solid #2ecc71; text-align: center; font-weight: bold; font-size: 20px; }
+        .match-card { background: #161b22; margin: 15px; padding: 15px; border-radius: 15px; border: 1px solid #30363d; }
+        .teams { display: flex; justify-content: space-between; align-items: center; text-align: center; }
+        .team img { width: 50px; height: 50px; margin-bottom: 8px; }
+        .score { font-size: 24px; font-weight: bold; color: #2ecc71; }
+        .video-box { background: #000; margin: 15px; border-radius: 15px; overflow: hidden; border: 2px solid #2ecc71; height: 200px; display: flex; align-items: center; justify-content: center; }
+        .footer { position: fixed; bottom: 0; width: 100%; background: #161b22; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #30363d; }
+        .f-item { color: #8b949e; text-decoration: none; font-size: 12px; text-align: center; }
+        .f-item.active { color: #2ecc71; }
     </style>
 </head>
 <body>
 
-<div class="navbar">
-    <a href="#" class="logo"><i class="fas fa-volleyball-ball"></i> كورة سكور</a>
-    <div class="user"><i class="fas fa-search"></i></div>
+<div class="nav">📺 SMM RACE - بث مباشر</div>
+
+<div class="video-box" id="player">
+    <p style="color: #8b949e;">اضغط على المباراة لتشغيل البث المباشر</p>
 </div>
 
-<div class="leagues-bar">
-    <div class="league-item active">الدوري الإنجليزي</div>
-    <div class="league-item">الدوري الإسباني</div>
-    <div class="league-item">دوري أبطال أوروبا</div>
-    <div class="league-item">الدوري المصري</div>
-</div>
-
-<div class="matches-container">
-    <h3 style="font-size: 16px; border-right: 4px solid var(--accent-color); padding-right: 10px;">مباريات اليوم</h3>
-
-    <div class="match-card" onclick="location.href='#watch'">
-        <div class="team">
-            <img src="https://ssl.gstatic.com/onebox/media/sports/logos/96CcNNpw3LOsjST9CcY0_w_96x96.png" alt="Real Madrid">
-            <span>ريال مدريد</span>
+<div id="matches-list">
+    <div class="match-card" onclick="startStream('رابط_البث_هنا')">
+        <div class="teams">
+            <div class="team">
+                <img src="https://ssl.gstatic.com/onebox/media/sports/logos/96CcNNpw3LOsjST9CcY0_w_96x96.png">
+                <div>ريال مدريد</div>
+            </div>
+            <div class="score">VS</div>
+            <div class="team">
+                <img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4f3ErI9m649xxv29j6hw_96x96.png">
+                <div>برشلونة</div>
+            </div>
         </div>
-        <div class="match-info">
-            <span class="match-time">22:00</span>
-            <span class="vs">VS</span>
-            <span class="match-status">لم تبدأ</span>
-        </div>
-        <div class="team">
-            <img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4f3ErI9m649xxv29j6hw_96x96.png" alt="Barcelona">
-            <span>برشلونة</span>
-        </div>
-    </div>
-
-    <div class="match-card">
-        <div class="team">
-            <img src="https://ssl.gstatic.com/onebox/media/sports/logos/8u_rs20CRclTShKHS9Z3hA_96x96.png" alt="Liverpool">
-            <span>ليفربول</span>
-        </div>
-        <div class="match-info">
-            <span class="match-time" style="background:var(--accent-color); color:#000;">مباشر</span>
-            <span class="vs">2 - 1</span>
-            <span class="match-status" style="color:var(--accent-color);">الشوط الثاني</span>
-        </div>
-        <div class="team">
-            <img src="https://ssl.gstatic.com/onebox/media/sports/logos/z47joC9uH0a_SNo9mOn7Zg_96x96.png" alt="Man City">
-            <span>مان سيتي</span>
-        </div>
+        <div style="text-align:center; margin-top:10px; font-size:12px; color:#2ecc71;">● مباشر الآن</div>
     </div>
 </div>
 
-<div class="footer-nav">
-    <a href="#" class="f-item active"><i class="fas fa-home"></i>الرئيسية</a>
-    <a href="#" class="f-item"><i class="fas fa-tv"></i>القنوات</a>
-    <a href="#" class="f-item"><i class="fas fa-trophy"></i>الدوريات</a>
-    <a href="#" class="f-item"><i class="fas fa-cog"></i>الإعدادات</a>
+<div class="footer">
+    <a href="#" class="f-item active"><i class="fas fa-home"></i><br>الرئيسية</a>
+    <a href="#" class="f-item"><i class="fas fa-tv"></i><br>القنوات</a>
+    <a href="#" class="f-item"><i class="fas fa-trophy"></i><br>الدوريات</a>
 </div>
+
+<script>
+    const API_KEY = "Bf7d42ac856fecc0e1e6ad24debe9c5e";
+
+    function startStream(url) {
+        const player = document.getElementById('player');
+        player.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`;
+    }
+
+    // هنا مستقبلاً هنضيف كود سحب الماتشات بالمفتاح بتاعك
+    console.log("الـ API جاهز للاستخدام: " + API_KEY);
+</script>
 
 </body>
 </html>
