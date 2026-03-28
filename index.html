@@ -3,61 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZACK SMM | لوحة تزويد المتابعين</title>
+    <title>ZACK SMM | طلب جديد</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main: #ffe611; --bg: #0b0b0b; --card: #1a1a1a; }
-        body { background: var(--bg); color: white; font-family: 'Cairo'; margin: 0; }
-        .hero { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'); background-size: cover; padding: 60px 20px; text-align: center; border-bottom: 3px solid var(--main); }
-        .hero h1 { color: var(--main); font-size: 30px; margin-bottom: 10px; }
-        .services { padding: 20px; }
-        .service-card { background: var(--card); border: 1px solid #333; border-radius: 15px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; transition: 0.3s; }
-        .service-card:hover { border-color: var(--main); transform: scale(1.02); }
-        .icon { background: var(--main); color: #000; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .price { color: var(--main); font-weight: bold; margin-right: auto; }
-        .order-btn { background: var(--main); color: #000; display: block; text-align: center; padding: 15px; margin: 20px; border-radius: 10px; text-decoration: none; font-weight: bold; }
+        :root { --yellow: #faff00; --bg: #fdfdf5; --white: #ffffff; }
+        body { background-color: var(--bg); font-family: 'Cairo', sans-serif; margin: 0; padding: 15px; }
+
+        /* الأزرار العلوية */
+        .top-nav { display: flex; background: #fff; border-radius: 15px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .nav-btn { flex: 1; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #555; }
+        .nav-btn.active { background: #000; color: var(--yellow); }
+
+        /* أزرار الفلترة الصغيرة */
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-item { background: #eee; padding: 8px 15px; border-radius: 10px; font-size: 13px; white-space: nowrap; cursor: pointer; }
+        .filter-item.active { background: var(--yellow); font-weight: bold; }
+
+        /* نموذج الطلب */
+        .order-card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #333; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        select, input, textarea { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #eee; background: #fdfdfd; font-family: 'Cairo'; font-size: 14px; box-sizing: border-box; }
+        
+        /* مربع الوصف */
+        .description-box { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 15px; font-size: 13px; color: #666; line-height: 1.8; }
+        .alert-dot { color: red; margin-left: 5px; }
+
+        /* التصميم الخاص بالاختيارات */
+        .service-id { background: var(--yellow); padding: 2px 8px; border-radius: 5px; font-weight: bold; margin-left: 10px; }
     </style>
 </head>
 <body>
 
-<div class="hero">
-    <h1>ZACK SMM PANEL</h1>
-    <p>أرخص وأسرع خدمات السوشيال ميديا في مصر</p>
-</div>
-
-<div class="services">
-    <h2 style="font-size: 18px; border-right: 4px solid var(--main); padding-right: 10px;">خدماتنا المميزة</h2>
-
-    <div class="service-card">
-        <div class="icon"><i class="fab fa-instagram"></i></div>
-        <div>
-            <div style="font-weight:bold;">1000 متابع انستقرام</div>
-            <div style="font-size:12px; color:#888;">ضمان 30 يوم - سرعة فورية</div>
-        </div>
-        <div class="price">15 EGP</div>
+    <div class="top-nav">
+        <div class="nav-btn active"><i class="fas fa-shopping-cart"></i> طلب جديد</div>
+        <div class="nav-btn"><i class="fas fa-layer-group"></i> طلب جماعي</div>
     </div>
 
-    <div class="service-card">
-        <div class="icon"><i class="fab fa-facebook"></i></div>
-        <div>
-            <div style="font-weight:bold;">1000 لايك فيسبوك</div>
-            <div style="font-size:12px; color:#888;">حسابات حقيقية - بدون نقص</div>
-        </div>
-        <div class="price">20 EGP</div>
+    <div class="filter-bar">
+        <div class="filter-item active" id="current-platform">الكل</div>
+        <div class="filter-item">الاشتراكات</div>
+        <div class="filter-item">قائمة المفضلة</div>
     </div>
 
-    <div class="service-card">
-        <div class="icon"><i class="fab fa-tiktok"></i></div>
-        <div>
-            <div style="font-weight:bold;">1000 مشاهدة تيك توك</div>
-            <div style="font-size:12px; color:#888;">زيادة سريعة جداً</div>
+    <div class="order-card">
+        <div class="input-group">
+            <span class="label">القسم</span>
+            <select id="category-select" onchange="updateServices()">
+                <option value="tiktok">🎵 تيك توك [متابعين - لايكات]</option>
+                <option value="insta">📸 انستقرام [حقيقي - ضمان]</option>
+                <option value="snap">👻 سناب شات [إضافات - مشاهدات]</option>
+            </select>
         </div>
-        <div class="price">5 EGP</div>
+
+        <div class="input-group">
+            <span class="label">الخدمة</span>
+            <select id="service-select">
+                <option>اختر الخدمة المطلوبة...</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <span class="label">وصف</span>
+            <div class="description-box" id="service-desc">
+                تنـويه : <br>
+                - في خانة الرابط : ضع رابط الحساب الصحيح.<br>
+                - لا تضع أكثر من طلب لنفس الرابط في وقت واحد.<br>
+                <span class="alert-dot">🔴</span> ملاحظات هامة جداً قبل الطلب.
+            </div>
+        </div>
+
+        <button style="width:100%; background:#000; color:var(--yellow); padding:15px; border:none; border-radius:12px; font-weight:bold; font-size:16px; cursor:pointer;">
+            تأكيد الطلب
+        </button>
     </div>
-</div>
 
-<a href="https://wa.me/201040077271" class="order-btn"><i class="fab fa-whatsapp"></i> اطلب الآن عبر الواتساب</a>
+    <script>
+        // بيانات الخدمات (عشان تتغير لما تختار القسم)
+        const servicesData = {
+            tiktok: [
+                {id: "5520", name: "متابعين تيك توك - سرعة برق"},
+                {id: "5521", name: "لايكات تيك توك - ضمان 30 يوم"}
+            ],
+            insta: [
+                {id: "1010", name: "متابعين انستقرام عرب حقيقي"},
+                {id: "1011", name: "لايكات انستقرام منوعة"}
+            ],
+            snap: [
+                {id: "21595", name: "متابعين سناب شات [باكج#1]"}
+            ]
+        };
 
+        function updateServices() {
+            const cat = document.getElementById('category-select').value;
+            const serviceSelect = document.getElementById('service-select');
+            const platformText = document.getElementById('current-platform');
+            
+            // تحديث نص الفلتر العلوي
+            platformText.innerText = "قسم " + cat.toUpperCase();
+
+            // مسح الخيارات القديمة وإضافة الجديدة
+            serviceSelect.innerHTML = "";
+            servicesData[cat].forEach(s => {
+                let opt = document.createElement('option');
+                opt.innerHTML = `<span class="service-id">${s.id}</span> - ${s.name}`;
+                opt.value = s.id;
+                serviceSelect.appendChild(opt);
+            });
+        }
+
+        // تشغيل أول مرة
+        updateServices();
+    </script>
 </body>
-</html>
+                    </html>
+                    
