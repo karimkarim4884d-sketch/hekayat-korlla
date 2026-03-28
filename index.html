@@ -3,94 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zack Cinema | عالم الأفلام</title>
+    <title>ZACK HUB | سينما وكورة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-yellow: #ffe611; --bg-black: #0b0b0b; --card-bg: #1a1a1a; }
-        body { background-color: var(--bg-black); color: white; font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 80px; }
+        :root { --main: #ffe611; --bg: #0b0b0b; --card: #1a1a1a; }
+        body { background: var(--bg); color: white; font-family: 'Cairo'; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
         /* الهيدر */
-        .header { background: var(--card-bg); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main-yellow); sticky: top; z-index: 1000; }
-        .logo { font-size: 22px; font-weight: bold; color: var(--main-yellow); text-decoration: none; }
-        .logo span { color: white; }
+        .header { background: var(--card); padding: 15px; text-align: center; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 22px; font-weight: bold; color: var(--main); }
 
-        /* حاوية الأفلام */
-        .container { padding: 15px; }
-        .section-title { font-size: 18px; margin-bottom: 15px; border-right: 4px solid var(--main-yellow); padding-right: 10px; }
+        /* البحث */
+        .search-box { padding: 15px; display: flex; gap: 5px; }
+        input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: white; font-family: 'Cairo'; }
+        .btn-search { background: var(--main); border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* الأقسام */
+        .section { display: none; padding: 15px; }
+        .active-section { display: block; }
+        .section-title { font-size: 18px; border-right: 4px solid var(--main); padding-right: 10px; margin-bottom: 15px; }
 
         /* شبكة الأفلام */
-        .movies-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .movie-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; position: relative; transition: 0.3s; border: 1px solid #333; }
-        .movie-card img { width: 100%; height: 230px; object-fit: cover; }
-        .movie-info { padding: 10px; text-align: center; }
-        .movie-title { font-size: 14px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .quality { position: absolute; top: 10px; left: 10px; background: var(--main-yellow); color: black; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .card { background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid #333; position: relative; }
+        .card img { width: 100%; height: 220px; object-fit: cover; }
+        .card-info { padding: 8px; text-align: center; font-size: 13px; }
+        .quality { position: absolute; top: 5px; left: 5px; background: var(--main); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
 
-        /* مشغل الفيديو */
-        .player-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 2000; flex-direction: column; }
-        .close-player { padding: 20px; text-align: left; font-size: 25px; color: var(--main-yellow); cursor: pointer; }
-        .video-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
-        iframe { width: 95%; height: 250px; border: 2px solid var(--main-yellow); border-radius: 10px; }
+        /* مشغل الفيديو المنبثق */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 2000; flex-direction: column; }
+        .close { padding: 20px; color: var(--main); font-size: 25px; cursor: pointer; }
+        iframe { width: 95%; height: 250px; border: 2px solid var(--main); margin: auto; border-radius: 10px; }
 
-        /* القائمة السفلى */
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; }
-        .nav-item { color: #888; text-decoration: none; font-size: 12px; text-align: center; }
-        .nav-item.active { color: var(--main-yellow); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+        /* شريط التنقل */
+        .nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; }
+        .nav-item { color: #777; text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--main); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <i class="fas fa-search" style="color:var(--main-yellow)"></i>
-    <a href="#" class="logo">ZACK <span>CINEMA</span></a>
-    <i class="fas fa-bars"></i>
+    <div class="logo">ZACK <span style="color:white">HUB</span></div>
 </div>
 
-<div class="container">
-    <h2 class="section-title">أحدث الأفلام المضافة</h2>
-    
-    <div class="movies-grid">
-        <div class="movie-card" onclick="watchMovie('https://www.youtube.com/embed/dQw4w9WgXcQ', 'فيلم أكشن 2026')">
-            <span class="quality">4K</span>
-            <img src="https://image.tmdb.org/t/p/w500/1E5baAaEse26feH6WLjSuR3Anp7.jpg" alt="Movie">
-            <div class="movie-info">
-                <div class="movie-title">فيلم الأكشن والسرعة</div>
-                <div style="font-size:11px; color:#888;">2026 • مترجم</div>
-            </div>
-        </div>
+<div id="cinema" class="section active-section">
+    <div class="search-box">
+        <input type="text" id="movieInput" placeholder="ابحث عن فيلم...">
+        <button class="btn-search" onclick="searchMovie()"><i class="fas fa-search"></i></button>
+    </div>
+    <h2 class="section-title">أفلام تريند</h2>
+    <div class="grid" id="movieList"></div>
+</div>
 
-        <div class="movie-card" onclick="watchMovie('https://www.youtube.com/embed/dQw4w9WgXcQ', 'فيلم رعب جديد')">
-            <span class="quality">BlueRay</span>
-            <img src="https://image.tmdb.org/t/p/w500/8Gxv8UbgDx9pnmFYy2nuNuEtTfX.jpg" alt="Movie">
-            <div class="movie-info">
-                <div class="movie-title">بيت الرعب الملعون</div>
-                <div style="font-size:11px; color:#888;">2025 • مدبلج</div>
+<div id="sports" class="section">
+    <h2 class="section-title">مباريات اليوم</h2>
+    <div id="matchList">
+        <div class="card" style="display:block; margin-bottom:10px; padding:15px;" onclick="openPlayer('https://vidsrc.to/embed/movie/414906')">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="text-align:center;"><img src="https://ssl.gstatic.com/onebox/media/sports/logos/96CcNNpw3LOsjST9CcY0_w_96x96.png" width="40"><br>ريال مدريد</div>
+                <div style="color:var(--main); font-weight:bold;">22:00</div>
+                <div style="text-align:center;"><img src="https://ssl.gstatic.com/onebox/media/sports/logos/Th4f3ErI9m649xxv29j6hw_96x96.png" width="40"><br>برشلونة</div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="playerModal" class="player-modal">
-    <div class="close-player" onclick="closePlayer()"><i class="fas fa-times"></i></div>
-    <h3 id="mTitle" style="text-align:center; color:white;">اسم الفيلم</h3>
-    <div class="video-wrapper">
-        <iframe id="videoFrame" src="" allowfullscreen></iframe>
-    </div>
+<div id="playerModal" class="modal">
+    <div class="close" onclick="closePlayer()"><i class="fas fa-times"></i></div>
+    <iframe id="videoFrame" src="" allowfullscreen></iframe>
 </div>
 
-<div class="nav-bottom">
-    <a href="#" class="nav-item active"><i class="fas fa-film"></i>الأفلام</a>
-    <a href="#" class="nav-item"><i class="fas fa-tv"></i>المسلسلات</a>
-    <a href="#" class="nav-item"><i class="fas fa-heart"></i>المفضلة</a>
-    <a href="#" class="nav-item"><i class="fas fa-user"></i>حسابي</a>
+<div class="nav">
+    <div class="nav-item active" onclick="showSection('cinema', this)"><i class="fas fa-film"></i>سينما</div>
+    <div class="nav-item" onclick="showSection('sports', this)"><i class="fas fa-futbol"></i>كورة</div>
+    <div class="nav-item" onclick="window.open('https://wa.me/201040077271')"><i class="fab fa-whatsapp"></i>دعم</div>
 </div>
 
 <script>
-    function watchMovie(url, title) {
+    const tmdbKey = "602058b8f240509a259c6f2e8674586d";
+
+    // تبديل الأقسام
+    function showSection(id, el) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active-section'));
+        document.getElementById(id).classList.add('active-section');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // بحث وجلب أفلام
+    async function searchMovie() {
+        const q = document.getElementById('movieInput').value;
+        const url = q ? `search/movie?query=${q}` : `trending/movie/day?`;
+        const res = await fetch(`https://api.themoviedb.org/3/${url}&api_key=${tmdbKey}&language=ar`);
+        const data = await res.json();
+        let h = '';
+        data.results.forEach(m => {
+            if(!m.poster_path) return;
+            h += `<div class="card" onclick="openPlayer('https://vidsrc.to/embed/movie/${m.id}')">
+                    <span class="quality">HD</span>
+                    <img src="https://image.tmdb.org/t/p/w500${m.poster_path}">
+                    <div class="card-info"><b>${m.title}</b></div>
+                  </div>`;
+        });
+        document.getElementById('movieList').innerHTML = h;
+    }
+
+    function openPlayer(url) {
         document.getElementById('videoFrame').src = url;
-        document.getElementById('mTitle').innerText = title;
         document.getElementById('playerModal').style.display = 'flex';
     }
 
@@ -98,8 +120,9 @@
         document.getElementById('playerModal').style.display = 'none';
         document.getElementById('videoFrame').src = '';
     }
-</script>
 
+    // تشغيل الأفلام عند التحميل
+    searchMovie();
+</script>
 </body>
-    </html>
-    
+</html>
