@@ -3,119 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZACK SMM | طلب جديد</title>
+    <title>ZACK SMM | نظام الطلب الذكي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --yellow: #faff00; --bg: #fdfdf5; --white: #ffffff; }
+        :root { --yellow: #faff00; --bg: #fdfdf5; --dark: #000000; }
         body { background-color: var(--bg); font-family: 'Cairo', sans-serif; margin: 0; padding: 15px; }
 
-        /* الأزرار العلوية */
-        .top-nav { display: flex; background: #fff; border-radius: 15px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .nav-btn { flex: 1; padding: 15px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #555; }
-        .nav-btn.active { background: #000; color: var(--yellow); }
+        /* أيقونات المنصات السريعة */
+        .platform-icons { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px; }
+        .p-icon { width: 50px; height: 50px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; border: 2px solid transparent; }
+        .p-icon.active { border-color: var(--dark); background: var(--yellow); }
 
-        /* أزرار الفلترة الصغيرة */
-        .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .filter-item { background: #eee; padding: 8px 15px; border-radius: 10px; font-size: 13px; white-space: nowrap; cursor: pointer; }
-        .filter-item.active { background: var(--yellow); font-weight: bold; }
-
-        /* نموذج الطلب */
-        .order-card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        /* كارت الطلب */
+        .order-card { background: #fff; border-radius: 25px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #333; }
-        .input-group { position: relative; margin-bottom: 20px; }
-        select, input, textarea { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #eee; background: #fdfdfd; font-family: 'Cairo'; font-size: 14px; box-sizing: border-box; }
+        .input-group { margin-bottom: 15px; }
+        select, input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #eee; background: #f9f9f9; font-family: 'Cairo'; box-sizing: border-box; }
         
-        /* مربع الوصف */
-        .description-box { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 15px; font-size: 13px; color: #666; line-height: 1.8; }
-        .alert-dot { color: red; margin-left: 5px; }
+        /* صندوق السعر */
+        .price-box { background: #000; color: var(--yellow); padding: 15px; border-radius: 15px; text-align: center; margin: 15px 0; font-weight: bold; }
+        .price-box span { font-size: 20px; }
 
-        /* التصميم الخاص بالاختيارات */
-        .service-id { background: var(--yellow); padding: 2px 8px; border-radius: 5px; font-weight: bold; margin-left: 10px; }
+        .desc { background: #f5f5f5; padding: 12px; border-radius: 12px; font-size: 12px; color: #666; border-right: 4px solid var(--yellow); line-height: 1.6; }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <div class="nav-btn active"><i class="fas fa-shopping-cart"></i> طلب جديد</div>
-        <div class="nav-btn"><i class="fas fa-layer-group"></i> طلب جماعي</div>
-    </div>
-
-    <div class="filter-bar">
-        <div class="filter-item active" id="current-platform">الكل</div>
-        <div class="filter-item">الاشتراكات</div>
-        <div class="filter-item">قائمة المفضلة</div>
+    <div class="platform-icons">
+        <div class="p-icon active" onclick="selectPlatform('tiktok', this)"><i class="fab fa-tiktok"></i></div>
+        <div class="p-icon" onclick="selectPlatform('insta', this)"><i class="fab fa-instagram"></i></div>
+        <div class="p-icon" onclick="selectPlatform('snap', this)"><i class="fab fa-snapchat"></i></div>
+        <div class="p-icon" onclick="selectPlatform('fb', this)"><i class="fab fa-facebook-f"></i></div>
     </div>
 
     <div class="order-card">
         <div class="input-group">
-            <span class="label">القسم</span>
-            <select id="category-select" onchange="updateServices()">
-                <option value="tiktok">🎵 تيك توك [متابعين - لايكات]</option>
-                <option value="insta">📸 انستقرام [حقيقي - ضمان]</option>
-                <option value="snap">👻 سناب شات [إضافات - مشاهدات]</option>
-            </select>
+            <span class="label">الخدمة المختارة</span>
+            <select id="service-list" onchange="calculatePrice()"></select>
         </div>
 
         <div class="input-group">
-            <span class="label">الخدمة</span>
-            <select id="service-select">
-                <option>اختر الخدمة المطلوبة...</option>
-            </select>
+            <span class="label">الرابط (Link)</span>
+            <input type="text" placeholder="ضع الرابط هنا...">
         </div>
 
         <div class="input-group">
-            <span class="label">وصف</span>
-            <div class="description-box" id="service-desc">
-                تنـويه : <br>
-                - في خانة الرابط : ضع رابط الحساب الصحيح.<br>
-                - لا تضع أكثر من طلب لنفس الرابط في وقت واحد.<br>
-                <span class="alert-dot">🔴</span> ملاحظات هامة جداً قبل الطلب.
-            </div>
+            <span class="label">الكمية</span>
+            <input type="number" id="quantity" placeholder="الحد الأدنى 100" oninput="calculatePrice()">
         </div>
 
-        <button style="width:100%; background:#000; color:var(--yellow); padding:15px; border:none; border-radius:12px; font-weight:bold; font-size:16px; cursor:pointer;">
-            تأكيد الطلب
-        </button>
+        <div class="desc">
+            <span style="color:red">●</span> تأكد من أن الحساب "عام" وليس "خاص" قبل الطلب.
+        </div>
+
+        <div class="price-box">
+            السعر الإجمالي: $<span id="total-price">0.00</span>
+        </div>
+
+        <button style="width:100%; background:#000; color:var(--yellow); padding:16px; border:none; border-radius:15px; font-weight:bold; font-size:16px;">تأكيد العملية</button>
     </div>
 
     <script>
-        // بيانات الخدمات (عشان تتغير لما تختار القسم)
-        const servicesData = {
+        // قاعدة بيانات الخدمات مع الأسعار لكل 1000
+        const data = {
             tiktok: [
-                {id: "5520", name: "متابعين تيك توك - سرعة برق"},
-                {id: "5521", name: "لايكات تيك توك - ضمان 30 يوم"}
+                {id: 5520, name: "متابعين تيك توك سرعة برق", pricePer1000: 0.50},
+                {id: 5521, name: "لايكات تيك توك حقيقية", pricePer1000: 0.20}
             ],
             insta: [
-                {id: "1010", name: "متابعين انستقرام عرب حقيقي"},
-                {id: "1011", name: "لايكات انستقرام منوعة"}
+                {id: 1010, name: "متابعين انستجرام ضمان 30 يوم", pricePer1000: 0.80},
+                {id: 1011, name: "لايكات انستجرام عربية", pricePer1000: 0.40}
             ],
             snap: [
-                {id: "21595", name: "متابعين سناب شات [باكج#1]"}
+                {id: 2159, name: "إضافات سناب شات خليجية", pricePer1000: 5.00}
+            ],
+            fb: [
+                {id: 3030, name: "لايكات بوستات فيسبوك", pricePer1000: 1.20}
             ]
         };
 
-        function updateServices() {
-            const cat = document.getElementById('category-select').value;
-            const serviceSelect = document.getElementById('service-select');
-            const platformText = document.getElementById('current-platform');
-            
-            // تحديث نص الفلتر العلوي
-            platformText.innerText = "قسم " + cat.toUpperCase();
+        function selectPlatform(p, el) {
+            // تغيير شكل الأيقونة النشطة
+            document.querySelectorAll('.p-icon').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
 
-            // مسح الخيارات القديمة وإضافة الجديدة
-            serviceSelect.innerHTML = "";
-            servicesData[cat].forEach(s => {
+            // تحديث قائمة الخدمات
+            const list = document.getElementById('service-list');
+            list.innerHTML = "";
+            data[p].forEach(s => {
                 let opt = document.createElement('option');
-                opt.innerHTML = `<span class="service-id">${s.id}</span> - ${s.name}`;
-                opt.value = s.id;
-                serviceSelect.appendChild(opt);
+                opt.value = s.pricePer1000;
+                opt.innerText = `#${s.id} - ${s.name}`;
+                list.appendChild(opt);
             });
+            calculatePrice();
         }
 
-        // تشغيل أول مرة
-        updateServices();
+        function calculatePrice() {
+            const pricePer1000 = parseFloat(document.getElementById('service-list').value);
+            const qty = parseInt(document.getElementById('quantity').value) || 0;
+            const total = (qty / 1000) * pricePer1000;
+            document.getElementById('total-price').innerText = total.toFixed(4);
+        }
+
+        // تشغيل افتراضي
+        selectPlatform('tiktok', document.querySelector('.p-icon'));
     </script>
 </body>
-                    </html>
-                    
+    </html>
+    
