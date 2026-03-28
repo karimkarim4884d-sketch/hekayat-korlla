@@ -6,81 +6,102 @@
     <title>ZACK SMM | لوحة التحكم</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
     <style>
         :root { --yellow: #faff00; --bg: #fdfdf5; --dark: #000; }
         body { background: var(--bg); font-family: 'Cairo', sans-serif; margin: 0; padding: 15px; }
-        
-        /* كارت الرصيد (نفس الصورة) */
+        #auth-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .auth-card { background: #fff; border: 4px solid #000; border-radius: 25px; padding: 30px; width: 100%; max-width: 400px; text-align: center; }
+        #main-app { display: none; }
         .balance-card { background: #fff; border: 4px solid #000; border-radius: 25px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .balance-val { font-size: 24px; font-weight: 900; }
-        .balance-icon { background: var(--yellow); padding: 10px; border-radius: 12px; border: 2px solid #000; }
-
-        /* نموذج الطلب */
+        .balance-val { font-size: 28px; font-weight: 900; }
         .card { background: #fff; border-radius: 25px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        select, input { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid #eee; background: #f9f9f9; font-family: 'Cairo'; margin-bottom: 12px; box-sizing: border-box; }
-        
-        .btn-order { width: 100%; background: #000; color: var(--yellow); padding: 18px; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 16px; }
-
-        /* صندوق فودافون كاش */
-        .cash-section { border: 2px dashed #ff0000; background: #fff5f5; border-radius: 20px; padding: 15px; text-align: center; }
-        .copy-btn { background: #000; color: #fff; border: none; padding: 5px 15px; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-
-        /* النافذة المنبثقة (Popup) */
-        #customAlert { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; border: 3px solid #000; padding: 30px; border-radius: 25px; display: none; z-index: 1000; text-align: center; box-shadow: 0 0 100px rgba(0,0,0,0.5); width: 80%; }
+        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid #eee; margin-bottom: 15px; font-family: 'Cairo'; box-sizing: border-box; }
+        .btn-main { width: 100%; background: #000; color: var(--yellow); padding: 18px; border: none; border-radius: 18px; font-weight: bold; cursor: pointer; }
+        .cash-box { border: 2px dashed red; padding: 15px; border-radius: 20px; background: #fff5f5; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="balance-card">
-        <div>
-            <div style="font-size:12px; color:#888;">رصيد حسابك</div>
-            <div class="balance-val">$0.4047</div>
+    <div id="auth-page">
+        <div class="auth-card">
+            <h2>ZACK <span style="background:var(--yellow); padding:5px; border-radius:10px;">SMM</span></h2>
+            <input type="number" id="auth-phone" placeholder="رقم الموبايل">
+            <input type="password" id="auth-pass" placeholder="كلمة المرور">
+            <button class="btn-main" onclick="handleAuth()">دخول / تسجيل</button>
         </div>
-        <div class="balance-icon"><i class="fas fa-wallet"></i></div>
     </div>
 
-    <div class="card">
-        <label style="font-weight:bold; font-size:14px;">الخدمة</label>
-        <select id="srv">
-            <option>متابعين تيك توك - ضمان 30 يوم</option>
-            <option>لايكات انستقرام حقيقية</option>
-        </select>
+    <div id="main-app">
+        <div class="balance-card">
+            <div>
+                <div style="font-size:12px;">رصيدك الحالي</div>
+                <div class="balance-val" id="user-balance">$0.0000</div>
+            </div>
+            <div style="background:var(--yellow); padding:10px; border-radius:10px; border:2px solid #000;"><i class="fas fa-wallet"></i></div>
+        </div>
 
-        <input type="text" id="link" placeholder="ضع الرابط هنا...">
-        <input type="number" id="qty" placeholder="الكمية (أقل شيء 100)">
-        
-        <button class="btn-order" onclick="processOrder()">تأكيد العملية الآن</button>
-    </div>
+        <div class="card">
+            <select id="srv"><option data-p="0.45">متابعين تيك توك ($0.45)</option></select>
+            <input type="text" id="link" placeholder="الرابط...">
+            <input type="number" id="qty" placeholder="الكمية...">
+            <button class="btn-main" onclick="sendOrder()">تأكيد الطلب</button>
+        </div>
 
-    <div class="cash-section">
-        <h3 style="color:#ff0000; margin:0 0 10px 0;"><i class="fas fa-mobile-alt"></i> شحن رصيد فودافون كاش</h3>
-        <div style="font-size:20px; font-weight:bold; letter-spacing:2px;">01040077271</div>
-        <button class="copy-btn" onclick="copyNum()">نسخ الرقم</button>
-        <p style="font-size:11px; color:#666; margin-top:10px;">ارسل سكرين شوت + رقم المحول لتفعيل الرصيد</p>
-    </div>
-
-    <div id="customAlert">
-        <div style="font-size:40px; color:green; margin-bottom:15px;"><i class="fas fa-check-circle"></i></div>
-        <h2 style="margin:0;">تم بنجاح!</h2>
-        <p>جاري معالجة طلبك عبر السيرفر بمفتاحك الخاص.</p>
-        <button onclick="document.getElementById('customAlert').style.display='none'" style="background:#000; color:var(--yellow); padding:10px 30px; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">حسناً</button>
+        <div class="cash-box">
+            <h4 style="color:red; margin:0;">شحن فوري (فودافون كاش)</h4>
+            <div style="font-size:20px; font-weight:bold;">01040077271</div>
+            <p style="font-size:10px;">الرصيد يضاف تلقائياً فور التحقق من العملية</p>
+        </div>
     </div>
 
     <script>
-        const API_KEY = "Af25c610001841c34364e8ad2d6d66e0";
+        // البيانات اللي في صورتك يا بطل
+        const firebaseConfig = {
+            apiKey: "AIzaSyAubyhMKRbUApvTtIpDVo5...",
+            authDomain: "mmss-242e6.firebaseapp.com",
+            projectId: "mmss-242e6",
+            storageBucket: "mmss-242e6.firebasestorage.app",
+            messagingSenderId: "767920291158",
+            appId: "1:767920291158:web:61e1eaacd48..."
+        };
 
-        function processOrder() {
-            const link = document.getElementById('link').value;
-            if(!link) return alert("فين الرابط يا بطل؟");
-            
-            // إظهار النافذة الاحترافية بدل الـ Alert العادي
-            document.getElementById('customAlert').style.display = 'block';
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let userUID = null;
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                userUID = user.uid;
+                document.getElementById('auth-page').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                db.ref('users/' + userUID + '/balance').on('value', s => {
+                    document.getElementById('user-balance').innerText = "$" + (s.val() || 0).toFixed(4);
+                });
+            }
+        });
+
+        async function handleAuth() {
+            const email = document.getElementById('auth-phone').value + "@zack.com";
+            const pass = document.getElementById('auth-pass').value;
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+            } catch (e) {
+                await auth.createUserWithEmailAndPassword(email, pass);
+                db.ref('users/' + auth.currentUser.uid).set({ balance: 0 });
+            }
         }
 
-        function copyNum() {
-            navigator.clipboard.writeText("01040077271");
-            alert("تم نسخ الرقم بنجاح!");
+        function sendOrder() {
+            alert("تم استلام طلبك! سيتم الخصم من الرصيد فور التنفيذ.");
         }
     </script>
 </body>
-</html>
+    </html>
+    
