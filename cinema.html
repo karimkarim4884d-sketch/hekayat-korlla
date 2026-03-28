@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zack Cinema | عالم الأفلام</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --main-yellow: #ffe611; --bg-black: #0b0b0b; --card-bg: #1a1a1a; }
+        body { background-color: var(--bg-black); color: white; font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 80px; }
+        
+        /* الهيدر */
+        .header { background: var(--card-bg); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main-yellow); sticky: top; z-index: 1000; }
+        .logo { font-size: 22px; font-weight: bold; color: var(--main-yellow); text-decoration: none; }
+        .logo span { color: white; }
+
+        /* حاوية الأفلام */
+        .container { padding: 15px; }
+        .section-title { font-size: 18px; margin-bottom: 15px; border-right: 4px solid var(--main-yellow); padding-right: 10px; }
+
+        /* شبكة الأفلام */
+        .movies-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .movie-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; position: relative; transition: 0.3s; border: 1px solid #333; }
+        .movie-card img { width: 100%; height: 230px; object-fit: cover; }
+        .movie-info { padding: 10px; text-align: center; }
+        .movie-title { font-size: 14px; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .quality { position: absolute; top: 10px; left: 10px; background: var(--main-yellow); color: black; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; }
+
+        /* مشغل الفيديو */
+        .player-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 2000; flex-direction: column; }
+        .close-player { padding: 20px; text-align: left; font-size: 25px; color: var(--main-yellow); cursor: pointer; }
+        .video-wrapper { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        iframe { width: 95%; height: 250px; border: 2px solid var(--main-yellow); border-radius: 10px; }
+
+        /* القائمة السفلى */
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; }
+        .nav-item { color: #888; text-decoration: none; font-size: 12px; text-align: center; }
+        .nav-item.active { color: var(--main-yellow); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <i class="fas fa-search" style="color:var(--main-yellow)"></i>
+    <a href="#" class="logo">ZACK <span>CINEMA</span></a>
+    <i class="fas fa-bars"></i>
+</div>
+
+<div class="container">
+    <h2 class="section-title">أحدث الأفلام المضافة</h2>
+    
+    <div class="movies-grid">
+        <div class="movie-card" onclick="watchMovie('https://www.youtube.com/embed/dQw4w9WgXcQ', 'فيلم أكشن 2026')">
+            <span class="quality">4K</span>
+            <img src="https://image.tmdb.org/t/p/w500/1E5baAaEse26feH6WLjSuR3Anp7.jpg" alt="Movie">
+            <div class="movie-info">
+                <div class="movie-title">فيلم الأكشن والسرعة</div>
+                <div style="font-size:11px; color:#888;">2026 • مترجم</div>
+            </div>
+        </div>
+
+        <div class="movie-card" onclick="watchMovie('https://www.youtube.com/embed/dQw4w9WgXcQ', 'فيلم رعب جديد')">
+            <span class="quality">BlueRay</span>
+            <img src="https://image.tmdb.org/t/p/w500/8Gxv8UbgDx9pnmFYy2nuNuEtTfX.jpg" alt="Movie">
+            <div class="movie-info">
+                <div class="movie-title">بيت الرعب الملعون</div>
+                <div style="font-size:11px; color:#888;">2025 • مدبلج</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="playerModal" class="player-modal">
+    <div class="close-player" onclick="closePlayer()"><i class="fas fa-times"></i></div>
+    <h3 id="mTitle" style="text-align:center; color:white;">اسم الفيلم</h3>
+    <div class="video-wrapper">
+        <iframe id="videoFrame" src="" allowfullscreen></iframe>
+    </div>
+</div>
+
+<div class="nav-bottom">
+    <a href="#" class="nav-item active"><i class="fas fa-film"></i>الأفلام</a>
+    <a href="#" class="nav-item"><i class="fas fa-tv"></i>المسلسلات</a>
+    <a href="#" class="nav-item"><i class="fas fa-heart"></i>المفضلة</a>
+    <a href="#" class="nav-item"><i class="fas fa-user"></i>حسابي</a>
+</div>
+
+<script>
+    function watchMovie(url, title) {
+        document.getElementById('videoFrame').src = url;
+        document.getElementById('mTitle').innerText = title;
+        document.getElementById('playerModal').style.display = 'flex';
+    }
+
+    function closePlayer() {
+        document.getElementById('playerModal').style.display = 'none';
+        document.getElementById('videoFrame').src = '';
+    }
+</script>
+
+</body>
+  </html>
+  
