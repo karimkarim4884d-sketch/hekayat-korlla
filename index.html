@@ -1,97 +1,100 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sultan SMM | لوحة الخدمات الملكية</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Hagma W Lakta - 2026</title>
     <style>
-        :root { --primary: #f1c40f; --bg-dark: #0a0a0a; --card-bg: #161616; --success: #2ecc71; }
-        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-dark); color: white; margin: 0; text-align: center; }
-        header { background: #1a1a1a; padding: 20px; border-bottom: 2px solid var(--primary); font-size: 26px; font-weight: bold; color: var(--primary); }
-        .hero { padding: 40px 20px; }
-        .search-container { margin: 20px auto; width: 90%; max-width: 500px; }
-        .search-input { width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; }
-        .container { max-width: 1200px; margin: auto; padding: 20px; }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 15px; padding: 20px; border: 1px solid #222; text-align: right; transition: 0.3s; }
-        .card:hover { border-color: var(--primary); transform: translateY(-5px); }
-        .service-id { color: var(--primary); font-size: 12px; font-weight: bold; }
-        .service-name { font-size: 16px; margin: 10px 0; height: 50px; overflow: hidden; }
-        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #222; padding-top: 10px; }
-        .price { color: var(--success); font-size: 20px; font-weight: bold; }
-        .order-btn { background: var(--primary); color: black; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
-        .whatsapp-btn { position: fixed; bottom: 20px; left: 20px; background: #25d366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        :root { --bg: #0d1117; --card: #161b22; --accent: #00d2ff; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); margin: 0; font-family: 'Segoe UI', sans-serif; padding-bottom: 70px; }
+        header { padding: 15px; text-align: center; border-bottom: 1px solid #30363d; background: var(--bg); }
+        .logo-text { font-size: 1.5rem; font-weight: bold; color: var(--accent); letter-spacing: 1px; }
+        
+        /* كارت المباراة المطور */
+        .match-card { background: var(--card); margin: 12px; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid var(--accent); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .team { flex: 1; text-align: center; }
+        .team img { width: 42px; height: 42px; display: block; margin: 0 auto 8px; object-fit: contain; }
+        .team-name { font-size: 0.85rem; font-weight: 600; }
+        
+        .score-box { flex: 0.8; text-align: center; }
+        .score { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin-bottom: 2px; }
+        .status { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; }
+        .live-tag { color: #ff4d4d; font-weight: bold; animation: blink 1s infinite; }
+        @keyframes blink { 0% {opacity:1} 50% {opacity:0.4} 100% {opacity:1} }
+
+        .nav { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #30363d; }
     </style>
 </head>
 <body>
 
-<header>👑 SULTAN SMM</header>
+<header>
+    <div class="logo-text">HAGMA W LAKTA</div>
+</header>
 
-<div class="hero">
-    <h1>لوحة الخدمات الملكية 🔥</h1>
-    <p>جميع الخدمات بأسعار خاصة شاملة عمولتك</p>
+<div id="matches-list">
+    <p style="text-align:center; padding:20px;">⏳ Loading Top Matches...</p>
 </div>
 
-<div class="search-container">
-    <input type="text" id="search" class="search-input" placeholder="🔍 ابحث عن خدمة..." onkeyup="filterServices()">
-</div>
-
-<div class="container">
-    <div id="services-list" class="services-grid">
-        <div style="grid-column: 1/-1;">جاري سحب الخدمات من السيرفر... 🔄</div>
-    </div>
-</div>
-
-<a href="https://wa.me/201040077271" class="whatsapp-btn">
-    <i class="fab fa-whatsapp"></i> دعم كيمو: 01040077271
-</a>
+<nav class="nav">
+    <div style="color: var(--accent)">⚽ Matches</div>
+    <div style="color: #8b949e">📺 Live</div>
+    <div style="color: #8b949e">➕ More</div>
+</nav>
 
 <script>
-    const API_KEY = "Ae64eeb72f7d8fa4d26565e8060191e3"; // المفتاح اللي بعته يا وحش
-    const API_URL = "https://smmcpan.com/api/v2?key=" + API_KEY + "&action=services";
-    const PROXY = "https://api.allorigins.win/get?url=";
+// المفتاح الجديد بتاعك يا Zack
+const API_KEY = 'G7A1jgQBumWntdvz'; 
+// فلتر الدوريات المهمة (أبطال أوروبا، إنجلترا، إسبانيا، إيطاليا، ألمانيا، الدوري السعودي، المصري)
+const TOP_LEAGUES = [2, 3, 39, 140, 135, 78, 307, 233];
 
-    async function fetchServices() {
-        try {
-            const response = await fetch(PROXY + encodeURIComponent(API_URL));
-            const rawData = await response.json();
-            const data = JSON.parse(rawData.contents);
-            
-            const container = document.getElementById('services-list');
-            container.innerHTML = '';
-
-            data.forEach(service => {
-                // السعر الأصلي + 10 جنيه عمولتك
-                const finalPrice = (parseFloat(service.rate) + 10.0).toFixed(2);
-                
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <span class="service-id">ID: ${service.service}</span>
-                    <div class="service-name">${service.name}</div>
-                    <div class="price-row">
-                        <div class="price">${finalPrice} ج.م</div>
-                        <a href="https://wa.me/201040077271?text=طلب خدمة ID: ${service.service}" class="order-btn">اطلب الآن</a>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        } catch (err) {
-            document.getElementById('services-list').innerHTML = "❌ خطأ في التحميل، تأكد من إعدادات السيرفر.";
-        }
-    }
-
-    function filterServices() {
-        let val = document.getElementById('search').value.toLowerCase();
-        let cards = document.getElementsByClassName('card');
-        Array.from(cards).forEach(card => {
-            card.style.display = card.innerText.toLowerCase().includes(val) ? "" : "none";
+async function loadTopMatches() {
+    const today = new Date().toISOString().split('T')[0];
+    const list = document.getElementById('matches-list');
+    
+    try {
+        const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${today}`, {
+            headers: { 
+                "x-rapidapi-key": API_KEY, 
+                "x-rapidapi-host": "v3.football.api-sports.io" 
+            }
         });
+        const data = await res.json();
+        
+        // تطبيق الفلتر على الدوريات المهمة فقط
+        const filtered = data.response.filter(m => TOP_LEAGUES.includes(m.league.id));
+        
+        // لو مفيش ماتشات في الدوريات دي حالياً، اعرض أول 10 ماتشات عادية
+        const displayMatches = filtered.length > 0 ? filtered : data.response.slice(0, 10);
+
+        list.innerHTML = displayMatches.map(m => {
+            const isLive = ["1H", "2H", "HT", "ET", "P"].includes(m.fixture.status.short);
+            const time = new Date(m.fixture.date).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+            
+            return `
+            <div class="match-card">
+                <div class="team">
+                    <img src="${m.teams.home.logo}" alt="logo">
+                    <div class="team-name">${m.teams.home.name}</div>
+                </div>
+                <div class="score-box">
+                    <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
+                    <div class="status ${isLive ? 'live-tag' : ''}">
+                        ${isLive ? '🔴 LIVE ' + m.fixture.status.elapsed + "'" : (m.fixture.status.short === 'FT' ? 'Finished' : time)}
+                    </div>
+                </div>
+                <div class="team">
+                    <img src="${m.teams.away.logo}" alt="logo">
+                    <div class="team-name">${m.teams.away.name}</div>
+                </div>
+            </div>`;
+        }).join('');
+
+    } catch (e) {
+        list.innerHTML = '<p style="text-align:center; padding:20px;">⚠️ Error Connection</p>';
     }
+}
 
-    fetchServices();
+loadTopMatches();
 </script>
-
 </body>
 </html>
