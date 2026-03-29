@@ -3,26 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hagma W Lakta - 2026</title>
+    <title>HAGMA W LAKTA</title>
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #00d2ff; --text: #ffffff; }
-        body { background: var(--bg); color: var(--text); margin: 0; font-family: 'Segoe UI', sans-serif; padding-bottom: 70px; }
-        header { padding: 15px; text-align: center; border-bottom: 1px solid #30363d; background: var(--bg); }
-        .logo-text { font-size: 1.5rem; font-weight: bold; color: var(--accent); letter-spacing: 1px; }
+        :root { --main-red: #8b0000; --dark-bg: #050505; --accent: #00d2ff; }
+        body { background: var(--dark-bg); color: white; margin: 0; font-family: 'Arial', sans-serif; padding-bottom: 70px; }
         
-        /* كارت المباراة المطور */
-        .match-card { background: var(--card); margin: 12px; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid var(--accent); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .team { flex: 1; text-align: center; }
-        .team img { width: 42px; height: 42px; display: block; margin: 0 auto 8px; object-fit: contain; }
-        .team-name { font-size: 0.85rem; font-weight: 600; }
-        
-        .score-box { flex: 0.8; text-align: center; }
-        .score { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin-bottom: 2px; }
-        .status { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; }
-        .live-tag { color: #ff4d4d; font-weight: bold; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity:1} 50% {opacity:0.4} 100% {opacity:1} }
+        header { padding: 20px; text-align: center; background: linear-gradient(to bottom, #1a0000, var(--dark-bg)); }
+        .logo-text { font-size: 1.8rem; font-weight: bold; color: var(--accent); text-shadow: 0 0 10px var(--accent); }
 
-        .nav { position: fixed; bottom: 0; width: 100%; background: #0d1117; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #30363d; }
+        .match-card { 
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a); 
+            margin: 15px; padding: 15px; border-radius: 10px; 
+            display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid #333; position: relative; overflow: hidden;
+        }
+        .match-card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--main-red); }
+
+        .team { flex: 1; text-align: center; }
+        .team img { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+        .team-name { font-size: 0.8rem; margin-top: 5px; color: #ccc; }
+
+        .score-box { flex: 0.7; text-align: center; }
+        .vs { font-size: 1.2rem; font-weight: bold; color: var(--main-red); }
+        .score { font-size: 1.8rem; font-weight: 900; color: white; }
+        .status { font-size: 0.65rem; color: #888; margin-top: 5px; letter-spacing: 1px; }
+        .live-dot { color: #ff0000; animation: blink 1s infinite; font-weight: bold; }
+
+        @keyframes blink { 0% {opacity:1} 50% {opacity:0.3} 100% {opacity:1} }
+
+        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
+        .nav-item { color: #555; font-size: 0.75rem; text-decoration: none; text-align: center; }
+        .nav-item.active { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -31,70 +42,58 @@
     <div class="logo-text">HAGMA W LAKTA</div>
 </header>
 
-<div id="matches-list">
-    <p style="text-align:center; padding:20px;">⏳ Loading Top Matches...</p>
+<div id="matches-container">
+    <p style="text-align:center; padding:50px; color:#444;">Searching for matches...</p>
 </div>
 
 <nav class="nav">
-    <div style="color: var(--accent)">⚽ Matches</div>
-    <div style="color: #8b949e">📺 Live</div>
-    <div style="color: #8b949e">➕ More</div>
+    <a href="#" class="nav-item active">⚽<br>Matches</a>
+    <a href="#" class="nav-item">📺<br>Live</a>
+    <a href="https://wa.me/201040077271" class="nav-item">➕<br>More</a>
 </nav>
 
 <script>
-// المفتاح الجديد بتاعك يا Zack
-const API_KEY = 'G7A1jgQBumWntdvz'; 
-// فلتر الدوريات المهمة (أبطال أوروبا، إنجلترا، إسبانيا، إيطاليا، ألمانيا، الدوري السعودي، المصري)
-const TOP_LEAGUES = [2, 3, 39, 140, 135, 78, 307, 233];
+const API_KEY = 'G7A1jgQBumWntdvz'; // تأكد إن المفتاح ده صحيح من موقع API-Football
+const IMPORTANT_LEAGUES = [2, 3, 39, 140, 135, 78, 307, 233]; // أهم الدوريات
 
-async function loadTopMatches() {
-    const today = new Date().toISOString().split('T')[0];
-    const list = document.getElementById('matches-list');
-    
+async function getLiveMatches() {
+    const container = document.getElementById('matches-container');
     try {
-        const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${today}`, {
-            headers: { 
-                "x-rapidapi-key": API_KEY, 
-                "x-rapidapi-host": "v3.football.api-sports.io" 
-            }
+        const response = await fetch('https://v3.football.api-sports.io/fixtures?live=all', {
+            headers: { 'x-rapidapi-key': API_KEY, 'x-rapidapi-host': 'v3.football.api-sports.io' }
         });
-        const data = await res.json();
-        
-        // تطبيق الفلتر على الدوريات المهمة فقط
-        const filtered = data.response.filter(m => TOP_LEAGUES.includes(m.league.id));
-        
-        // لو مفيش ماتشات في الدوريات دي حالياً، اعرض أول 10 ماتشات عادية
-        const displayMatches = filtered.length > 0 ? filtered : data.response.slice(0, 10);
+        const data = await response.json();
+        const matches = data.response;
 
-        list.innerHTML = displayMatches.map(m => {
-            const isLive = ["1H", "2H", "HT", "ET", "P"].includes(m.fixture.status.short);
-            const time = new Date(m.fixture.date).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
-            
-            return `
+        if (!matches || matches.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:50px;">No live matches right now.</p>';
+            return;
+        }
+
+        container.innerHTML = matches.map(m => `
             <div class="match-card">
                 <div class="team">
-                    <img src="${m.teams.home.logo}" alt="logo">
+                    <img src="${m.teams.home.logo}" onerror="this.src='https://via.placeholder.com/40'">
                     <div class="team-name">${m.teams.home.name}</div>
                 </div>
                 <div class="score-box">
-                    <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
-                    <div class="status ${isLive ? 'live-tag' : ''}">
-                        ${isLive ? '🔴 LIVE ' + m.fixture.status.elapsed + "'" : (m.fixture.status.short === 'FT' ? 'Finished' : time)}
-                    </div>
+                    <div class="score">${m.goals.home} - ${m.goals.away}</div>
+                    <div class="status"><span class="live-dot">●</span> LIVE ${m.fixture.status.elapsed}'</div>
                 </div>
                 <div class="team">
-                    <img src="${m.teams.away.logo}" alt="logo">
+                    <img src="${m.teams.away.logo}" onerror="this.src='https://via.placeholder.com/40'">
                     <div class="team-name">${m.teams.away.name}</div>
                 </div>
-            </div>`;
-        }).join('');
+            </div>
+        `).join('');
 
-    } catch (e) {
-        list.innerHTML = '<p style="text-align:center; padding:20px;">⚠️ Error Connection</p>';
+    } catch (error) {
+        container.innerHTML = '<p style="text-align:center; padding:50px; color:red;">Connection Error. Check API Key.</p>';
     }
 }
 
-loadTopMatches();
+getLiveMatches();
+setInterval(getLiveMatches, 60000); // تحديث كل دقيقة
 </script>
 </body>
 </html>
