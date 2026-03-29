@@ -3,99 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sultan SMM | لوحة التحكم الملكية</title>
+    <title>Sultan SMM | منصة السلطان للخدمات</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main-color: #007bff; --bg-dark: #0f172a; --card-bg: #1e293b; --text-gold: #f59e0b; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-dark); color: white; margin: 0; padding: 0; }
-        
-        /* الهيدر زي SMMCpan */
-        header { background: var(--card-bg); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 24px; font-weight: bold; color: var(--text-gold); text-transform: uppercase; }
-        .nav-links a { color: #cbd5e1; text-decoration: none; margin-right: 20px; font-size: 14px; }
+        :root {
+            --primary: #f1c40f; /* لون ذهبي */
+            --bg-dark: #0a0a0a;
+            --card-bg: #161616;
+            --text-gray: #b3b3b3;
+            --success: #2ecc71;
+        }
 
-        /* منطقة الترحيب */
-        .hero { padding: 60px 20px; text-align: center; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
-        .hero h1 { font-size: 35px; margin-bottom: 10px; color: white; }
-        .hero p { color: #94a3b8; font-size: 18px; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
 
-        /* جدول الخدمات الشيك */
-        .container { max-width: 1000px; margin: -50px auto 50px; padding: 20px; }
-        .services-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .services-table th { background: #334155; padding: 15px; text-align: right; color: var(--text-gold); font-size: 14px; }
-        .services-table td { padding: 15px; border-bottom: 1px solid #334155; font-size: 14px; vertical-align: middle; }
-        .service-name { font-weight: bold; display: flex; align-items: center; gap: 10px; }
-        .service-name i { color: var(--main-color); }
-        
-        .price-tag { background: #064e3b; color: #34d399; padding: 5px 10px; border-radius: 6px; font-weight: bold; }
-        
-        .order-btn { background: var(--text-gold); color: black; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; transition: 0.3s; }
-        .order-btn:hover { background: white; transform: scale(1.05); }
+        /* هيدر فخم */
+        header {
+            background: linear-gradient(145deg, #1a1a1a, #000);
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-        /* الدعم الفني السريع */
-        .support-float { position: fixed; bottom: 20px; left: 20px; background: #25d366; color: white; padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; }
+        .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 2px; }
         
-        footer { text-align: center; padding: 30px; color: #64748b; font-size: 13px; }
+        /* البرواز الرئيسي */
+        .hero {
+            padding: 60px 20px;
+            text-align: center;
+            background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 2px 2px 10px rgba(241, 196, 15, 0.3); }
+        .hero p { color: var(--text-gray); font-size: 1.2rem; max-width: 600px; margin: auto; }
+
+        /* البحث */
+        .search-container { margin: -30px auto 40px; text-align: center; width: 90%; max-width: 600px; }
+        .search-input {
+            width: 100%;
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: 2px solid #333;
+            background: #1a1a1a;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(241, 196, 15, 0.2); }
+
+        /* شبكة الخدمات */
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #222;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover { transform: translateY(-10px); border-color: var(--primary); }
+        
+        .card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(241, 196, 15, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .service-id { background: #333; color: var(--primary); padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        .service-name { font-size: 18px; font-weight: bold; margin: 15px 0; min-height: 55px; }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #222;
+        }
+
+        .price-amount { color: var(--success); font-size: 22px; font-weight: 800; }
+        .order-btn {
+            background: var(--primary);
+            color: black;
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .order-btn:hover { background: white; box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2); }
+
+        /* زر الدعم الفني */
+        .support-btn {
+            position: fixed; bottom: 30px; left: 30px;
+            background: #25d366; color: white; padding: 15px 30px;
+            border-radius: 50px; font-weight: bold; text-decoration: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        footer { text-align: center; padding: 50px; color: #555; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">👑 Sultan SMM</div>
-    <div class="nav-links">
-        <a href="#">الرئيسية</a>
-        <a href="#">الخدمات</a>
-        <a href="tel:01040077271">اتصل بنا</a>
-    </div>
+    <div class="logo">SULTAN SMM</div>
 </header>
 
 <section class="hero">
-    <h1>أهلاً بك في منصة "السلطان" 🚀</h1>
-    <p>أرخص خدمات السوشيال ميديا في مصر والوطن العربي</p>
+    <h1>لوحة الخدمات الملكية 👑</h1>
+    <p>اختر الخدمة، وسلطان هينفذ لك في ثواني!</p>
 </section>
 
-<div class="container">
-    <table class="services-table">
-        <thead>
-            <tr>
-                <th>الخدمة</th>
-                <th>السعر (لكل 1000)</th>
-                <th>الحالة</th>
-                <th>طلب الخدمة</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="service-name"><i class="fab fa-tiktok"></i> 10,000 متابع تيك توك (حقيقي)</td>
-                <td><span class="price-tag">160 ج.م</span></td>
-                <td>⚡ سريع جداً</td>
-                <td><a href="https://wa.me/201040077271?text=طلب تيك توك" class="order-btn">اطلب الآن</a></td>
-            </tr>
-            <tr>
-                <td class="service-name"><i class="fab fa-facebook"></i> 5,000 متابع فيسبوك (ضمان)</td>
-                <td><span class="price-tag">110 ج.م</span></td>
-                <td>✅ مستقر</td>
-                <td><a href="https://wa.me/201040077271?text=طلب فيسبوك" class="order-btn">اطلب الآن</a></td>
-            </tr>
-            <tr>
-                <td class="service-name"><i class="fab fa-instagram"></i> 1,000 متابع إنستجرام (عربي)</td>
-                <td><span class="price-tag">45 ج.م</span></td>
-                <td>🔥 تريند</td>
-                <td><a href="https://wa.me/201040077271?text=طلب انستا" class="order-btn">اطلب الآن</a></td>
-            </tr>
-        </tbody>
-    </table>
+<div class="search-container">
+    <input type="text" id="search" class="search-input" placeholder="🔍 ابحث عن خدمتك (تيك توك، فيسبوك...)" onkeyup="filterServices()">
 </div>
 
-<a href="https://wa.me/201040077271" class="support-float">
-    <i class="fab fa-whatsapp"></i> تواصل مع الدعم الفني (كيمو)
+<div class="container">
+    <div id="services-list" class="services-grid">
+        <div style="grid-column: 1/-1; text-align: center;">جاري استدعاء الخدمات من السيرفر... 🔄</div>
+    </div>
+</div>
+
+<a href="https://wa.me/201040077271" class="support-btn">
+    <i class="fab fa-whatsapp"></i> دعم كيمو (01040077271)
 </a>
 
 <footer>
-    <p>جميع الحقوق محفوظة لـ Sultan SMM © 2026</p>
-    <p>تواصل معنا: 01040077271</p>
+    جميع الحقوق محفوظة لـ Sultan SMM © 2026
 </footer>
 
+<script>
+    const KEY = "96607c93da3b08d9f64f81b88e0f2f8d"; // المفتاح الجديد
+    const PROXY_URL = "https://api.allorigins.win/get?url=";
+    const API_URL = "https://smmcpan.com/api/v2?key=" + KEY + "&action=services";
+
+    async function fetchServices() {
+        try {
+            const res = await fetch(PROXY_URL + encodeURIComponent(API_URL));
+            const data = JSON.parse((await res.json()).contents);
+            const container = document.getElementById('services-list');
+            container.innerHTML = '';
+
+            data.forEach(service => {
+                // إضافة عمولة 10 جنيه
+                const finalRate = (parseFloat(service.rate) + 10.0).toFixed(2);
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <span class="service-id">ID: ${service.service}</span>
+                    <div class="service-name">${service.name}</div>
+                    <div class="price-row">
+                        <div class="price-amount">${finalRate} ج.م</div>
+                        <a href="https://wa.me/201040077271?text=طلب خدمة ID: ${service.service}" class="order-btn">اطلب الآن</a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            document.getElementById('services-list').innerHTML = "❌ خطأ في الاتصال بالسيرفر، تأكد من مفتاح الـ API.";
+        }
+    }
+
+    function filterServices() {
+        let val = document.getElementById('search').value.toLowerCase();
+        let items = document.getElementsByClassName('card');
+        Array.from(items).forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(val) ? "" : "none";
+        });
+    }
+
+    fetchServices();
+</script>
+
 </body>
-                    </html>
-                    
+</html>
