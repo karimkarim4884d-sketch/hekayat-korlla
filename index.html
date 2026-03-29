@@ -3,172 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sultan SMM | منصة السلطان للخدمات</title>
+    <title>Sultan SMM | لوحة الخدمات الملكية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #f1c40f; /* لون ذهبي */
-            --bg-dark: #0a0a0a;
-            --card-bg: #161616;
-            --text-gray: #b3b3b3;
-            --success: #2ecc71;
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--bg-dark);
-            color: white;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-
-        /* هيدر فخم */
-        header {
-            background: linear-gradient(145deg, #1a1a1a, #000);
-            padding: 20px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--primary);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 2px; }
-        
-        /* البرواز الرئيسي */
-        .hero {
-            padding: 60px 20px;
-            text-align: center;
-            background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
-        }
-
-        .hero h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 2px 2px 10px rgba(241, 196, 15, 0.3); }
-        .hero p { color: var(--text-gray); font-size: 1.2rem; max-width: 600px; margin: auto; }
-
-        /* البحث */
-        .search-container { margin: -30px auto 40px; text-align: center; width: 90%; max-width: 600px; }
-        .search-input {
-            width: 100%;
-            padding: 15px 25px;
-            border-radius: 50px;
-            border: 2px solid #333;
-            background: #1a1a1a;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            transition: 0.3s;
-        }
-        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(241, 196, 15, 0.2); }
-
-        /* شبكة الخدمات */
+        :root { --primary: #f1c40f; --bg-dark: #0a0a0a; --card-bg: #161616; --success: #2ecc71; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-dark); color: white; margin: 0; text-align: center; }
+        header { background: #1a1a1a; padding: 20px; border-bottom: 2px solid var(--primary); font-size: 26px; font-weight: bold; color: var(--primary); }
+        .hero { padding: 40px 20px; }
+        .search-container { margin: 20px auto; width: 90%; max-width: 500px; }
+        .search-input { width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #333; background: #222; color: white; outline: none; }
         .container { max-width: 1200px; margin: auto; padding: 20px; }
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid #222;
-            transition: 0.4s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card:hover { transform: translateY(-10px); border-color: var(--primary); }
-        
-        .card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(241, 196, 15, 0.05) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .service-id { background: #333; color: var(--primary); padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-        .service-name { font-size: 18px; font-weight: bold; margin: 15px 0; min-height: 55px; }
-        
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #222;
-        }
-
-        .price-amount { color: var(--success); font-size: 22px; font-weight: 800; }
-        .order-btn {
-            background: var(--primary);
-            color: black;
-            padding: 10px 20px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .order-btn:hover { background: white; box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2); }
-
-        /* زر الدعم الفني */
-        .support-btn {
-            position: fixed; bottom: 30px; left: 30px;
-            background: #25d366; color: white; padding: 15px 30px;
-            border-radius: 50px; font-weight: bold; text-decoration: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999;
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        footer { text-align: center; padding: 50px; color: #555; font-size: 14px; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: var(--card-bg); border-radius: 15px; padding: 20px; border: 1px solid #222; text-align: right; transition: 0.3s; }
+        .card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .service-id { color: var(--primary); font-size: 12px; font-weight: bold; }
+        .service-name { font-size: 16px; margin: 10px 0; height: 50px; overflow: hidden; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #222; padding-top: 10px; }
+        .price { color: var(--success); font-size: 20px; font-weight: bold; }
+        .order-btn { background: var(--primary); color: black; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .whatsapp-btn { position: fixed; bottom: 20px; left: 20px; background: #25d366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">SULTAN SMM</div>
-</header>
+<header>👑 SULTAN SMM</header>
 
-<section class="hero">
-    <h1>لوحة الخدمات الملكية 👑</h1>
-    <p>اختر الخدمة، وسلطان هينفذ لك في ثواني!</p>
-</section>
+<div class="hero">
+    <h1>لوحة الخدمات الملكية 🔥</h1>
+    <p>جميع الخدمات بأسعار خاصة شاملة عمولتك</p>
+</div>
 
 <div class="search-container">
-    <input type="text" id="search" class="search-input" placeholder="🔍 ابحث عن خدمتك (تيك توك، فيسبوك...)" onkeyup="filterServices()">
+    <input type="text" id="search" class="search-input" placeholder="🔍 ابحث عن خدمة..." onkeyup="filterServices()">
 </div>
 
 <div class="container">
     <div id="services-list" class="services-grid">
-        <div style="grid-column: 1/-1; text-align: center;">جاري استدعاء الخدمات من السيرفر... 🔄</div>
+        <div style="grid-column: 1/-1;">جاري سحب الخدمات من السيرفر... 🔄</div>
     </div>
 </div>
 
-<a href="https://wa.me/201040077271" class="support-btn">
-    <i class="fab fa-whatsapp"></i> دعم كيمو (01040077271)
+<a href="https://wa.me/201040077271" class="whatsapp-btn">
+    <i class="fab fa-whatsapp"></i> دعم كيمو: 01040077271
 </a>
 
-<footer>
-    جميع الحقوق محفوظة لـ Sultan SMM © 2026
-</footer>
-
 <script>
-    const KEY = "96607c93da3b08d9f64f81b88e0f2f8d"; // المفتاح الجديد
-    const PROXY_URL = "https://api.allorigins.win/get?url=";
-    const API_URL = "https://smmcpan.com/api/v2?key=" + KEY + "&action=services";
+    const API_KEY = "Ae64eeb72f7d8fa4d26565e8060191e3"; // المفتاح اللي بعته يا وحش
+    const API_URL = "https://smmcpan.com/api/v2?key=" + API_KEY + "&action=services";
+    const PROXY = "https://api.allorigins.win/get?url=";
 
     async function fetchServices() {
         try {
-            const res = await fetch(PROXY_URL + encodeURIComponent(API_URL));
-            const data = JSON.parse((await res.json()).contents);
+            const response = await fetch(PROXY + encodeURIComponent(API_URL));
+            const rawData = await response.json();
+            const data = JSON.parse(rawData.contents);
+            
             const container = document.getElementById('services-list');
             container.innerHTML = '';
 
             data.forEach(service => {
-                // إضافة عمولة 10 جنيه
-                const finalRate = (parseFloat(service.rate) + 10.0).toFixed(2);
+                // السعر الأصلي + 10 جنيه عمولتك
+                const finalPrice = (parseFloat(service.rate) + 10.0).toFixed(2);
                 
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -176,22 +71,22 @@
                     <span class="service-id">ID: ${service.service}</span>
                     <div class="service-name">${service.name}</div>
                     <div class="price-row">
-                        <div class="price-amount">${finalRate} ج.م</div>
+                        <div class="price">${finalPrice} ج.م</div>
                         <a href="https://wa.me/201040077271?text=طلب خدمة ID: ${service.service}" class="order-btn">اطلب الآن</a>
                     </div>
                 `;
                 container.appendChild(card);
             });
         } catch (err) {
-            document.getElementById('services-list').innerHTML = "❌ خطأ في الاتصال بالسيرفر، تأكد من مفتاح الـ API.";
+            document.getElementById('services-list').innerHTML = "❌ خطأ في التحميل، تأكد من إعدادات السيرفر.";
         }
     }
 
     function filterServices() {
         let val = document.getElementById('search').value.toLowerCase();
-        let items = document.getElementsByClassName('card');
-        Array.from(items).forEach(item => {
-            item.style.display = item.innerText.toLowerCase().includes(val) ? "" : "none";
+        let cards = document.getElementsByClassName('card');
+        Array.from(cards).forEach(card => {
+            card.style.display = card.innerText.toLowerCase().includes(val) ? "" : "none";
         });
     }
 
