@@ -11,6 +11,7 @@
             --dark-bg: #0f0f0f;
             --card-bg: #1a1a1a;
             --text-color: #ffffff;
+            --live-red: #ff3e3e;
         }
 
         body {
@@ -22,106 +23,61 @@
         }
 
         .header { text-align: center; padding: 20px 0; }
-        .header h1 { color: var(--main-green); margin: 0; font-size: 28px; text-transform: uppercase; }
+        .header h1 { color: var(--main-green); margin: 0; font-size: 28px; }
 
-        /* أدوات البحث والتقويم */
         .tools-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            display: flex; gap: 10px; margin-bottom: 15px; max-width: 800px; margin: 0 auto 15px auto;
         }
 
         input[type="text"], input[type="date"] {
-            background: var(--card-bg);
-            border: 1px solid #333;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            outline: none;
-            flex: 1;
+            background: var(--card-bg); border: 1px solid #333; color: white;
+            padding: 12px; border-radius: 8px; outline: none; flex: 1;
         }
 
-        /* الأقسام (Tabs) */
-        .tabs {
-            display: flex;
-            gap: 5px;
-            max-width: 800px;
-            margin: 0 auto 20px auto;
-        }
-
+        .tabs { display: flex; gap: 5px; max-width: 800px; margin: 0 auto 20px auto; }
         .tab-btn {
-            flex: 1;
-            background: var(--card-bg);
-            color: white;
-            border: none;
-            padding: 12px;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: 0.3s;
+            flex: 1; background: var(--card-bg); color: white; border: none;
+            padding: 12px; cursor: pointer; border-radius: 8px; font-weight: bold;
         }
+        .tab-btn.active { background: var(--main-green); color: black; }
 
-        .tab-btn.active {
-            background: var(--main-green);
-            color: black;
-        }
-
-        /* كارت المباراة */
-        #matchesContainer {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        #matchesContainer { max-width: 800px; margin: 0 auto; }
 
         .match-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            border-bottom: 3px solid #333;
-            transition: 0.3s;
+            background: var(--card-bg); border-radius: 15px; padding: 18px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 15px; border-bottom: 4px solid #222; transition: 0.3s;
         }
 
-        .match-card:hover { border-bottom-color: var(--main-green); }
-
         .team { width: 35%; text-align: center; }
-        .team img { width: 45px; height: 45px; object-fit: contain; margin-bottom: 5px; }
-        .team span { display: block; font-size: 14px; font-weight: bold; }
+        .team img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 8px; }
+        .team span { display: block; font-size: 14px; font-weight: 600; }
 
-        .info { width: 30%; text-align: center; }
-        .time { font-size: 18px; font-weight: bold; color: var(--main-green); }
-        .league { font-size: 10px; color: #888; margin-top: 5px; }
+        .info { width: 30%; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .score { font-size: 26px; font-weight: 900; letter-spacing: 2px; color: var(--main-green); }
+        .time { font-size: 16px; font-weight: bold; }
+        .vs-text { color: #555; font-weight: bold; font-size: 14px; }
+        .league { font-size: 10px; color: #888; }
+        
+        .status-badge {
+            font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold;
+        }
+        .live { background: var(--live-red); color: white; animation: blink 1.2s infinite; }
+        .finished { background: #333; color: #aaa; }
 
-        /* زر الواتساب */
+        @keyframes blink { 50% { opacity: 0.4; } }
+
         .wa-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: #25d366;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            z-index: 999;
+            position: fixed; bottom: 20px; left: 20px; background: #25d366;
+            width: 60px; height: 60px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 30px;
+            color: white; text-decoration: none; box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>هجمة مرتدة ⚽</h1>
-</div>
+<div class="header"><h1>هجمة مرتدة ⚽</h1></div>
 
 <div class="tools-container">
     <input type="text" id="searchInput" placeholder="ابحث عن فريق..." onkeyup="searchMatches()">
@@ -134,23 +90,20 @@
     <button class="tab-btn" id="btn-tomorrow" onclick="changeTab(1, 'btn-tomorrow')">غداً</button>
 </div>
 
-<div id="matchesContainer">
-    <p style="text-align: center; color: #888;">جاري تحميل أهم المباريات...</p>
-</div>
+<div id="matchesContainer"></div>
 
-<a href="https://wa.me/201040077271" class="wa-btn" target="_blank">
-    <i class="fab fa-whatsapp"></i>
-</a>
+<a href="https://wa.me/201040077271" class="wa-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
 
 <script>
     const API_KEY = "Bf7d42ac856fecc0e1e6ad24debe9c5e";
-    const IMPORTANT_LEAGUES = [2, 3, 39, 140, 78, 135, 61, 233, 848, 4, 301]; // دوري الأبطال، إنجلترا، إسبانيا، مصر، السعودية.. إلخ
+    const IMPORTANT_LEAGUES = [2, 3, 39, 140, 78, 135, 61, 233, 848, 4, 301];
 
     async function loadMatches(dateString) {
         const container = document.getElementById('matchesContainer');
-        container.innerHTML = '<p style="text-align: center;">جاري البحث عن أهم الماتشات...</p>';
+        container.innerHTML = '<p style="text-align: center;">جاري تحديث النتائج...</p>';
 
         try {
+            // إضافة lang=ar لمحاولة جلب الأسماء بالعربية
             const response = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateString}`, {
                 "method": "GET",
                 "headers": {
@@ -161,10 +114,9 @@
 
             const data = await response.json();
             const matches = data.response.filter(m => IMPORTANT_LEAGUES.includes(m.league.id));
-
             renderMatches(matches);
         } catch (error) {
-            container.innerHTML = '<p style="color: red; text-align:center;">حدث خطأ في جلب البيانات</p>';
+            container.innerHTML = '<p style="text-align:center; color:red;">خطأ في الاتصال بالسيرفر</p>';
         }
     }
 
@@ -173,12 +125,28 @@
         container.innerHTML = '';
 
         if (matches.length === 0) {
-            container.innerHTML = '<p style="text-align: center;">لا توجد مباريات هامة في هذا التاريخ</p>';
+            container.innerHTML = '<p style="text-align: center;">لا توجد مباريات هامة</p>';
             return;
         }
 
         matches.forEach(m => {
-            const matchTime = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+            const status = m.fixture.status.short;
+            const homeGoals = m.goals.home !== null ? m.goals.home : 0;
+            const awayGoals = m.goals.away !== null ? m.goals.away : 0;
+            
+            let centerHTML = '';
+            
+            if (status === 'NS') { // لم تبدأ
+                const time = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+                centerHTML = `<div class="time">${time}</div><div class="vs-text">VS</div>`;
+            } else if (['1H', '2H', 'HT', 'ET', 'P'].includes(status)) { // مباشرة
+                centerHTML = `<div class="score">${homeGoals} - ${awayGoals}</div><div class="status-badge live">مباشر</div>`;
+            } else if (status === 'FT') { // منتهية
+                centerHTML = `<div class="score">${homeGoals} - ${awayGoals}</div><div class="status-badge finished">منتهية</div>`;
+            } else { // حالات أخرى (ملغاة، مؤجلة...)
+                centerHTML = `<div class="vs-text">${m.fixture.status.long}</div>`;
+            }
+
             container.innerHTML += `
                 <div class="match-card" data-name="${m.teams.home.name} ${m.teams.away.name}">
                     <div class="team">
@@ -186,9 +154,8 @@
                         <span>${m.teams.home.name}</span>
                     </div>
                     <div class="info">
-                        <div class="time">${matchTime}</div>
+                        ${centerHTML}
                         <div class="league">${m.league.name}</div>
-                        <div style="font-size:10px; color:#aaa;">${m.fixture.status.short}</div>
                     </div>
                     <div class="team">
                         <img src="${m.teams.away.logo}" alt="">
@@ -202,7 +169,6 @@
     function changeTab(offset, btnId) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(btnId).classList.add('active');
-        
         const date = new Date();
         date.setDate(date.getDate() + offset);
         loadMatches(date.toISOString().split('T')[0]);
@@ -221,12 +187,18 @@
         });
     }
 
-    // التحميل الافتراضي لمباريات اليوم
-    window.onload = () => {
-        const today = new Date().toISOString().split('T')[0];
-        loadMatches(today);
-    };
+    // تحديث تلقائي كل دقيقتين للمباريات المباشرة
+    setInterval(() => {
+        const activeTab = document.querySelector('.tab-btn.active').id;
+        if(activeTab === 'btn-today') {
+            const today = new Date().toISOString().split('T')[0];
+            loadMatches(today);
+        }
+    }, 120000);
+
+    window.onload = () => loadMatches(new Date().toISOString().split('T')[0]);
 </script>
 
 </body>
-</html>
+    </html>
+    
