@@ -60,7 +60,8 @@
         .league { font-size: 10px; color: #888; }
         
         .status-badge {
-            font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold;
+            font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: bold;
+            display: flex; align-items: center; gap: 4px;
         }
         .live { background: var(--live-red); color: white; animation: blink 1.2s infinite; }
         .finished { background: #333; color: #aaa; }
@@ -103,7 +104,6 @@
         container.innerHTML = '<p style="text-align: center;">جاري تحديث النتائج...</p>';
 
         try {
-            // إضافة lang=ar لمحاولة جلب الأسماء بالعربية
             const response = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateString}`, {
                 "method": "GET",
                 "headers": {
@@ -139,11 +139,23 @@
             if (status === 'NS') { // لم تبدأ
                 const time = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
                 centerHTML = `<div class="time">${time}</div><div class="vs-text">VS</div>`;
-            } else if (['1H', '2H', 'HT', 'ET', 'P'].includes(status)) { // مباشرة
-                centerHTML = `<div class="score">${homeGoals} - ${awayGoals}</div><div class="status-badge live">مباشر</div>`;
-            } else if (status === 'FT') { // منتهية
+            } 
+            else if (['1H', '2H', 'HT', 'ET', 'P'].includes(status)) { // مباشرة
+                // جلب الدقيقة الحالية من API
+                const elapsed = m.fixture.status.elapsed;
+                const matchTime = status === 'HT' ? 'بين الشوطين' : `${elapsed}'`;
+                
+                centerHTML = `
+                    <div class="score">${homeGoals} - ${awayGoals}</div>
+                    <div class="status-badge live">
+                        <i class="fas fa-circle" style="font-size: 8px;"></i>
+                        مباشر | ${matchTime}
+                    </div>`;
+            } 
+            else if (status === 'FT') { // منتهية
                 centerHTML = `<div class="score">${homeGoals} - ${awayGoals}</div><div class="status-badge finished">منتهية</div>`;
-            } else { // حالات أخرى (ملغاة، مؤجلة...)
+            } 
+            else { // حالات أخرى (ملغاة، مؤجلة...)
                 centerHTML = `<div class="vs-text">${m.fixture.status.long}</div>`;
             }
 
@@ -200,5 +212,4 @@
 </script>
 
 </body>
-    </html>
-    
+</html>
