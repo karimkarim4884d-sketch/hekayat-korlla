@@ -3,114 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HAGMA W LAKTA</title>
+    <title>هجمة مرتدة - بث مباشر ومباريات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --red: #8b0000; --dark: #050505; --accent: #00d2ff; }
-        body { background: var(--dark); color: white; margin: 0; font-family: sans-serif; padding-bottom: 80px; }
-        header { padding: 20px; text-align: center; background: linear-gradient(to bottom, #1a0000, var(--dark)); }
-        .logo { font-size: 1.8rem; font-weight: bold; color: var(--accent); text-shadow: 0 0 10px var(--accent); font-family: 'Arial Black', sans-serif; }
-        
-        /* التبويبات */
-        .tabs { display: flex; justify-content: space-around; background: #111; padding: 10px 0; border-bottom: 1px solid #222; }
-        .tab { font-size: 0.85rem; color: #888; cursor: pointer; padding: 5px 10px; border-radius: 15px; }
-        .tab.active { color: white; background: var(--red); font-weight: bold; }
-
-        .container { min-height: 400px; }
-        .match-card { 
-            background: #111; margin: 12px; padding: 15px; border-radius: 10px; 
-            display: flex; align-items: center; justify-content: space-between;
-            border-right: 4px solid var(--red);
+        :root {
+            --main-color: #008136; /* لون أخضر رياضي */
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-white: #ffffff;
         }
-        .team { flex: 1; text-align: center; font-size: 0.8rem; }
-        .team img { width: 40px; height: 40px; display: block; margin: 0 auto 5px; }
-        .score-box { flex: 0.8; text-align: center; }
-        .score { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
-        .status { font-size: 0.7rem; color: #666; margin-top: 5px; }
-        .live { color: #ff0000; font-weight: bold; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity:1} 50% {opacity:0.4} 100% {opacity:1} }
 
-        .nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
-        .nav-item { color: #555; font-size: 0.75rem; text-align: center; cursor: pointer; text-decoration: none; }
-        .nav-item.active { color: var(--accent); }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* شريط البحث والتقويم */
+        .header-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"], input[type="date"] {
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--card-bg);
+            color: white;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* الأقسام (Tabs) */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+            flex: 1;
+        }
+
+        .tab-btn.active {
+            background: var(--main-color);
+        }
+
+        /* كروت المباريات */
+        .match-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 15px;
+            border-right: 5px solid var(--main-color);
+            transition: transform 0.2s;
+        }
+
+        .match-card:hover { transform: scale(1.02); }
+
+        .team { text-align: center; width: 30%; }
+        .team img { width: 40px; height: 40px; display: block; margin: 0 auto 5px; }
+
+        .match-info { text-align: center; }
+        .match-time { font-size: 1.2rem; font-weight: bold; color: var(--main-color); }
+        .match-status { font-size: 0.8rem; color: #aaa; }
+
+        /* زر الواتساب العائم */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #25d366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-decoration: none;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
-<header><div class="logo">HAGMA W LAKTA</div></header>
+    <h2 style="text-align: center; color: var(--main-color);">⚽ هجمة مرتدة</h2>
 
-<div class="tabs">
-    <div class="tab" id="yesterday" onclick="changeDate(-1, 'yesterday')">مباريات الأمس</div>
-    <div class="tab active" id="today" onclick="changeDate(0, 'today')">مباريات اليوم</div>
-    <div class="tab" id="tomorrow" onclick="changeDate(1, 'tomorrow')">مباريات الغد</div>
-</div>
+    <div class="header-tools">
+        <input type="text" id="searchInput" placeholder="ابحث عن مباراة أو فريق..." onkeyup="filterMatches()">
+        <input type="date" id="calendarInput" onchange="filterByDate()">
+    </div>
 
-<div id="list" class="container">
-    <p style="text-align:center; padding:50px;">⏳ جاري تحميل الماتشات...</p>
-</div>
+    <div class="tabs">
+        <button class="tab-btn" onclick="switchTab('yesterday', this)">مباريات الأمس</button>
+        <button class="tab-btn active" onclick="switchTab('today', this)">مباريات اليوم</button>
+        <button class="tab-btn" onclick="switchTab('tomorrow', this)">مباريات الغد</button>
+    </div>
 
-<nav class="nav">
-    <div class="nav-item active" onclick="changeDate(0, 'today')">⚽<br>المباريات</div>
-    <div class="nav-item" onclick="window.location.reload()">📺<br>البث المباشر</div>
-    <a href="https://wa.me/201040077271" class="nav-item">💬<br>المزيد</a>
-</nav>
+    <div id="matchesContainer">
+        <div class="match-card" data-day="today" data-teams="ريال مدريد برشلونة">
+            <div class="team">
+                <img src="https://via.placeholder.com/40" alt="Home">
+                <span>ريال مدريد</span>
+            </div>
+            <div class="match-info">
+                <div class="match-time">22:00</div>
+                <div class="match-status">الدوري الإسباني</div>
+            </div>
+            <div class="team">
+                <img src="https://via.placeholder.com/40" alt="Away">
+                <span>برشلونة</span>
+            </div>
+        </div>
+        
+        <div class="match-card" data-day="tomorrow" data-teams="ليفربول مانشستر سيتي">
+            <div class="team">
+                <img src="https://via.placeholder.com/40" alt="Home">
+                <span>ليفربول</span>
+            </div>
+            <div class="match-info">
+                <div class="match-time">18:00</div>
+                <div class="match-status">الدوري الإنجليزي</div>
+            </div>
+            <div class="team">
+                <img src="https://via.placeholder.com/40" alt="Away">
+                <span>مان سيتي</span>
+            </div>
+        </div>
+    </div>
 
-<script>
-const API_KEY = 'Bf7d42ac856fecc0e1e6ad24debe9c5e';
-const TOP_LEAGUES = [2, 3, 39, 140, 135, 78, 307, 233, 61]; 
+    <a href="https://wa.me/201040077271" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-async function loadMatches(offset = 0) {
-    const list = document.getElementById('list');
-    const date = new Date();
-    date.setDate(date.getDate() + offset);
-    const dateStr = date.toISOString().split('T')[0];
+    <script>
+        // دالة تبديل الأقسام (أمس، اليوم، غداً)
+        function switchTab(day, btn) {
+            // تحديث الأزرار
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
-    try {
-        const res = await fetch(`https://v3.football.api-sports.io/fixtures?date=${dateStr}`, {
-            headers: { 'x-rapidapi-key': API_KEY, 'x-rapidapi-host': 'v3.football.api-sports.io' }
-        });
-        const data = await res.json();
-        const matches = data.response;
-
-        // فلترة الدوريات المهمة
-        let filtered = matches.filter(m => TOP_LEAGUES.includes(m.league.id));
-        if (filtered.length === 0) filtered = matches.slice(0, 15);
-
-        // لو قسم "اليوم": استبعد الماتشات اللي خلصت (FT) عشان تروح للأمس
-        if (offset === 0) {
-            filtered = filtered.filter(m => m.fixture.status.short !== "FT");
+            // تصفية المباريات
+            let matches = document.querySelectorAll('.match-card');
+            matches.forEach(match => {
+                if(match.getAttribute('data-day') === day) {
+                    match.style.display = "flex";
+                } else {
+                    match.style.display = "none";
+                }
+            });
         }
 
-        if (filtered.length === 0) {
-            list.innerHTML = '<p style="text-align:center; padding:50px;">لا توجد مباريات متاحة الآن</p>';
-            return;
+        // دالة البحث الاحترافية
+        function filterMatches() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let matches = document.querySelectorAll('.match-card');
+            matches.forEach(match => {
+                let teams = match.getAttribute('data-teams').toLowerCase();
+                match.style.display = teams.includes(input) ? "flex" : "none";
+            });
         }
 
-        list.innerHTML = filtered.map(m => {
-            const isLive = ["1H", "2H", "HT", "ET", "P"].includes(m.fixture.status.short);
-            const time = new Date(m.fixture.date).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
-            let statusText = isLive ? `<span class="live">🔴 مباشر ${m.fixture.status.elapsed}'</span>` : (m.fixture.status.short === "FT" ? "انتهت" : time);
+        // دالة التقويم السنوي (فلترة بالتاريخ)
+        function filterByDate() {
+            let selectedDate = document.getElementById('calendarInput').value;
+            alert("سيتم عرض مباريات تاريخ: " + selectedDate);
+            // هنا تربطها بقاعدة البيانات لجلب ماتشات اليوم المختار
+        }
 
-            return `
-            <div class="match-card">
-                <div class="team"><img src="${m.teams.home.logo}"> ${m.teams.home.name}</div>
-                <div class="score-box">
-                    <div class="score">${m.goals.home ?? 0} - ${m.goals.away ?? 0}</div>
-                    <div class="status">${statusText}</div>
-                </div>
-                <div class="team"><img src="${m.teams.away.logo}"> ${m.teams.away.name}</div>
-            </div>`;
-        }).join('');
-
-    } catch (e) { list.innerHTML = '<p style="text-align:center; color:red;">خطأ في الاتصال بالـ API</p>'; }
-}
-
-function changeDate(offset, tabId) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    loadMatches(offset);
-}
-
-loadMatches(0); // ابدأ بمباريات اليوم
-</script>
+        // تشغيل "اليوم" كافتراضي عند الفتح
+        window.onload = () => {
+            switchTab('today', document.querySelector('.tab-btn.active'));
+        };
+    </script>
 </body>
-</html>
+                    </html>
+                    
