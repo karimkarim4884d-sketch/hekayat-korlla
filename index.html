@@ -1,86 +1,133 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>AI Video Editor (GitHub Ready)</title>
-<style>
-body{
-font-family:Arial;
-background:#111;
-color:#fff;
-text-align:center;
-padding:20px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAS4 Weapon Manager - Web Version</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-video{
-width:90%;
-margin-top:15px;
-border-radius:10px;
-}
+        body {
+            background-color: #0b0f1a; /* لون الخلفية غامق جداً زي اللعبة */
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-input,button{
-padding:10px;
-margin:8px;
-border-radius:8px;
-border:none;
-}
+        /* حاوية الكارت */
+        .card {
+            background: linear-gradient(145deg, #161d2f, #1e293b);
+            width: 320px;
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid #2d3748;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+            text-align: center;
+            transition: all 0.4s ease;
+        }
 
-button{
-background:#00c3ff;
-cursor:pointer;
-}
-</style>
+        /* تأثير الحركة عند مرور الماوس */
+        .card:hover {
+            transform: translateY(-15px);
+            border-color: #e11d48; /* لون أحمر ناري عند اللمس */
+            box-shadow: 0 20px 40px rgba(225, 29, 72, 0.2);
+        }
+
+        .weapon-icon {
+            background-color: #0b0f1a;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #e11d48;
+            overflow: hidden;
+        }
+
+        .weapon-icon img {
+            width: 80%;
+            height: auto;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #f8fafc;
+        }
+
+        .stats {
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .stat-label { color: #94a3b8; }
+        .stat-value { color: #fbbf24; font-weight: bold; }
+
+        .btn-action {
+            background-color: #e11d48;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .btn-action:hover {
+            background-color: #be123c;
+        }
+    </style>
 </head>
-
 <body>
 
-<h1>🎬 AI Video Editor (GitHub Pages)</h1>
+    <div class="card">
+        <div class="weapon-icon">
+            <span style="font-size: 50px;">🔫</span>
+        </div>
+        
+        <h2>Striker Shotgun</h2>
+        
+        <div class="stats">
+            <div class="stat-line">
+                <span class="stat-label">الضرر:</span>
+                <span class="stat-value">1,250</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">السرعة:</span>
+                <span class="stat-value">2.4/s</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">الخزنة:</span>
+                <span class="stat-value">80</span>
+            </div>
+        </div>
 
-<input type="file" id="video" accept="video/*"><br>
-
-<video id="preview" controls></video>
-
-<h3>📝 نص فوق الفيديو</h3>
-<input type="text" id="text" placeholder="اكتب نص">
-
-<br>
-
-<button onclick="addText()">عرض الفيديو مع النص</button>
-
-<p id="status"></p>
-
-<script>
-const video = document.getElementById("video");
-const preview = document.getElementById("preview");
-
-video.onchange = e => {
-preview.src = URL.createObjectURL(e.target.files[0]);
-};
-
-function addText(){
-
-const text = document.getElementById("text").value;
-
-if(!video.files[0]){
-alert("ارفع فيديو");
-return;
-}
-
-preview.onplay = () => {
-
-alert("⚠️ GitHub Pages لا يدعم تعديل الفيديو فعلياً، فقط عرض");
-
-};
-
-document.getElementById("status").innerText =
-"✔ تم تشغيل الفيديو (عرض فقط على GitHub Pages)";
-
-if(text){
-alert("النص: " + text);
-}
-
-}
-</script>
+        <button class="btn-action" onclick="alert('تم عرض تفاصيل السلاح!')">
+            تحليل السلاح
+        </button>
+    </div>
 
 </body>
-</html>
+  </html>
+  
