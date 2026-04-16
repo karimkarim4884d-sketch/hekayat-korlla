@@ -3,131 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAS4 Weapon Manager - Web Version</title>
-    
+    <title>محرر صور الألعاب</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            background-color: #0b0f1a; /* لون الخلفية غامق جداً زي اللعبة */
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* حاوية الكارت */
-        .card {
-            background: linear-gradient(145deg, #161d2f, #1e293b);
-            width: 320px;
-            padding: 25px;
-            border-radius: 20px;
-            border: 1px solid #2d3748;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
-            text-align: center;
-            transition: all 0.4s ease;
-        }
-
-        /* تأثير الحركة عند مرور الماوس */
-        .card:hover {
-            transform: translateY(-15px);
-            border-color: #e11d48; /* لون أحمر ناري عند اللمس */
-            box-shadow: 0 20px 40px rgba(225, 29, 72, 0.2);
-        }
-
-        .weapon-icon {
             background-color: #0b0f1a;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* مكان عرض الصورة */
+        #preview {
+            width: 100%;
+            height: 250px;
+            background-color: #0b0f1a;
+            border: 2px dashed #334155;
+            border-radius: 10px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid #e11d48;
             overflow: hidden;
         }
 
-        .weapon-icon img {
-            width: 80%;
-            height: auto;
+        #preview img {
+            max-width: 100%;
+            max-height: 100%;
+            transition: 0.3s;
         }
 
-        h2 {
-            font-size: 22px;
-            margin-bottom: 10px;
-            color: #f8fafc;
-        }
-
-        .stats {
-            background-color: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            padding: 15px;
+        /* أزرار التحكم */
+        input[type="file"] {
             margin-bottom: 20px;
+            color: #94a3b8;
         }
 
-        .stat-line {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
+        .filter-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
-        .stat-label { color: #94a3b8; }
-        .stat-value { color: #fbbf24; font-weight: bold; }
-
-        .btn-action {
-            background-color: #e11d48;
-            color: white;
+        button {
+            padding: 10px;
             border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            width: 100%;
-            transition: background 0.3s;
+            background-color: #334155;
+            color: white;
+            transition: 0.2s;
         }
 
-        .btn-action:hover {
-            background-color: #be123c;
-        }
+        button:hover { background-color: #e11d48; }
+
+        /* الفلاتر (CSS Classes) */
+        .grayscale { filter: grayscale(100%); }
+        .sepia { filter: sepia(100%); }
+        .invert { filter: invert(100%); }
+        .blur { filter: blur(5px); }
+        .bright { filter: brightness(150%) contrast(120%); }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="weapon-icon">
-            <span style="font-size: 50px;">🔫</span>
-        </div>
+    <div class="container">
+        <h2>محرر صور "Zack"</h2>
         
-        <h2>Striker Shotgun</h2>
+        <input type="file" id="imageInput" accept="image/*">
         
-        <div class="stats">
-            <div class="stat-line">
-                <span class="stat-label">الضرر:</span>
-                <span class="stat-value">1,250</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">السرعة:</span>
-                <span class="stat-value">2.4/s</span>
-            </div>
-            <div class="stat-line">
-                <span class="stat-label">الخزنة:</span>
-                <span class="stat-value">80</span>
-            </div>
+        <div id="preview">
+            <span id="placeholder">لا توجد صورة</span>
+            <img id="mainImage" src="" style="display: none;">
         </div>
 
-        <button class="btn-action" onclick="alert('تم عرض تفاصيل السلاح!')">
-            تحليل السلاح
-        </button>
+        <div class="filter-group">
+            <button onclick="applyFilter('')">بدون فلتر</button>
+            <button onclick="applyFilter('grayscale')">أبيض وأسود</button>
+            <button onclick="applyFilter('sepia')">كلاسيك (Sepia)</button>
+            <button onclick="applyFilter('bright')">سينمائي</button>
+            <button onclick="applyFilter('blur')">تغبيش (Blur)</button>
+            <button onclick="applyFilter('invert')">ألوان عكسية</button>
+        </div>
     </div>
 
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const mainImage = document.getElementById('mainImage');
+        const placeholder = document.getElementById('placeholder');
+
+        // وظيفة رفع وقراءة الصورة
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    mainImage.src = e.target.result;
+                    mainImage.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // وظيفة تطبيق الفلتر
+        function applyFilter(filterName) {
+            mainImage.className = filterName;
+        }
+    </script>
+
 </body>
-  </html>
-  
+</html>
