@@ -1,129 +1,38 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محرر صور الألعاب</title>
+    <title>مشغل البث - Zack Live</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body {
-            background-color: #0b0f1a;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: #1e293b;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        /* مكان عرض الصورة */
-        #preview {
-            width: 100%;
-            height: 250px;
-            background-color: #0b0f1a;
-            border: 2px dashed #334155;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        #preview img {
-            max-width: 100%;
-            max-height: 100%;
-            transition: 0.3s;
-        }
-
-        /* أزرار التحكم */
-        input[type="file"] {
-            margin-bottom: 20px;
-            color: #94a3b8;
-        }
-
-        .filter-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            background-color: #334155;
-            color: white;
-            transition: 0.2s;
-        }
-
-        button:hover { background-color: #e11d48; }
-
-        /* الفلاتر (CSS Classes) */
-        .grayscale { filter: grayscale(100%); }
-        .sepia { filter: sepia(100%); }
-        .invert { filter: invert(100%); }
-        .blur { filter: blur(5px); }
-        .bright { filter: brightness(150%) contrast(120%); }
+        body { background: #111; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        #video { width: 80%; max-width: 800px; background: black; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>محرر صور "Zack"</h2>
-        
-        <input type="file" id="imageInput" accept="image/*">
-        
-        <div id="preview">
-            <span id="placeholder">لا توجد صورة</span>
-            <img id="mainImage" src="" style="display: none;">
-        </div>
-
-        <div class="filter-group">
-            <button onclick="applyFilter('')">بدون فلتر</button>
-            <button onclick="applyFilter('grayscale')">أبيض وأسود</button>
-            <button onclick="applyFilter('sepia')">كلاسيك (Sepia)</button>
-            <button onclick="applyFilter('bright')">سينمائي</button>
-            <button onclick="applyFilter('blur')">تغبيش (Blur)</button>
-            <button onclick="applyFilter('invert')">ألوان عكسية</button>
-        </div>
-    </div>
+    <video id="video" controls autoplay></video>
 
     <script>
-        const imageInput = document.getElementById('imageInput');
-        const mainImage = document.getElementById('mainImage');
-        const placeholder = document.getElementById('placeholder');
+        var video = document.getElementById('video');
+        // هنا تضع رابط البث الخاص بك (m3u8)
+        var videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'; 
 
-        // وظيفة رفع وقراءة الصورة
-        imageInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    mainImage.src = e.target.result;
-                    mainImage.style.display = 'block';
-                    placeholder.style.display = 'none';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // وظيفة تطبيق الفلتر
-        function applyFilter(filterName) {
-            mainImage.className = filterName;
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play();
+            });
+        }
+        // للمتصفحات التي تدعم HLS أصلاً مثل Safari
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
         }
     </script>
-
 </body>
 </html>
