@@ -3,257 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مرتدة سريعة</title>
+    <title>مونتاجو - محرر فيديو أونلاين</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: #0f172a; 
-            color: #e2e8f0; 
-            padding-bottom: 80px;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: #0f0f0f; color: #fff; padding: 20px; }
+       .container { max-width: 800px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 30px; color: #00d4ff; }
+       .upload-area {
+            border: 2px dashed #00d4ff; border-radius: 15px; padding: 40px;
+            text-align: center; cursor: pointer; margin-bottom: 20px;
         }
-        .header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 20px;
-            border-bottom: 2px solid #22c55e;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+       .upload-area:hover { background: #1a1a1a; }
+        #videoInput { display: none; }
+        #videoPreview { width: 100%; border-radius: 10px; margin: 20px 0; display: none; }
+       .controls { display: none; background: #1a1a1a; padding: 20px; border-radius: 10px; margin: 20px 0; }
+       .time-inputs { display: flex; gap: 10px; margin: 15px 0; }
+       .time-inputs input { flex: 1; padding: 10px; background: #0f0f0f; border: 1px solid #333; color: #fff; border-radius: 5px; }
+        button {
+            background: #00d4ff; color: #000; border: none; padding: 12px 25px;
+            border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin: 5px 0;
         }
-        .logo {
-            width: 50px;
-            height: 50px;
-        }
-        .header h1 {
-            font-size: 28px;
-            color: #22c55e;
-            font-weight: 900;
-        }
-        .filters {
-            background: #1e293b;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .filters input, .filters select {
-            padding: 12px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #e2e8f0;
-            border-radius: 8px;
-            font-size: 16px;
-            width: 100%;
-        }
-        .filters input:focus, .filters select:focus {
-            outline: none;
-            border-color: #22c55e;
-        }
-        .container { padding: 20px; }
-        .section-title {
-            font-size: 20px;
-            margin: 20px 0 15px;
-            color: #22c55e;
-            font-weight: bold;
-        }
-        .match {
-            background: #1e293b;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 12px;
-            border-right: 4px solid #334155;
-            transition: all 0.3s;
-        }
-        .match.live { border-right-color: #ef4444; }
-        .match:hover { background: #334155; transform: translateX(-5px); }
-        .match-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .league { font-size: 12px; color: #94a3b8; }
-        .status {
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: #334155;
-        }
-        .status.live { background: #ef4444; color: white; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .teams {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .score {
-            font-size: 24px;
-            color: #22c55e;
-            min-width: 60px;
-            text-align: center;
-        }
-        .time { font-size: 13px; color: #94a3b8; margin-top: 8px; }
-        .whatsapp-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: #25D366;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-            z-index: 1000;
-            text-decoration: none;
-        }
-        .whatsapp-btn svg { width: 35px; height: 35px; fill: white; }
-        .table {
-            background: #1e293b;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 15px;
-        }
-        .table-row {
-            display: grid;
-            grid-template-columns: 40px 1fr 40px 40px;
-            padding: 12px;
-            border-bottom: 1px solid #334155;
-        }
-        .table-row.header {
-            background: #0f172a;
-            font-weight: bold;
-            color: #22c55e;
-        }
+        button:disabled { background: #333; color: #666; cursor: not-allowed; }
+        #status { text-align: center; margin: 15px 0; color: #00d4ff; }
+        #downloadLink { display: none; text-align: center; margin-top: 20px; }
+        #downloadLink a { color: #00d4ff; text-decoration: none; font-size: 18px; }
     </style>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
 </head>
 <body>
-    <div class="header">
-        <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <circle cx="50" cy="50" r="45" fill="url(#grad)"/>
-            <path d="M 30 70 L 50 30 L 70 70 L 60 70 L 50 50 L 40 70 Z" fill="#0f172a"/>
-            <circle cx="50" cy="35" r="5" fill="#0f172a"/>
-        </svg>
-        <h1>مرتدة سريعة</h1>
-    </div>
-
-    <div class="filters">
-        <input type="text" id="search" placeholder="ابحث عن فريق..." onkeyup="filterMatches()">
-        <select id="leagueFilter" onchange="filterMatches()">
-            <option value="">كل الدوريات</option>
-            <option value="الدوري المصري">الدوري المصري</option>
-            <option value="الدوري الإنجليزي">الدوري الإنجليزي</option>
-        </select>
-        <select id="statusFilter" onchange="filterMatches()">
-            <option value="">كل الحالات</option>
-            <option value="مباشر">مباشر</option>
-            <option value="انتهى">انتهى</option>
-            <option value="قادم">قادم</option>
-        </select>
-        <input type="date" id="dateFilter" onchange="filterMatches()">
-    </div>
-
     <div class="container">
-        <h2 class="section-title">المباريات</h2>
-        <div id="matches"></div>
+        <h1>مونتاجو ✂️</h1>
 
-        <h2 class="section-title">جدول الدوري المصري</h2>
-        <div class="table" id="leagueTable"></div>
+        <div class="upload-area" onclick="document.getElementById('videoInput').click()">
+            <p>اضغط هنا لاختيار فيديو</p>
+            <small>MP4, MOV, WEBM</small>
+        </div>
+        <input type="file" id="videoInput" accept="video/*">
+
+        <video id="videoPreview" controls></video>
+
+        <div class="controls" id="controls">
+            <h3>قص الفيديو</h3>
+            <div class="time-inputs">
+                <input type="number" id="startTime" placeholder="البداية بالثواني" min="0" step="0.1">
+                <input type="number" id="endTime" placeholder="النهاية بالثواني" min="0" step="0.1">
+            </div>
+            <button id="trimBtn">قص وتصدير 1080p 60fps</button>
+            <button id="exportBtn">تصدير الفيديو كامل 1080p 60fps</button>
+        </div>
+
+        <div id="status"></div>
+        <div id="downloadLink"></div>
     </div>
-
-    <a href="https://wa.me/201040077271" class="whatsapp-btn" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-    </a>
 
     <script>
-        const mockMatches = [
-            { id: 1, home: "الأهلي", away: "الزمالك", homeScore: 2, awayScore: 1, league: "الدوري المصري", status: "مباشر", time: "75'", date: "2026-05-01" },
-            { id: 2, home: "بيراميدز", away: "فيوتشر", homeScore: 0, awayScore: 0, league: "الدوري المصري", status: "مباشر", time: "23'", date: "2026-05-01" },
-            { id: 3, home: "ليفربول", away: "مانشستر سيتي", homeScore: 3, awayScore: 2, league: "الدوري الإنجليزي", status: "انتهى", time: "FT", date: "2026-05-01" },
-            { id: 4, home: "أرسنال", away: "تشيلسي", homeScore: null, awayScore: null, league: "الدوري الإنجليزي", status: "قادم", time: "22:00", date: "2026-05-02" },
-            { id: 5, home: "الإسماعيلي", away: "المصري", homeScore: 1, awayScore: 1, league: "الدوري المصري", status: "انتهى", time: "FT", date: "2026-04-30" }
-        ];
+        const { createFFmpeg, fetchFile } = FFmpeg;
+        const ffmpeg = createFFmpeg({
+            log: true,
+            corePath: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js"
+        });
 
-        const leagueTableData = [
-            { pos: 1, team: "الأهلي", points: 45 },
-            { pos: 2, team: "بيراميدز", points: 42 },
-            { pos: 3, team: "الزمالك", points: 38 },
-            { pos: 4, team: "فيوتشر", points: 35 }
-        ];
+        const videoInput = document.getElementById('videoInput');
+        const videoPreview = document.getElementById('videoPreview');
+        const controls = document.getElementById('controls');
+        const status = document.getElementById('status');
+        const trimBtn = document.getElementById('trimBtn');
+        const exportBtn = document.getElementById('exportBtn');
 
-        function renderMatches(matches) {
-            const container = document.getElementById('matches');
-            if (matches.length === 0) {
-                container.innerHTML = '<p style="text-align:center;color:#94a3b8;padding:20px">لا توجد مباريات</p>';
-                return;
+        let videoFile;
+
+        videoInput.addEventListener('change', (e) => {
+            videoFile = e.target.files[0];
+            if (videoFile) {
+                videoPreview.src = URL.createObjectURL(videoFile);
+                videoPreview.style.display = 'block';
+                controls.style.display = 'block';
+                videoPreview.onloadedmetadata = () => {
+                    document.getElementById('endTime').value = videoPreview.duration.toFixed(1);
+                };
             }
-            
-            container.innerHTML = matches.map(match => `
-                <div class="match ${match.status === 'مباشر' ? 'live' : ''}">
-                    <div class="match-header">
-                        <span class="league">${match.league}</span>
-                        <span class="status ${match.status === 'مباشر' ? 'live' : ''}">${match.status}</span>
-                    </div>
-                    <div class="teams">
-                        <span>${match.home}</span>
-                        <span class="score">${match.homeScore ?? '-'} : ${match.awayScore ?? '-'}</span>
-                        <span>${match.away}</span>
-                    </div>
-                    <div class="time">${match.time} - ${match.date}</div>
-                </div>
-            `).join('');
+        });
+
+        async function processVideo(isTrim) {
+            if (!videoFile) return;
+
+            trimBtn.disabled = true;
+            exportBtn.disabled = true;
+            status.innerHTML = 'جاري تحميل المحرك... هياخد دقيقة أول مرة بس';
+
+            if (!ffmpeg.isLoaded()) {
+                await ffmpeg.load();
+            }
+
+            status.innerHTML = 'جاري معالجة الفيديو... متقفلهاش';
+            ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(videoFile));
+
+            let args = [];
+            if (isTrim) {
+                const start = document.getElementById('startTime').value || 0;
+                const end = document.getElementById('endTime').value;
+                const duration = end - start;
+                args = ['-ss', start, '-i', 'input.mp4', '-t', duration];
+            } else {
+                args = ['-i', 'input.mp4'];
+            }
+
+            // تصدير 1080p 60fps بأعلى جودة
+            args.push(
+                '-vf', 'scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2',
+                '-r', '60',
+                '-c:v', 'libx264',
+                '-preset', 'slow',
+                '-crf', '18',
+                '-c:a', 'aac',
+                '-b:a', '192k',
+                'output.mp4'
+            );
+
+            await ffmpeg.run(...args);
+
+            status.innerHTML = 'تم! جاري تجهيز التحميل...';
+            const data = ffmpeg.FS('readFile', 'output.mp4');
+            const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+
+            document.getElementById('downloadLink').innerHTML = `<a href="${url}" download="montago.mp4">⬇️ اضغط هنا لتحميل الفيديو</a>`;
+            document.getElementById('downloadLink').style.display = 'block';
+            status.innerHTML = 'خلصنا! ✅';
+
+            trimBtn.disabled = false;
+            exportBtn.disabled = false;
         }
 
-        function renderTable() {
-            const container = document.getElementById('leagueTable');
-            container.innerHTML = `
-                <div class="table-row header">
-                    <div>#</div><div>الفريق</div><div>لعب</div><div>نقاط</div>
-                </div>
-                ${leagueTableData.map(row => `
-                    <div class="table-row">
-                        <div>${row.pos}</div><div>${row.team}</div><div>15</div><div>${row.points}</div>
-                    </div>
-                `).join('')}
-            `;
-        }
-
-        function filterMatches() {
-            const search = document.getElementById('search').value.toLowerCase();
-            const league = document.getElementById('leagueFilter').value;
-            const status = document.getElementById('statusFilter').value;
-            const date = document.getElementById('dateFilter').value;
-
-            let filtered = mockMatches.filter(m => {
-                const matchSearch = m.home.toLowerCase().includes(search) || m.away.toLowerCase().includes(search);
-                const matchLeague = !league || m.league === league;
-                const matchStatus = !status || m.status === status;
-                const matchDate = !date || m.date === date;
-                return matchSearch && matchLeague && matchStatus && matchDate;
-            });
-
-            // ترتيب: المباشر الأول
-            filtered.sort((a, b) => {
-                if (a.status === 'مباشر' && b.status !== 'مباشر') return -1;
-                if (a.status !== 'مباشر' && b.status === 'مباشر') return 1;
-                return 0;
-            });
-
-            renderMatches(filtered);
-        }
-
-        // تشغيل أول مرة
-        renderMatches(mockMatches);
-        renderTable();
+        trimBtn.addEventListener('click', () => processVideo(true));
+        exportBtn.addEventListener('click', () => processVideo(false));
     </script>
 </body>
 </html>
