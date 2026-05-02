@@ -1,173 +1,32 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كلبش - مسلسلات رمضان</title>
+    <title>OSTORA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@900&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            /* هنا خليت الخط 900 يعني أقصى حاجة في التقل */
+            font-family: 'Cairo', sans-serif !important;
+            font-weight: 900 !important;
+        }
         body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: 'Droid Arabic Naskh', 'Arial', sans-serif;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .header {
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            font-size: 2.8em;
-            color: #ffcc00;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .subtitle {
-            color: #e0e0e0;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-
-        .package-container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background-color: #1e1e1e;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border: 1px solid #333333;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .poster-container {
-            width: 100%;
-            height: 250px;
-            margin-bottom: 20px;
-            border-radius: 15px;
-            overflow: hidden;
+            background-color: #0a0a0a;
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #333333; /* لـون خلفي في حالة عدم تحميل الصورة */
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
         }
-
-        .poster-container img {
-            max-height: 100%;
-            border-radius: 15px;
-            object-fit: contain; /* للحفاظ على نسب الصورة */
-        }
-
-        .no-poster-text {
-            color: #aaaaaa;
-            font-size: 0.9em;
-        }
-
-        .package-title {
-            color: #ffcc00;
-            font-size: 1.6em;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .price-row {
-            margin-bottom: 25px;
-        }
-
-        .price {
-            font-size: 2em;
-            font-weight: bold;
-            color: #ffffff;
-        }
-
-        .features-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 25px 0;
-            text-align: right;
-            width: auto;
-            max-width: 100%;
-            display: inline-block;
-        }
-
-        .features-list li {
-            margin: 10px 0;
-            font-size: 1.1em;
-            color: #e0e0e0;
-            display: flex;
-            align-items: center;
-        }
-
-        .check-icon {
-            color: #1dc700;
-            font-size: 1.3em;
-            margin-left: 10px;
-        }
-
-        .btn {
-            display: inline-block;
-            background-color: #ffcc00;
-            color: #121212;
-            padding: 15px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.3em;
-            transition: background-color 0.3s;
-            width: 80%;
-            max-width: 300px;
-        }
-
-        .btn:hover {
-            background-color: #e6b800;
-        }
-
-        .support {
-            margin-top: 40px;
-            font-size: 1em;
-            color: #aaaaaa;
-        }
-
-        .support a {
-            color: #ffcc00;
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <div class="logo">كلبش</div>
-        <div class="subtitle">اختر باقتك الرمضانية لعام 2026</div>
-    </div>
-
-    <div class="package-container">
-        <div class="card">
-            <div class="poster-container">
-                <img src="ali_clay_poster.jpg" alt="مسلسل علي كلاي" onerror="this.onerror=null; this.src=''; this.parentNode.innerHTML='<span class=\'no-poster-text\'>صورة مسلسل علي كلاي غير متوفرة</span>';">
-            </div>
-            <div class="package-title">باقة مسلسل علي كلاي</div>
-            <div class="price-row">
-                <span class="price">300 ج.م</span>
-            </div>
-            <ul class="features-list">
-                <li><span class="check-icon">✅</span> 5 فيديوهات حصرية</li>
-                <li><span class="check-icon">✅</span> إرشادات النشر</li>
-                <li><span class="check-icon">✅</span> هاشتاجات قوية</li>
-                <li><span class="check-icon">✅</span> سرعة انتشار الفيديو</li>
-            </ul>
-            <a href="https://wa.me/201040077271" class="btn">اشترك الآن</a>
-        </div>
-
-        <div class="card">
-            <div class="poster-container">
-                <img src="king_poster.jpg" alt="مسلسل الكينج" onerror="this.onerror=null; this.src=''; this.parentNode.innerHTML='<span class=\'no-poster-text\'>صورة مسلسل الكينج غير متوفرة
-                    
+        .card {
+            background-color: #171718;
+            padding: 25px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            border: 2px solid #282828
