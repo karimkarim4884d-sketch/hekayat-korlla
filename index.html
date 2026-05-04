@@ -1,32 +1,38 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSTORA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@900&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            /* هنا خليت الخط 900 يعني أقصى حاجة في التقل */
-            font-family: 'Cairo', sans-serif !important;
-            font-weight: 900 !important;
-        }
-        body {
-            background-color: #0a0a0a;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        .card {
-            background-color: #171718;
-            padding: 25px;
-            border-radius: 30px;
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
-            border: 2px solid #282828
+        body { background-color: #0a0a0a; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .brand { font-size: 2rem; color: #d4af37; font-weight: bold; margin-bottom: 20px; }
+        .card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 15px; padding: 15px; margin: 20px auto; width: 90%; max-width: 400px; }
+        .card img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+        .price { font-size: 1.5rem; color: #d4af37; font-weight: bold; }
+        .features { text-align: right; list-style: none; padding: 0; }
+        .btn { display: block; background-color: #d4af37; color: #000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+        .whatsapp-footer { font-size: 1.2rem; margin-top: 30px; color: #25d366; }
+    </style>
+</head>
+<body>
+
+    <div class="brand">شيكا - Combo Reach</div>
+
+    <div class="card">
+        <img src="https://via.placeholder.com/300x400" alt="صورة المسلسل">
+        <h3>STARTER</h3>
+        <p class="price">350 ج.م <span style="text-decoration:line-through; font-size: 1rem; color: #777;">799 ج.م</span></p>
+        <ul class="features">
+            <li>✅ 5 فيديوهات</li>
+            <li>✅ إرشادات النشر</li>
+            <li>✅ هاشتاجات قوية</li>
+            <li>✅ سرعة انتشار الفيديو</li>
+        </ul>
+        <a href="https://wa.me/201055647115" class="btn">احصل على العرض الآن</a>
+    </div>
+
+    <div class="whatsapp-footer">
+        للدعم الفني: 01055647115
+    </div>
+
+</body>
+</html>
