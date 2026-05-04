@@ -1,38 +1,127 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <style>
-        body { background-color: #0a0a0a; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
-        .brand { font-size: 2rem; color: #d4af37; font-weight: bold; margin-bottom: 20px; }
-        .card { background-color: #1a1a1a; border: 1px solid #333; border-radius: 15px; padding: 15px; margin: 20px auto; width: 90%; max-width: 400px; }
-        .card img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
-        .price { font-size: 1.5rem; color: #d4af37; font-weight: bold; }
-        .features { text-align: right; list-style: none; padding: 0; }
-        .btn { display: block; background-color: #d4af37; color: #000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 15px; }
-        .whatsapp-footer { font-size: 1.2rem; margin-top: 30px; color: #25d366; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شيكا للفيديوهات</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f0f0f;
+    color: white;
+    direction: rtl;
+}
+
+/* الهيدر */
+.header {
+    text-align: center;
+    padding: 40px;
+    background: #111;
+}
+
+.header h1 {
+    color: #e50914;
+    font-size: 40px;
+}
+
+.header p {
+    font-size: 18px;
+}
+
+/* الباقات */
+.packages {
+    text-align: center;
+    padding: 40px;
+}
+
+.card {
+    background: #1a1a1a;
+    padding: 20px;
+    margin: 20px auto;
+    width: 300px;
+    border-radius: 10px;
+}
+
+.price {
+    color: #e50914;
+    font-size: 24px;
+    margin-top: 10px;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #e50914;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+/* المسلسلات */
+.series {
+    padding: 40px;
+    text-align: center;
+}
+
+.series img {
+    width: 150px;
+    margin: 10px;
+    border-radius: 10px;
+}
+
+/* الفوتر */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #111;
+    margin-top: 30px;
+}
+</style>
+
 </head>
+
 <body>
 
-    <div class="brand">شيكا - Combo Reach</div>
+<!-- الهيدر -->
+<div class="header">
+    <h1>شيكا للفيديوهات</h1>
+    <p>أفضل باقات الفيديوهات بجودة عالية وسرعة نشر 🔥</p>
+    <p>الدعم الفني: 01055647115</p>
+</div>
+
+<!-- الباقات -->
+<div class="packages">
+    <h2>🎬 الباقات</h2>
 
     <div class="card">
-        <img src="https://via.placeholder.com/300x400" alt="صورة المسلسل">
-        <h3>STARTER</h3>
-        <p class="price">350 ج.م <span style="text-decoration:line-through; font-size: 1rem; color: #777;">799 ج.م</span></p>
-        <ul class="features">
-            <li>✅ 5 فيديوهات</li>
-            <li>✅ إرشادات النشر</li>
-            <li>✅ هاشتاجات قوية</li>
-            <li>✅ سرعة انتشار الفيديو</li>
-        </ul>
-        <a href="https://wa.me/201055647115" class="btn">احصل على العرض الآن</a>
+        <h3>باقة الفيديوهات</h3>
+        <p>3 فيديوهات</p>
+        <p>جودة عالية HD</p>
+        <p>تسليم سريع</p>
+        <div class="price">400 جنيه</div>
+        <a class="btn" href="https://wa.me/201055647115">احجز الآن</a>
     </div>
+</div>
 
-    <div class="whatsapp-footer">
-        للدعم الفني: 01055647115
-    </div>
+<!-- مسلسلات رمضان -->
+<div class="series">
+    <h2>🌙 مسلسلات رمضان</h2>
+
+    <img src="https://via.placeholder.com/150" alt="مسلسل">
+    <img src="https://via.placeholder.com/150" alt="مسلسل">
+    <img src="https://via.placeholder.com/150" alt="مسلسل">
+    <img src="https://via.placeholder.com/150" alt="مسلسل">
+
+    <p>مشاهدة وتحميل بجودة عالية 🔥</p>
+</div>
+
+<!-- الفوتر -->
+<div class="footer">
+    <p>© جميع الحقوق محفوظة - شيكا</p>
+</div>
 
 </body>
 </html>
