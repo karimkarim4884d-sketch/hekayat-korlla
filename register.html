@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +10,16 @@
 <style>
 .form{
 max-width:450px;
-margin:auto;
+margin:40px auto;
 background:#1e293b;
 padding:20px;
 border-radius:15px;
+}
+
+h2{
+color:white;
+text-align:center;
+margin-bottom:20px;
 }
 
 input{
@@ -30,7 +35,7 @@ button{
 width:100%;
 padding:15px;
 background:#2563eb;
-color:#fff;
+color:white;
 border:none;
 border-radius:10px;
 font-size:18px;
@@ -51,44 +56,62 @@ text-decoration:none;
 </style>
 
 </head>
-
 <body>
 
 <div class="form">
 
-<h2 style="color:white;text-align:center;">تسجيل وكيل</h2>
+<h2>تسجيل وكيل</h2>
 
-<input id="bd" type="text" placeholder="BD ID">
+<input id="bd" placeholder="BD ID">
 
-<input id="agent" type="text" placeholder="ID الوكيل">
+<input id="agent" placeholder="ID الوكيل">
 
-<input id="name" type="text" placeholder="اسم الوكيل">
+<input id="name" placeholder="اسم الوكيل">
 
-<button onclick="saveAgent()">
-حفظ الوكيل
-</button>
+<button id="saveBtn">حفظ الوكيل</button>
 
-<a href="index.html" class="back">
-⬅ العودة للرئيسية
-</a>
+<a href="index.html" class="back">⬅ العودة للرئيسية</a>
 
 </div>
 
-<script>
-function saveAgent(){
+<script type="module">
+
+import { db } from "./firebase.js";
+
+import { ref, push }
+from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
+
+document.getElementById("saveBtn").onclick = async ()=>{
 
 let bd=document.getElementById("bd").value;
 let agent=document.getElementById("agent").value;
 let name=document.getElementById("name").value;
 
-if(bd==""||agent==""||name==""){
+if(!bd||!agent||!name){
 alert("اكتب جميع البيانات");
 return;
 }
 
-alert("تم حفظ الوكيل (سيتم ربط Firebase في الخطوة التالية)");
+try{
+
+await push(ref(db,"agents"),{
+
+bd:bd,
+agent:agent,
+name:name
+
+});
+
+alert("✅ تم حفظ الوكيل");
+
+}catch(e){
+
+alert(e.message);
 
 }
+
+}
+
 </script>
 
 </body>
