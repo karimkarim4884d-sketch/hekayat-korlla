@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+    body { background-color: #0d0914; color: #fff; min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
+    .box { background: #161022; border: 1px solid #271e38; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; }
+    h2 { text-align: center; margin-bottom: 20px; color: #ff3b5c; }
+    input, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #33264a; background: #0d0914; color: #fff; }
+    button { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+    .btn-add { background: #ff3b5c; color: white; }
+    .btn-toggle { background: #2563eb; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .hidden { display: none !important; }
+    .status { text-align: center; margin: 15px 0; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <!-- شاشة الدخول -->
+  <div id="login-box" class="box">
+    <h2>تسجيل الدخول</h2>
+    <input type="password" id="pass" placeholder="أدخل كلمة السر">
+    <button class="btn-add" onclick="login()">دخول</button>
+  </div>
+
+  <!-- لوحة التحكم -->
+  <div id="admin-box" class="box hidden">
+    <h2>إضافة ذكرى جديدة ✨</h2>
+    <input type="text" id="post-title" placeholder="عنوان الذكرى">
+    <input type="text" id="post-date" placeholder="التاريخ (مثال: 2026/09/07)">
+    <textarea id="post-text" rows="4" placeholder="اكتب الكلام أو البوست هنا..."></textarea>
+    <input type="text" id="post-image" placeholder="رابط الصورة (URL)">
+    <input type="text" id="post-audio" placeholder="رابط الأغنية/الصوت (MP3 URL)">
+    
+    <button class="btn-add" onclick="addPost()">نشر الذكرى ✅</button>
+    
+    <hr style="border-color:#271e38; margin: 20px 0;">
+    
+    <div class="status" id="status-text"></div>
+    <button class="btn-toggle" onclick="toggleSite()">تغيير حالة الموقع (قفل / فتح)</button>
+    <button class="btn-danger" onclick="clearAll()">حذف جميع الذكريات 🗑️</button>
+  </div>
+
+  <script>
+    const SECRET = "2712007";
+
+    function login() {
+      if (document.getElementById('pass').value === SECRET) {
+        document.getElementById('login-box').classList.add('hidden');
+        document.getElementById('admin-box').classList.remove('hidden');
+        updateStatusUI();
+      } else {
+        alert("كلمة السر خاطئة!");
+      }
+    }
+
+    function addPost() {
+      const title = document.getElementById('post-title').value;
+      const date = document.getElementById('post-date').value;
+      const text = document.getElementById('post-text').value;
+      const image = document.getElementById('post-image').value;
+      const audio = document.getElementById('post-audio').value;
+
+      if (!title || !text) {
+        alert("يرجى كتابة العنوان والنص على الأقل!");
+        return;
+      }
+
+      const posts = JSON.parse(localStorage.getItem('memories_posts') || '[]');
+      posts.unshift({ title, date: date || new Date().toLocaleDateString('ar-EG'), text, image, audio });
+      
+      localStorage.setItem('memories_posts', JSON.stringify(posts));
+      alert("تمت إضافة الذكرى بنجاح ✨");
+      
+      // تفريغ الخانات
+      document.getElementById('post-title').value = '';
+      document.getElementById('post-date').value = '';
+      document.getElementById('post-text').value = '';
+      document.getElementById('post-image').value = '';
+      document.getElementById('post-audio').value = '';
+    }
+
+    function updateStatusUI() {
+      const isActive = localStorage.getItem('memories_site_active') !== 'false';
+      document.getElementById('status-text').innerHTML = isActive 
+        ? "حالة الموقع الآن: <span style='color:#10b981'>مفتوح ✅</span>"
+        : "حالة الموقع الآن: <span style='color:#ff3b5c'>مغلق 🔒</span>";
+    }
+
+    function toggleSite() {
+      const isActive = localStorage.getItem('memories_site_active') !== 'false';
+      localStorage.setItem('memories_site_active', !isActive);
+      updateStatusUI();
+    }
+
+    function clearAll() {
+      if (confirm("هل أنت تأكد من حذف كل الذكريات؟")) {
+        localStorage.removeItem('memories_posts');
+        alert("تم الحذف!");
+      }
+    }
+  </script>
+</body>
+      </html>
+      
