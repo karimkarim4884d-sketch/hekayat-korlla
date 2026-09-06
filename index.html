@@ -1,108 +1,126 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>سوق الكتاكيت والفقاسات</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الرابط</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+    body { background-color: #080c14; height: 100vh; display: flex; justify-content: center; align-items: center; color: white; flex-direction: column; }
+    
+    .card { background-color: #0f172a; width: 85%; max-width: 380px; padding: 40px 20px; border-radius: 24px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .icon-box { background-color: #ff2b3c; width: 100px; height: 100px; margin: 0 auto 25px; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 40px; }
+    .message { font-size: 24px; font-weight: bold; line-height: 1.4; }
+    .hidden { display: none !important; }
 
-<style>
-body{
-    margin:0;
-    font-family:Tahoma,sans-serif;
-    background:#fff8dc;
-}
-header{
-    background:#f7c600;
-    color:#000;
-    text-align:center;
-    padding:20px;
-}
-.logo{
-    font-size:40px;
-}
-.hero{
-    background:#ffe680;
-    text-align:center;
-    padding:50px 20px;
-}
-.products{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:20px;
-    padding:20px;
-}
-.card{
-    width:250px;
-    background:#fff;
-    border-radius:10px;
-    box-shadow:0 0 10px #ccc;
-    overflow:hidden;
-}
-.card img{
-    width:100%;
-}
-.card h3{
-    text-align:center;
-}
-.btn{
-    display:block;
-    background:#f7c600;
-    color:#000;
-    text-decoration:none;
-    padding:10px;
-    text-align:center;
-    margin:10px;
-    border-radius:5px;
-}
-footer{
-    background:#333;
-    color:#fff;
-    text-align:center;
-    padding:20px;
-}
-</style>
+    /* زر لوحة التحكم في الأسفل */
+    .admin-btn { position: fixed; bottom: 15px; right: 15px; opacity: 0.3; background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+    .admin-btn:hover { opacity: 1; }
+
+    /* تصميم نافذة لوحة التحكم */
+    .admin-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; }
+    .admin-box { background: #1e293b; padding: 25px; border-radius: 16px; width: 90%; max-width: 320px; text-align: center; }
+    .admin-box input { width: 100%; padding: 10px; margin: 15px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center; font-size: 16px; }
+    .admin-box button { width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 8px; }
+    .btn-main { background: #2563eb; color: white; }
+    .btn-toggle { background: #10b981; color: white; }
+    .btn-close { background: #475569; color: white; }
+  </style>
 </head>
-
 <body>
 
-<header>
-<div class="logo">🐥 سوق الكتاكيت</div>
-<h2>بيع الكتاكيت والفقاسات والأعلاف</h2>
-</header>
+  <!-- الشاشة عند إغلاق الرابط -->
+  <div id="closed-view" class="card">
+    <div class="icon-box">🔒</div>
+    <div class="message">هذا اللينك غير متاح الان 🔒</div>
+  </div>
 
-<section class="hero">
-<h1>أهلاً بكم في متجر الكتاكيت</h1>
-<p>أفضل أسعار الكتاكيت والفقاسات.</p>
-<a class="btn" href="tel:01040077271">📞 اتصل الآن: 01040077271</a>
-</section>
+  <!-- الشاشة عند فتح الرابط -->
+  <div id="open-view" class="card hidden">
+    <div class="message">مرحباً بك! اللينك متاح الآن ✨</div>
+  </div>
 
-<section class="products">
+  <!-- زر مخفي لدخول صاحب الموقع -->
+  <button class="admin-btn" onclick="openAdmin()">⚙️</button>
 
-<div class="card">
-<img src="chick1.jpg" alt="كتاكيت">
-<h3>كتاكيت عمر يوم</h3>
-<a class="btn" href="tel:01040077271">اطلب الآن</a>
-</div>
+  <!-- نافذة لوحة التحكم -->
+  <div id="admin-modal" class="admin-panel hidden">
+    <div class="admin-box">
+      <!-- مرحلة طلب كلمة السر -->
+      <div id="login-step">
+        <h3>لوحة التحكم</h3>
+        <input type="password" id="pass-input" placeholder="أدخل كلمة السر">
+        <button class="btn-main" onclick="checkPassword()">دخول</button>
+        <button class="btn-close" onclick="closeAdmin()">إلغاء</button>
+      </div>
 
-<div class="card">
-<img src="incubator.jpg" alt="فقاسة">
-<h3>فقاسات بيض</h3>
-<a class="btn" href="tel:01040077271">اطلب الآن</a>
-</div>
+      <!-- مرحلة تغيير الحالة (تظهر بعد كلمة السر الصحيحة) -->
+      <div id="control-step" class="hidden">
+        <h3>التحكم بالحالة</h3>
+        <p id="status-text" style="margin: 15px 0; font-weight: bold;"></p>
+        <button id="toggle-btn" class="btn-toggle" onclick="toggleStatus()">تغيير الحالة</button>
+        <button class="btn-close" onclick="closeAdmin()">إغلاق</button>
+      </div>
+    </div>
+  </div>
 
-<div class="card">
-<img src="feed.jpg" alt="أعلاف">
-<h3>أعلاف دواجن</h3>
-<a class="btn" href="tel:01040077271">اطلب الآن</a>
-</div>
+  <script>
+    const SECRET_PASS = "2712007"; // كلمة السر الخاصة بك
 
-</section>
+    // قراءة الحالة الحالية من ذاكرة المتصفح (الافتراضي: مغلق)
+    function renderView() {
+      const isActive = localStorage.getItem('link_active') === 'true';
+      if (isActive) {
+        document.getElementById('open-view').classList.remove('hidden');
+        document.getElementById('closed-view').classList.add('hidden');
+      } else {
+        document.getElementById('closed-view').classList.remove('hidden');
+        document.getElementById('open-view').classList.add('hidden');
+      }
+    }
 
-<footer>
-جميع الحقوق محفوظة © سوق الكتاكيت<br>
-للتواصل: 01040077271
-</footer>
+    function openAdmin() {
+      document.getElementById('admin-modal').classList.remove('hidden');
+      document.getElementById('login-step').classList.remove('hidden');
+      document.getElementById('control-step').classList.add('hidden');
+      document.getElementById('pass-input').value = '';
+    }
+
+    function closeAdmin() {
+      document.getElementById('admin-modal').classList.add('hidden');
+    }
+
+    function checkPassword() {
+      const input = document.getElementById('pass-input').value;
+      if (input === SECRET_PASS) {
+        document.getElementById('login-step').classList.add('hidden');
+        document.getElementById('control-step').classList.remove('hidden');
+        updateAdminUI();
+      } else {
+        alert("كلمة السر خاطئة!");
+      }
+    }
+
+    function updateAdminUI() {
+      const isActive = localStorage.getItem('link_active') === 'true';
+      const statusText = document.getElementById('status-text');
+      if (isActive) {
+        statusText.innerHTML = "الحالة الحالية: <span style='color:#10b981'>مفتوح ✅</span>";
+      } else {
+        statusText.innerHTML = "الحالة الحالية: <span style='color:#ff2b3c'>مغلق 🔒</span>";
+      }
+    }
+
+    function toggleStatus() {
+      const current = localStorage.getItem('link_active') === 'true';
+      localStorage.setItem('link_active', !current);
+      updateAdminUI();
+      renderView();
+    }
+
+    // تشغيل الصفحة عند الفتح
+    renderView();
+  </script>
 
 </body>
 </html>
