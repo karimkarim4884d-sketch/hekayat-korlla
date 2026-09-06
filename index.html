@@ -3,124 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>الرابط</title>
+  <title>عالم ذكرياتنا ✨</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-    body { background-color: #080c14; height: 100vh; display: flex; justify-content: center; align-items: center; color: white; flex-direction: column; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #0d0914; color: #f3f4f6; min-height: 100vh; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; }
     
-    .card { background-color: #0f172a; width: 85%; max-width: 380px; padding: 40px 20px; border-radius: 24px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    .icon-box { background-color: #ff2b3c; width: 100px; height: 100px; margin: 0 auto 25px; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 40px; }
-    .message { font-size: 24px; font-weight: bold; line-height: 1.4; }
+    header { text-align: center; margin: 30px 0; }
+    header h1 { color: #ff3b5c; font-size: 28px; margin-bottom: 8px; }
+    header p { color: #a1a1aa; font-size: 14px; }
+
+    .feed { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 20px; }
+    
+    .post-card { background: #161022; border: 1px solid #271e38; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .post-card img { width: 100%; border-radius: 12px; margin-bottom: 15px; object-fit: cover; max-height: 300px; }
+    .post-card .date { font-size: 12px; color: #ff3b5c; margin-bottom: 8px; font-weight: bold; }
+    .post-card .title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; }
+    .post-card .text { font-size: 15px; color: #d1d5db; line-height: 1.6; white-space: pre-line; margin-bottom: 15px; }
+    .post-card audio { width: 100%; border-radius: 30px; height: 35px; }
+
+    .closed-card { background: #161022; padding: 40px 20px; border-radius: 20px; text-align: center; border: 1px solid #271e38; margin-top: 50px; }
+    .closed-card .icon { font-size: 50px; margin-bottom: 15px; }
+    .closed-card h2 { color: #fff; font-size: 22px; }
+
     .hidden { display: none !important; }
-
-    /* زر لوحة التحكم في الأسفل */
-    .admin-btn { position: fixed; bottom: 15px; right: 15px; opacity: 0.3; background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
-    .admin-btn:hover { opacity: 1; }
-
-    /* تصميم نافذة لوحة التحكم */
-    .admin-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; }
-    .admin-box { background: #1e293b; padding: 25px; border-radius: 16px; width: 90%; max-width: 320px; text-align: center; }
-    .admin-box input { width: 100%; padding: 10px; margin: 15px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center; font-size: 16px; }
-    .admin-box button { width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 8px; }
-    .btn-main { background: #2563eb; color: white; }
-    .btn-toggle { background: #10b981; color: white; }
-    .btn-close { background: #475569; color: white; }
   </style>
 </head>
 <body>
 
-  <!-- الشاشة عند إغلاق الرابط -->
-  <div id="closed-view" class="card">
-    <div class="icon-box">🔒</div>
-    <div class="message">هذا اللينك غير متاح الان 🔒</div>
+  <div id="active-site" class="feed">
+    <header>
+      <h1>أجمل الذكريات ❤️</h1>
+      <p>كل لحظة حلوة توثقت هنا...</p>
+    </header>
+    <div id="posts-container"></div>
   </div>
 
-  <!-- الشاشة عند فتح الرابط -->
-  <div id="open-view" class="card hidden">
-    <div class="message">مرحباً بك! اللينك متاح الآن ✨</div>
-  </div>
-
-  <!-- زر مخفي لدخول صاحب الموقع -->
-  <button class="admin-btn" onclick="openAdmin()">⚙️</button>
-
-  <!-- نافذة لوحة التحكم -->
-  <div id="admin-modal" class="admin-panel hidden">
-    <div class="admin-box">
-      <!-- مرحلة طلب كلمة السر -->
-      <div id="login-step">
-        <h3>لوحة التحكم</h3>
-        <input type="password" id="pass-input" placeholder="أدخل كلمة السر">
-        <button class="btn-main" onclick="checkPassword()">دخول</button>
-        <button class="btn-close" onclick="closeAdmin()">إلغاء</button>
-      </div>
-
-      <!-- مرحلة تغيير الحالة (تظهر بعد كلمة السر الصحيحة) -->
-      <div id="control-step" class="hidden">
-        <h3>التحكم بالحالة</h3>
-        <p id="status-text" style="margin: 15px 0; font-weight: bold;"></p>
-        <button id="toggle-btn" class="btn-toggle" onclick="toggleStatus()">تغيير الحالة</button>
-        <button class="btn-close" onclick="closeAdmin()">إغلاق</button>
-      </div>
-    </div>
+  <div id="closed-site" class="closed-card hidden">
+    <div class="icon">🔒</div>
+    <h2>هذا اللينك غير متاح الان 🔒</h2>
   </div>
 
   <script>
-    const SECRET_PASS = "2712007"; // كلمة السر الخاصة بك
-
-    // قراءة الحالة الحالية من ذاكرة المتصفح (الافتراضي: مغلق)
-    function renderView() {
-      const isActive = localStorage.getItem('link_active') === 'true';
-      if (isActive) {
-        document.getElementById('open-view').classList.remove('hidden');
-        document.getElementById('closed-view').classList.add('hidden');
-      } else {
-        document.getElementById('closed-view').classList.remove('hidden');
-        document.getElementById('open-view').classList.add('hidden');
+    function render() {
+      const isSiteActive = localStorage.getItem('memories_site_active') !== 'false';
+      
+      if (!isSiteActive) {
+        document.getElementById('active-site').classList.add('hidden');
+        document.getElementById('closed-site').classList.remove('hidden');
+        return;
       }
-    }
 
-    function openAdmin() {
-      document.getElementById('admin-modal').classList.remove('hidden');
-      document.getElementById('login-step').classList.remove('hidden');
-      document.getElementById('control-step').classList.add('hidden');
-      document.getElementById('pass-input').value = '';
-    }
+      const postsContainer = document.getElementById('posts-container');
+      const posts = JSON.parse(localStorage.getItem('memories_posts') || '[]');
 
-    function closeAdmin() {
-      document.getElementById('admin-modal').classList.add('hidden');
-    }
-
-    function checkPassword() {
-      const input = document.getElementById('pass-input').value;
-      if (input === SECRET_PASS) {
-        document.getElementById('login-step').classList.add('hidden');
-        document.getElementById('control-step').classList.remove('hidden');
-        updateAdminUI();
-      } else {
-        alert("كلمة السر خاطئة!");
+      if (posts.length === 0) {
+        postsContainer.innerHTML = `<p style="text-align:center; color:#71717a;">لا توجد ذكريات مضافة حتى الآن ✨</p>`;
+        return;
       }
+
+      postsContainer.innerHTML = posts.map(post => `
+        <div class="post-card">
+          ${post.image ? `<img src="${post.image}" alt="ذكرى">` : ''}
+          <div class="date">${post.date}</div>
+          <div class="title">${post.title}</div>
+          <div class="text">${post.text}</div>
+          ${post.audio ? `<audio controls src="${post.audio}"></audio>` : ''}
+        </div>
+      `).join('');
     }
 
-    function updateAdminUI() {
-      const isActive = localStorage.getItem('link_active') === 'true';
-      const statusText = document.getElementById('status-text');
-      if (isActive) {
-        statusText.innerHTML = "الحالة الحالية: <span style='color:#10b981'>مفتوح ✅</span>";
-      } else {
-        statusText.innerHTML = "الحالة الحالية: <span style='color:#ff2b3c'>مغلق 🔒</span>";
-      }
-    }
-
-    function toggleStatus() {
-      const current = localStorage.getItem('link_active') === 'true';
-      localStorage.setItem('link_active', !current);
-      updateAdminUI();
-      renderView();
-    }
-
-    // تشغيل الصفحة عند الفتح
-    renderView();
+    render();
   </script>
-
 </body>
 </html>
