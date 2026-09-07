@@ -1,1009 +1,1047 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>ذكرياتنا ❤️</title>
-
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Great+Vibes&display=swap');
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Cairo', sans-serif;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255, 70, 140, .18), transparent 30%),
-        radial-gradient(circle at 80% 70%, rgba(180, 40, 120, .18), transparent 30%),
-        linear-gradient(135deg, #09030a, #210817, #10030d);
-      color: white;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* شاشة البداية */
-
-    .welcome {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 25px;
-      background:
-        radial-gradient(circle, rgba(255, 40, 120, .15), transparent 40%),
-        #09030a;
-      transition: .8s;
-    }
-
-    .welcome.hide {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .welcome-box {
-      width: 100%;
-      max-width: 500px;
-      padding: 45px 25px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 30px;
-      background: rgba(255,255,255,.06);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 20px 70px rgba(0,0,0,.5);
-    }
-
-    .welcome-heart {
-      font-size: 80px;
-      animation: heartbeat 1.3s infinite;
-    }
-
-    .welcome h1 {
-      margin-top: 20px;
-      font-size: 34px;
-    }
-
-    .welcome p {
-      margin-top: 12px;
-      color: #ffc9df;
-    }
-
-    .enter-btn {
-      margin-top: 30px;
-      border: none;
-      padding: 15px 35px;
-      border-radius: 50px;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      background: linear-gradient(135deg, #ff3f87, #c52b75);
-      box-shadow: 0 10px 30px rgba(255, 45, 120, .3);
-      transition: .3s;
-    }
-
-    .enter-btn:hover {
-      transform: translateY(-3px) scale(1.03);
-    }
-
-    /* الهيدر */
-
-    header {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 30px 20px;
-      position: relative;
-    }
-
-    .hero {
-      max-width: 850px;
-    }
-
-    .small-title {
-      color: #ff9dc3;
-      font-size: 15px;
-      letter-spacing: 2px;
-      margin-bottom: 15px;
-    }
-
-    .hero h1 {
-      font-size: clamp(42px, 9vw, 80px);
-      line-height: 1.2;
-      background: linear-gradient(90deg, #fff, #ff8eb9, #fff);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .hero p {
-      margin: 20px auto;
-      max-width: 650px;
-      color: #e8cbd7;
-      line-height: 2;
-      font-size: 17px;
-    }
-
-    .hero-buttons {
-      margin-top: 30px;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      border: none;
-      cursor: pointer;
-      padding: 13px 25px;
-      border-radius: 50px;
-      font-family: inherit;
-      font-weight: bold;
-      color: white;
-      transition: .3s;
-    }
-
-    .btn-main {
-      background: linear-gradient(135deg, #ff3f87, #b92368);
-      box-shadow: 0 10px 30px rgba(255, 50, 130, .25);
-    }
-
-    .btn-dark {
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-    }
-
-    .btn:hover {
-      transform: translateY(-4px);
-    }
-
-    /* الأقسام */
-
-    section {
-      width: 92%;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 80px 0;
-    }
-
-    .section-title {
-      text-align: center;
-      margin-bottom: 35px;
-    }
-
-    .section-title h2 {
-      font-size: 30px;
-    }
-
-    .section-title p {
-      color: #cbaeba;
-      margin-top: 8px;
-    }
-
-    .card {
-      background: rgba(255,255,255,.055);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 28px;
-      padding: 30px;
-      backdrop-filter: blur(15px);
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
-    }
-
-    /* العداد */
-
-    .counter {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-    }
-
-    .counter-box {
-      text-align: center;
-      padding: 25px 10px;
-      border-radius: 20px;
-      background: rgba(255,255,255,.05);
-    }
-
-    .counter-number {
-      display: block;
-      color: #ff91b9;
-      font-size: 32px;
-      font-weight: bold;
-    }
-
-    .counter-label {
-      color: #d5bdc8;
-      font-size: 13px;
-    }
-
-    /* الرسالة */
-
-    .love-message {
-      text-align: center;
-      line-height: 2.2;
-      color: #f7dce7;
-      font-size: 17px;
-    }
-
-    .quote {
-      font-size: 30px;
-      margin-bottom: 15px;
-    }
-
-    /* الذكريات */
-
-    .memories {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .memory {
-      min-height: 200px;
-      padding: 25px;
-      border-radius: 22px;
-      background:
-        linear-gradient(145deg, rgba(255,255,255,.1), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.1);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      transition: .4s;
-    }
-
-    .memory:hover {
-      transform: translateY(-8px);
-      border-color: rgba(255,120,170,.4);
-    }
-
-    .memory-icon {
-      font-size: 45px;
-      margin-bottom: 12px;
-    }
-
-    .memory h3 {
-      margin-bottom: 8px;
-    }
-
-    .memory p {
-      color: #cdb7c2;
-      font-size: 14px;
-    }
-
-    /* الغرفة السرية */
-
-    .secret {
-      text-align: center;
-    }
-
-    .secret-icon {
-      font-size: 55px;
-      margin-bottom: 15px;
-    }
-
-    .secret p {
-      color: #ceb9c4;
-      margin-bottom: 20px;
-    }
-
-    /* الفوتر */
-
-    footer {
-      text-align: center;
-      padding: 40px 20px;
-      color: #987e8b;
-      border-top: 1px solid rgba(255,255,255,.06);
-    }
-
-    /* القلوب */
-
-    .heart-effect {
-      position: fixed;
-      pointer-events: none;
-      z-index: 10000;
-      animation: heartFly 1.5s ease-out forwards;
-      font-size: 22px;
-    }
-
-    @keyframes heartFly {
-      0% {
-        transform: translate(0,0) scale(.5) rotate(0deg);
-        opacity: 1;
-      }
-
-      100% {
-        transform:
-          translate(
-            calc(-50px + 100px * var(--x)),
-            calc(-120px - 100px * var(--y))
-          )
-          scale(1.5)
-          rotate(30deg);
-        opacity: 0;
-      }
-    }
-
-    @keyframes heartbeat {
-      0%,100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.15);
-      }
-    }
-
-    /* قلوب خلفية */
-
-    .background-heart {
-      position: fixed;
-      bottom: -40px;
-      opacity: .25;
-      pointer-events: none;
-      animation: floatHeart linear forwards;
-      z-index: 0;
-    }
-
-    @keyframes floatHeart {
-      from {
-        transform: translateY(0) rotate(0);
-        opacity: 0;
-      }
-
-      20% {
-        opacity: .25;
-      }
-
-      to {
-        transform: translateY(-110vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
-    @media(max-width:700px) {
-
-      .counter {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .memories {
-        grid-template-columns: 1fr;
-      }
-
-      .card {
-        padding: 22px;
-      }
-
-      section {
-        padding: 60px 0;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حكايتنا ❤️</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html{scroll-behavior:smooth}
+
+body{
+font-family:Cairo,Arial,sans-serif;
+background:
+radial-gradient(circle at 20% 10%,#58152f55,transparent 30%),
+radial-gradient(circle at 80% 80%,#8b174855,transparent 30%),
+linear-gradient(135deg,#08030a,#210817,#090309);
+color:#fff;
+overflow-x:hidden;
+}
+
+/* شاشة البداية */
+
+#intro{
+position:fixed;
+inset:0;
+z-index:99999;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:20px;
+background:#09030a;
+transition:1s;
+}
+
+#intro.hide{
+opacity:0;
+visibility:hidden;
+}
+
+.intro-box{
+width:100%;
+max-width:500px;
+padding:45px 25px;
+border-radius:30px;
+background:#ffffff0c;
+border:1px solid #ffffff18;
+backdrop-filter:blur(20px);
+box-shadow:0 20px 80px #000;
+}
+
+.big-heart{
+font-size:85px;
+animation:pulse 1.3s infinite;
+}
+
+.intro-box h1{
+font-size:42px;
+margin:15px 0;
+}
+
+.intro-box p{
+color:#eecbd9;
+line-height:2;
+}
+
+button{
+font-family:inherit;
+cursor:pointer;
+border:0;
+color:#fff;
+}
+
+.main-btn{
+margin-top:25px;
+padding:14px 30px;
+border-radius:50px;
+font-weight:800;
+font-size:15px;
+background:linear-gradient(135deg,#ff3e88,#a91f60);
+box-shadow:0 10px 30px #ff3e8844;
+transition:.3s;
+}
+
+.main-btn:hover{
+transform:translateY(-4px) scale(1.03);
+}
+
+/* الهيرو */
+
+.hero{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:30px 20px;
+}
+
+.hero-content{
+max-width:850px;
+}
+
+.eyebrow{
+color:#ff9bc0;
+letter-spacing:3px;
+font-size:13px;
+margin-bottom:15px;
+}
+
+.hero h1{
+font-size:clamp(45px,10vw,90px);
+background:linear-gradient(90deg,#fff,#ff82b1,#fff);
+-webkit-background-clip:text;
+color:transparent;
+line-height:1.2;
+}
+
+.hero p{
+max-width:650px;
+margin:20px auto;
+color:#dfc4d0;
+font-size:17px;
+line-height:2;
+}
+
+.buttons{
+display:flex;
+justify-content:center;
+gap:12px;
+flex-wrap:wrap;
+}
+
+.second-btn{
+margin-top:25px;
+padding:13px 25px;
+border-radius:50px;
+background:#ffffff0d;
+border:1px solid #ffffff1c;
+}
+
+/* الأقسام */
+
+section{
+width:92%;
+max-width:1000px;
+margin:auto;
+padding:75px 0;
+}
+
+.title{
+text-align:center;
+margin-bottom:35px;
+}
+
+.title h2{
+font-size:31px;
+}
+
+.title p{
+margin-top:7px;
+color:#bda7b3;
+}
+
+.card{
+background:#ffffff08;
+border:1px solid #ffffff12;
+border-radius:28px;
+padding:30px;
+backdrop-filter:blur(15px);
+box-shadow:0 20px 60px #0004;
+}
+
+/* العداد */
+
+.counter{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:14px;
+}
+
+.time{
+text-align:center;
+padding:25px 10px;
+background:#ffffff08;
+border-radius:20px;
+}
+
+.number{
+display:block;
+font-size:35px;
+font-weight:800;
+color:#ff8eb7;
+}
+
+.label{
+color:#cdb8c4;
+font-size:13px;
+}
+
+/* الرسالة */
+
+.message{
+text-align:center;
+font-size:17px;
+line-height:2.3;
+color:#f3dce6;
+}
+
+.message .heart{
+font-size:45px;
+margin-bottom:10px;
+}
+
+/* الذكريات */
+
+.memories{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:18px;
+}
+
+.memory{
+min-height:220px;
+padding:25px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+border-radius:23px;
+background:linear-gradient(145deg,#ffffff12,#ffffff04);
+border:1px solid #ffffff12;
+transition:.4s;
+cursor:pointer;
+}
+
+.memory:hover{
+transform:translateY(-8px);
+border-color:#ff70a655;
+}
+
+.memory-icon{
+font-size:55px;
+margin-bottom:15px;
+}
+
+.memory p{
+color:#c8b1bd;
+font-size:14px;
+margin-top:8px;
+}
+
+/* الخط الزمني */
+
+.timeline{
+position:relative;
+padding-right:25px;
+}
+
+.timeline:before{
+content:"";
+position:absolute;
+right:7px;
+top:0;
+bottom:0;
+width:2px;
+background:#ff609944;
+}
+
+.event{
+position:relative;
+margin-bottom:25px;
+padding:20px;
+border-radius:20px;
+background:#ffffff08;
+border:1px solid #ffffff10;
+}
+
+.event:before{
+content:"❤️";
+position:absolute;
+right:-12px;
+top:20px;
+font-size:18px;
+}
+
+.event h3{
+color:#ff9bc1;
+}
+
+.event p{
+color:#ceb9c4;
+line-height:1.9;
+margin-top:5px;
+}
+
+/* السر */
+
+.secret{
+text-align:center;
+}
+
+.secret-icon{
+font-size:60px;
+margin-bottom:15px;
+}
+
+/* الصور */
+
+.gallery{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px;
+}
+
+.photo{
+height:220px;
+border-radius:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:45px;
+background:
+linear-gradient(135deg,#ff438855,#6d174955);
+border:1px solid #ffffff15;
+}
+
+/* الفوتر */
+
+footer{
+text-align:center;
+padding:45px 20px;
+color:#927e89;
+border-top:1px solid #ffffff08;
+}
+
+/* قلوب الضغط */
+
+.click-heart{
+position:fixed;
+z-index:100000;
+pointer-events:none;
+font-size:25px;
+animation:fly 1.5s ease-out forwards;
+}
+
+@keyframes fly{
+0%{
+transform:translate(0,0) scale(.5) rotate(0);
+opacity:1;
+}
+100%{
+transform:translate(
+calc(-100px + 200px * var(--x)),
+calc(-100px - 180px * var(--y))
+) scale(1.5) rotate(40deg);
+opacity:0;
+}
+}
+
+@keyframes pulse{
+0%,100%{transform:scale(1)}
+50%{transform:scale(1.15)}
+}
+
+/* قلوب الخلفية */
+
+.bg-heart{
+position:fixed;
+bottom:-50px;
+pointer-events:none;
+z-index:-1;
+opacity:.25;
+animation:float 10s linear forwards;
+}
+
+@keyframes float{
+to{
+transform:translateY(-115vh) rotate(360deg);
+opacity:0;
+}
+}
+
+/* موبايل */
+
+@media(max-width:700px){
+
+.counter{
+grid-template-columns:repeat(2,1fr);
+}
+
+.memories{
+grid-template-columns:1fr;
+}
+
+.gallery{
+grid-template-columns:repeat(2,1fr);
+}
+
+.photo{
+height:160px;
+}
+
+section{
+padding:55px 0;
+}
+
+.card{
+padding:22px;
+}
+
+}
+</style>
 </head>
 
 <body>
 
-  <!-- شاشة البداية -->
+<!-- شاشة البداية -->
 
-  <div class="welcome" id="welcome">
+<div id="intro">
 
-    <div class="welcome-box">
+<div class="intro-box">
 
-      <div class="welcome-heart">❤️</div>
+<div class="big-heart">❤️</div>
 
-      <h1>ذكرياتنا</h1>
+<h1>حكايتنا</h1>
 
-      <p>
-        مكان صغير يحتفظ بكل لحظة جميلة بيننا
-      </p>
+<p>
+مكان صغير يجمع أجمل ذكرياتنا
+<br>
+وكل لحظة جميلة تستحق أن تبقى للأبد.
+</p>
 
-      <button class="enter-btn" onclick="enterSite(event)">
-        دخول إلى عالمنا ❤️
-      </button>
+<button class="main-btn" onclick="enterSite(event)">
+دخول إلى عالمنا ❤️
+</button>
 
-    </div>
+</div>
 
-  </div>
+</div>
 
 
-  <!-- الصفحة الرئيسية -->
+<!-- الرئيسية -->
 
-  <header>
+<header class="hero">
 
-    <div class="hero">
+<div class="hero-content">
 
-      <div class="small-title">
-        OUR BEAUTIFUL MEMORIES
-      </div>
+<div class="eyebrow">
+OUR BEAUTIFUL STORY
+</div>
 
-      <h1>
-        حكايتنا ❤️
-      </h1>
+<h1>حكايتنا ❤️</h1>
 
-      <p>
-        ليست مجرد ذكريات...
-        إنها أجمل اللحظات التي تستحق أن تبقى معنا للأبد.
-      </p>
+<p>
+ليست مجرد قصة عادية...
+إنها مجموعة من اللحظات والضحكات والكلام
+والذكريات التي أصبحت جزءًا من القلب.
+</p>
 
-      <div class="hero-buttons">
+<div class="buttons">
 
-        <button
-          class="btn btn-main"
-          onclick="showLove(event)"
-        >
-          ❤️ اضغط هنا
-        </button>
+<button class="main-btn" onclick="loveClick(event)">
+❤️ اضغط هنا
+</button>
 
-        <button
-          class="btn btn-dark"
-          onclick="scrollToMemories()"
-        >
-          ✨ ذكرياتنا
-        </button>
+<button class="second-btn" onclick="goTo('memories')">
+✨ ذكرياتنا
+</button>
 
-      </div>
+</div>
 
-    </div>
+</div>
 
-  </header>
+</header>
 
 
-  <!-- عداد الأيام -->
+<!-- العداد -->
 
-  <section id="counter-section">
+<section id="counter">
 
-    <div class="section-title">
+<div class="title">
 
-      <h2>⏳ الوقت الذي جمعنا</h2>
+<h2>⏳ منذ بداية الحكاية</h2>
 
-      <p>
-        وكل ثانية فيه لها قيمة ❤️
-      </p>
+<p>كل ثانية لها قيمة ❤️</p>
 
-    </div>
+</div>
 
-    <div class="card">
+<div class="card">
 
-      <div class="counter">
+<div class="counter">
 
-        <div class="counter-box">
-          <span class="counter-number" id="days">0</span>
-          <span class="counter-label">يوم</span>
-        </div>
+<div class="time">
+<span class="number" id="days">0</span>
+<span class="label">يوم</span>
+</div>
 
-        <div class="counter-box">
-          <span class="counter-number" id="hours">0</span>
-          <span class="counter-label">ساعة</span>
-        </div>
+<div class="time">
+<span class="number" id="hours">0</span>
+<span class="label">ساعة</span>
+</div>
 
-        <div class="counter-box">
-          <span class="counter-number" id="minutes">0</span>
-          <span class="counter-label">دقيقة</span>
-        </div>
+<div class="time">
+<span class="number" id="minutes">0</span>
+<span class="label">دقيقة</span>
+</div>
 
-        <div class="counter-box">
-          <span class="counter-number" id="seconds">0</span>
-          <span class="counter-label">ثانية</span>
-        </div>
+<div class="time">
+<span class="number" id="seconds">0</span>
+<span class="label">ثانية</span>
+</div>
 
-      </div>
+</div>
 
-    </div>
+</div>
 
-  </section>
+</section>
 
 
-  <!-- الرسالة -->
+<!-- الرسالة -->
 
-  <section>
+<section>
 
-    <div class="section-title">
+<div class="title">
+<h2>💌 رسالة من القلب</h2>
+</div>
 
-      <h2>💌 رسالة من القلب</h2>
+<div class="card message">
 
-    </div>
+<div class="heart">❤️</div>
 
-    <div class="card love-message">
+بعض الأشخاص يدخلون حياتنا صدفة،
+<br>
+ثم يصبح وجودهم أجمل شيء فيها.
 
-      <div class="quote">“</div>
+<br><br>
 
-      بعض الأشخاص يدخلون حياتنا صدفة،
-      <br>
+قد تمر الأيام وتتغير أشياء كثيرة،
+لكن هناك ذكريات تبقى دائمًا في القلب.
 
-      ثم يصبحون أجمل جزء فيها.
+<br><br>
 
-      <br><br>
+<strong>
+وهذه الصفحة مجرد بداية لحكاية جميلة لا تنتهي ❤️
+</strong>
 
-      مهما مرت الأيام وتغيرت الأشياء،
-      <br>
+</div>
 
-      ستبقى بعض الذكريات لها مكان خاص في القلب.
+</section>
 
-      <br><br>
 
-      <strong>
-        وهذه الصفحة صنعت لتبقى حكايتنا جميلة دائمًا ❤️
-      </strong>
+<!-- الذكريات -->
 
-      <div class="quote">”</div>
+<section id="memories">
 
-    </div>
+<div class="title">
 
-  </section>
+<h2>📸 أجمل الذكريات</h2>
 
+<p>اضغط على أي ذكرى لترى القلوب ❤️</p>
 
-  <!-- الذكريات -->
+</div>
 
-  <section id="memories">
+<div class="memories">
 
-    <div class="section-title">
+<div class="memory" onclick="heartExplosion(event)">
 
-      <h2>📸 ذكرياتنا</h2>
+<div class="memory-icon">📸</div>
 
-      <p>
-        هنا سنضع أجمل لحظاتنا
-      </p>
+<h3>أول ذكرى</h3>
 
-    </div>
+<p>
+أول لحظة بدأت فيها الحكاية.
+</p>
 
-    <div class="memories">
+</div>
 
-      <div
-        class="memory"
-        onclick="heartExplosion(event)"
-      >
 
-        <div class="memory-icon">📸</div>
+<div class="memory" onclick="heartExplosion(event)">
 
-        <h3>أول ذكرى</h3>
+<div class="memory-icon">💬</div>
 
-        <p>
-          أول يوم أصبح له معنى مختلف ❤️
-        </p>
+<h3>أول محادثة</h3>
 
-      </div>
+<p>
+كلمات بسيطة أصبحت ذكرى جميلة.
+</p>
 
+</div>
 
-      <div
-        class="memory"
-        onclick="heartExplosion(event)"
-      >
 
-        <div class="memory-icon">💬</div>
+<div class="memory" onclick="heartExplosion(event)">
 
-        <h3>أجمل محادثة</h3>
+<div class="memory-icon">💕</div>
 
-        <p>
-          كلمات بسيطة لكنها لا تُنسى.
-        </p>
+<h3>لحظة مميزة</h3>
 
-      </div>
+<p>
+لحظة نتمنى أن تبقى للأبد.
+</p>
 
+</div>
 
-      <div
-        class="memory"
-        onclick="heartExplosion(event)"
-      >
+</div>
 
-        <div class="memory-icon">💕</div>
+</section>
 
-        <h3>لحظة مميزة</h3>
 
-        <p>
-          لحظة نتمنى أن تتكرر دائمًا.
-        </p>
+<!-- Timeline -->
 
-      </div>
+<section>
 
-    </div>
+<div class="title">
 
-  </section>
+<h2>📖 حكايتنا</h2>
 
+<p>محطات صغيرة من قصتنا</p>
 
-  <!-- الغرفة السرية -->
+</div>
 
-  <section>
+<div class="card timeline">
 
-    <div class="card secret">
+<div class="event">
 
-      <div class="secret-icon">
-        🔐
-      </div>
+<h3>❤️ البداية</h3>
 
-      <h2>
-        الغرفة السرية
-      </h2>
+<p>
+هنا بدأت أول صفحة من الحكاية.
+</p>
 
-      <p>
-        مكان خاص لا يفتح إلا بكلمة السر ❤️
-      </p>
+</div>
 
-      <button
-        class="btn btn-main"
-        onclick="openSecret(event)"
-      >
-        دخول للغرفة السرية
-      </button>
+<div class="event">
 
-    </div>
+<h3>💬 أول كلام</h3>
 
-  </section>
+<p>
+كلمات بسيطة تحولت إلى ذكريات كثيرة.
+</p>
 
+</div>
 
-  <footer>
+<div class="event">
 
-    صُنعت بكل حب ❤️
+<h3>💕 أجمل لحظة</h3>
 
-    <br>
+<p>
+من اللحظات التي نتمنى أن تتكرر دائمًا.
+</p>
 
-    © ذكرياتنا
+</div>
 
-  </footer>
+<div class="event">
 
+<h3>♾️ وما زالت الحكاية مستمرة</h3>
 
-  <script>
+<p>
+والأجمل أن هذه ليست النهاية...
+بل بداية لذكريات جديدة.
+</p>
 
-    /* تاريخ البداية */
+</div>
 
-    const startDate =
-      new Date("2007-12-27T00:00:00");
+</div>
 
+</section>
 
-    function updateCounter() {
 
-      const now = new Date();
+<!-- معرض الصور -->
 
-      const difference =
-        now - startDate;
+<section>
 
-      const days =
-        Math.floor(
-          difference /
-          (1000 * 60 * 60 * 24)
-        );
+<div class="title">
 
-      const hours =
-        Math.floor(
-          (difference /
-          (1000 * 60 * 60)) % 24
-        );
+<h2>🖼️ صورنا</h2>
 
-      const minutes =
-        Math.floor(
-          (difference /
-          (1000 * 60)) % 60
-        );
+<p>سنضع هنا صورنا الحقيقية لاحقًا ❤️</p>
 
-      const seconds =
-        Math.floor(
-          (difference / 1000) % 60
-        );
+</div>
 
+<div class="gallery">
 
-      document.getElementById("days")
-        .textContent = days;
+<div class="photo" onclick="heartExplosion(event)">📷</div>
 
-      document.getElementById("hours")
-        .textContent = hours;
+<div class="photo" onclick="heartExplosion(event)">❤️</div>
 
-      document.getElementById("minutes")
-        .textContent = minutes;
+<div class="photo" onclick="heartExplosion(event)">📸</div>
 
-      document.getElementById("seconds")
-        .textContent = seconds;
-    }
+<div class="photo" onclick="heartExplosion(event)">💕</div>
 
+<div class="photo" onclick="heartExplosion(event)">💗</div>
 
-    updateCounter();
+<div class="photo" onclick="heartExplosion(event)">✨</div>
 
-    setInterval(updateCounter, 1000);
+</div>
 
+</section>
 
-    /* دخول الموقع */
 
-    function enterSite(event) {
+<!-- الغرفة السرية -->
 
-      heartExplosion(event);
+<section>
 
-      setTimeout(() => {
+<div class="card secret">
 
-        document
-          .getElementById("welcome")
-          .classList.add("hide");
+<div class="secret-icon">🔐</div>
 
-      }, 500);
+<h2>الغرفة السرية</h2>
 
-    }
+<p style="color:#cdb8c4;margin-top:10px">
+مكان خاص لا يفتح إلا بكلمة السر ❤️
+</p>
 
+<button class="main-btn" onclick="secretRoom(event)">
+دخول للغرفة السرية
+</button>
 
-    /* قلوب كثيرة */
+</div>
 
-    function heartExplosion(event) {
+</section>
 
-      const x =
-        event.clientX ||
-        window.innerWidth / 2;
 
-      const y =
-        event.clientY ||
-        window.innerHeight / 2;
+<footer>
 
+صُنعت بكل حب ❤️
 
-      for(let i = 0; i < 35; i++) {
+<br><br>
 
-        const heart =
-          document.createElement("div");
+© 2026 — حكايتنا
 
-        heart.className =
-          "heart-effect";
+</footer>
 
-        const hearts =
-          ["❤️","💕","💗","💖","💓","💞"];
 
-        heart.textContent =
-          hearts[
-            Math.floor(
-              Math.random() *
-              hearts.length
-            )
-          ];
+<script>
 
+/* =========================
+   تاريخ بداية الحكاية
+========================= */
 
-        heart.style.left =
-          x + "px";
+const startDate =
+new Date("2007-12-27T00:00:00");
 
-        heart.style.top =
-          y + "px";
 
-        heart.style.setProperty(
-          "--x",
-          Math.random()
-        );
+function updateCounter(){
 
-        heart.style.setProperty(
-          "--y",
-          Math.random()
-        );
+const now = new Date();
 
-        heart.style.fontSize =
-          (15 + Math.random() * 25) + "px";
+const difference = now - startDate;
 
+const days =
+Math.floor(
+difference/(1000*60*60*24)
+);
 
-        document.body.appendChild(heart);
+const hours =
+Math.floor(
+(difference/(1000*60*60))%24
+);
 
+const minutes =
+Math.floor(
+(difference/(1000*60))%60
+);
 
-        setTimeout(() => {
-          heart.remove();
-        }, 1600);
+const seconds =
+Math.floor(
+(difference/1000)%60
+);
 
-      }
+document.getElementById("days").textContent=days;
 
-    }
+document.getElementById("hours").textContent=hours;
 
+document.getElementById("minutes").textContent=minutes;
 
-    /* زر اضغط هنا */
+document.getElementById("seconds").textContent=seconds;
 
-    function showLove(event) {
+}
 
-      heartExplosion(event);
+updateCounter();
 
-      alert(
-        "❤️ كل ضغطة هنا تساوي ذكرى جميلة ❤️"
-      );
+setInterval(updateCounter,1000);
 
-    }
 
+/* =========================
+   دخول الموقع
+========================= */
 
-    /* الانتقال للذكريات */
+function enterSite(event){
 
-    function scrollToMemories() {
+heartExplosion(event);
 
-      document
-        .getElementById("memories")
-        .scrollIntoView({
-          behavior: "smooth"
-        });
+setTimeout(()=>{
 
-      setTimeout(() => {
+document
+.getElementById("intro")
+.classList.add("hide");
 
-        heartExplosion({
-          clientX:
-            window.innerWidth / 2,
+},400);
 
-          clientY:
-            window.innerHeight / 2
-        });
+}
 
-      }, 700);
 
-    }
+/* =========================
+   قلوب كثيرة
+========================= */
 
+function heartExplosion(event){
 
-    /* الغرفة السرية */
+const x =
+event.clientX || window.innerWidth/2;
 
-    function openSecret(event) {
+const y =
+event.clientY || window.innerHeight/2;
 
-      heartExplosion(event);
+const hearts=[
+"❤️","💕","💗","💖","💓","💞","💘"
+];
 
-      const password =
-        prompt("🔐 أدخل كلمة السر:");
+for(let i=0;i<45;i++){
 
-      if(password === "272006") {
+const heart=
+document.createElement("div");
 
-        document.body.innerHTML = `
+heart.className="click-heart";
 
-          <div style="
-            min-height:100vh;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            text-align:center;
-            padding:25px;
-            background:
-              radial-gradient(
-                circle,
-                #48152e,
-                #10030d
-              );
-            font-family:Cairo,Arial;
-            color:white;
-          ">
+heart.textContent=
+hearts[
+Math.floor(Math.random()*hearts.length)
+];
 
-            <div>
+heart.style.left=x+"px";
 
-              <div style="
-                font-size:90px;
-                animation:heartbeat 1.2s infinite;
-              ">
-                ❤️
-              </div>
+heart.style.top=y+"px";
 
-              <h1 style="
-                font-size:42px;
-                margin:20px 0;
-              ">
-                الغرفة السرية
-              </h1>
+heart.style.setProperty(
+"--x",
+Math.random()
+);
 
-              <p style="
-                color:#ffd7e7;
-                line-height:2.2;
-                font-size:18px;
-              ">
-                أهلًا بك في مكاننا الخاص ❤️
-                <br>
-                هنا سنضع أجمل أسرار وذكريات حكايتنا.
-                <br>
-                <br>
-                بعض الأشياء لا تحتاج أن يراها العالم...
-                <br>
-                يكفي أن تبقى بيننا. ❤️
-              </p>
+heart.style.setProperty(
+"--y",
+Math.random()
+);
 
-              <button
-                onclick="location.reload()"
-                style="
-                  margin-top:25px;
-                  padding:13px 30px;
-                  border:0;
-                  border-radius:30px;
-                  background:#ff4b91;
-                  color:white;
-                  font-weight:bold;
-                  cursor:pointer;
-                "
-              >
-                العودة ❤️
-              </button>
+heart.style.fontSize=
+(15+Math.random()*30)+"px";
 
-            </div>
+document.body.appendChild(heart);
 
-          </div>
-        `;
+setTimeout(()=>{
+heart.remove();
+},1600);
 
+}
 
-        for(let i = 0; i < 80; i++) {
+}
 
-          setTimeout(() => {
 
-            heartExplosion({
-              clientX:
-                Math.random() *
-                window.innerWidth,
+/* =========================
+   زر الحب
+========================= */
 
-              clientY:
-                Math.random() *
-                window.innerHeight
-            });
+function loveClick(event){
 
-          }, i * 30);
+heartExplosion(event);
 
-        }
+}
 
-      } else {
 
-        alert(
-          "❌ كلمة السر غير صحيحة"
-        );
+/* =========================
+   الانتقال
+========================= */
 
-        heartExplosion(event);
+function goTo(id){
 
-      }
+document
+.getElementById(id)
+.scrollIntoView({
+behavior:"smooth"
+});
 
-    }
+setTimeout(()=>{
 
+heartExplosion({
+clientX:window.innerWidth/2,
+clientY:window.innerHeight/2
+});
 
-    /* قلوب خلفية مستمرة */
+},600);
 
-    function backgroundHeart() {
+}
 
-      const heart =
-        document.createElement("div");
 
-      heart.className =
-        "background-heart";
+/* =========================
+   الغرفة السرية
+========================= */
 
-      heart.textContent =
-        ["❤️","💕","💗","💖"][
-          Math.floor(
-            Math.random() * 4
-          )
-        ];
+function secretRoom(event){
 
-      heart.style.left =
-        Math.random() * 100 + "vw";
+heartExplosion(event);
 
-      heart.style.fontSize =
-        (15 + Math.random() * 25) + "px";
+const password=
+prompt("🔐 أدخل كلمة السر:");
 
-      heart.style.animationDuration =
-        (6 + Math.random() * 7) + "s";
+if(password==="272006"){
 
+document.body.innerHTML=`
 
-      document.body.appendChild(heart);
+<div style="
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:25px;
+background:
+radial-gradient(circle,#5c1738,#0a0309);
+font-family:Cairo,Arial;
+">
 
+<div>
 
-      setTimeout(() => {
-        heart.remove();
-      }, 13000);
+<div style="
+font-size:90px;
+animation:pulse 1.2s infinite;
+">
+❤️
+</div>
 
-    }
+<h1 style="
+font-size:42px;
+margin:20px 0;
+">
+الغرفة السرية
+</h1>
 
+<p style="
+color:#f3d6e4;
+line-height:2.3;
+font-size:18px;
+">
+أهلًا بك في مكاننا الخاص ❤️
+<br><br>
+هنا سنضع أسرارنا وأجمل ذكرياتنا.
+<br>
+مكان لا يخص إلا أصحاب الحكاية.
+<br><br>
+<strong>
+والحكاية ما زالت مستمرة... ♾️
+</strong>
+</p>
 
-    setInterval(backgroundHeart, 900);
+<button
+onclick="location.reload()"
+style="
+margin-top:25px;
+padding:14px 30px;
+border:0;
+border-radius:30px;
+background:#ff4388;
+color:#fff;
+font-weight:bold;
+font-family:Cairo;
+cursor:pointer;
+">
+العودة ❤️
+</button>
 
+</div>
 
-    /* الضغط في أي مكان */
+</div>
+`;
 
-    document.addEventListener(
-      "click",
-      function(event) {
+}else{
 
-        if(
-          event.target.tagName !== "BUTTON" &&
-          !event.target.closest(".memory")
-        ) {
-          heartExplosion(event);
-        }
+alert("❌ كلمة السر غير صحيحة");
 
-      }
-    );
+}
 
-  </script>
+}
+
+
+/* =========================
+   قلوب خلفية
+========================= */
+
+function createBackgroundHeart(){
+
+const heart=
+document.createElement("div");
+
+heart.className="bg-heart";
+
+heart.textContent=
+["❤️","💕","💗","💖"][
+Math.floor(Math.random()*4)
+];
+
+heart.style.left=
+Math.random()*100+"vw";
+
+heart.style.fontSize=
+(15+Math.random()*25)+"px";
+
+heart.style.animationDuration=
+(7+Math.random()*7)+"s";
+
+document.body.appendChild(heart);
+
+setTimeout(()=>{
+heart.remove();
+},15000);
+
+}
+
+setInterval(createBackgroundHeart,900);
+
+
+/* =========================
+   أي ضغطة في الصفحة
+========================= */
+
+document.addEventListener("click",(event)=>{
+
+if(
+event.target.tagName!=="BUTTON" &&
+!event.target.closest(".memory") &&
+!event.target.closest(".photo")
+){
+
+heartExplosion(event);
+
+}
+
+});
+
+</script>
 
 </body>
 </html>
